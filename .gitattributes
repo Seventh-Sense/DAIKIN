@@ -1,0 +1,33 @@
+# 文本文件统一强制使用 LF 换行符，消除批量警告
+# 环境配置文件
+*.env text eol=lf
+*.env.development text eol=lf
+*.env.production text eol=lf
+
+# Git 配置文件
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# 前端源码文件
+*.ts text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.tsx text eol=lf
+*.vue text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+
+# SVG 文件（作为文本处理，强制 LF，避免被误判为二进制）
+*.svg text eol=lf
+
+# 二进制文件（不进行任何换行符转换，防止损坏）
+*.png binary
+*.jpg binary
+*.gif binary
+*.exe binary
+*.dll binary
+*.woff binary
+*.woff2 binary
