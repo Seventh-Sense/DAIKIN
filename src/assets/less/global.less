@@ -5,14 +5,26 @@
 @light-text: #333333;
 @dark-text: #e5e5e5;
 
+:root {
+  /* 全局基础字体（对应 Ant Design 所有文本组件） */
+  --ant-font-family: "SimSun", "Songti SC", serif !important;
+  /* 可选：单独设置 monospace 字体（代码块等场景，如需宋体也可替换） */
+  --ant-font-family-monospace: "SimSun", "Songti SC", monospace !important;
+}
+
 // 全局重置
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "SimSun", "Songti SC", serif !important;
 }
 
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
   width: 100%;
   overflow: hidden;
@@ -33,39 +45,4 @@ html, body, #app {
   --sidebar-bg: #1f1f1f;
   --header-bg: #2f2f2f;
   --content-bg: #1f1f1f;
-}
-
-// 布局样式复用
-.layout-container {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-container {
-  width: 200px;
-  height: 100%;
-  background: var(--sidebar-bg);
-  color: var(--text-color);
-  transition: all 0.3s ease;
-}
-
-.header-container {
-  height: 64px;
-  background: var(--header-bg);
-  color: var(--text-color);
-  border-bottom: 1px solid #e8e8e8;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-}
-
-.content-container {
-  flex: 1;
-  background: var(--content-bg);
-  color: var(--text-color);
-  padding: 20px;
-  overflow: auto;
 }

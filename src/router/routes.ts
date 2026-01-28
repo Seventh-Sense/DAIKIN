@@ -3,6 +3,11 @@ import { RouteRecordRaw } from "vue-router";
 export const publicRoutes: RouteRecordRaw[] = [
   {
     path: "/",
+    name: "Login",
+    component: () => import("@/views/Login/index.vue"),
+  },
+  {
+    path: "/HelloWorld",
     name: "HelloWorld",
     component: () => import("@/components/HelloWorld/index.vue"),
   },
@@ -10,7 +15,7 @@ export const publicRoutes: RouteRecordRaw[] = [
 
 export const privateRoutes: RouteRecordRaw[] = [
   {
-    path: "/",
+    path: "/HelloWorld",
     name: "HelloWorld",
     component: () => import("@/components/HelloWorld/index.vue"),
   },

@@ -21,7 +21,7 @@ export default defineConfig({
           mainColor: "red",
         },
         javascriptEnabled: true,
-        additionalData: `@import "@/assets/less/global.less";`
+        additionalData: `@import "@/assets/less/index.less";`
       },
     },
   },

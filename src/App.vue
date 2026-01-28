@@ -13,7 +13,4 @@ onMounted(() => {
 </script>
 
 <style lang="less">
-@import "@/assets/less/global.less";
-@import "@/assets/less/light.less";
-@import "@/assets/less/dark.less";
 </style>
