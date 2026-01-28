@@ -20,6 +20,8 @@ export default defineConfig({
           // 全局变量
           mainColor: "red",
         },
+        javascriptEnabled: true,
+        additionalData: `@import "@/assets/less/global.less";`
       },
     },
   },
@@ -54,5 +56,6 @@ export default defineConfig({
     open: true, // 是否自动在浏览器打开项目
     port: 3000, // 设置服务启动时的端口
     host: "0.0.0.0", // 指定服务监听的主机地址
+    cors: true
   },
 });

@@ -1,18 +1,13 @@
 // src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router';
-
-const routes = [
-  {
-    path: '/',
-    name: 'HelloWorld',
-    component:  () => import('@/components/HelloWorld/index.vue')
-  },
-  // 添加更多路由...
-];
+import routes from './routes'
+import { setupRouterGuard } from './guard'
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+setupRouterGuard(router)
 
 export default router;
