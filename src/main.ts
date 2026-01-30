@@ -1,6 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import '@/assets/less/index.less'
+import "@/assets/less/index.less";
 import svgIcon from "./icons/svgIcon.vue";
 
 import router from "./router";

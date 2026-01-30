@@ -3,7 +3,6 @@ import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
 import { createSvg } from "./src/icons/svgIcon";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue(), createSvg("./src/icons/svg/")],
   resolve: {

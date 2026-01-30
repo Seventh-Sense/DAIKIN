@@ -1,60 +1,56 @@
 <template>
   <a-row class="login">
-    <a-col :span="12">col-18 col-push-6</a-col>
+    <a-col :span="12">
+      <div style="background-color: antiquewhite; height: 100vh">
+        <a-input v-model:value="formState.username" size="large"></a-input>
+      </div>
+    </a-col>
     <a-col :span="12">
       <div class="login-box">
         <a-form
           :model="formState"
+          :rules="rules"
           name="normal_login"
           class="login-form"
           @finish="onFinish"
           @finishFailed="onFinishFailed"
         >
-          <a-form-item
-            label="Username"
-            name="username"
-            :rules="[
-              { required: true, message: 'Please input your username!' },
-            ]"
-          >
-            <a-input v-model:value="formState.username">
+          <a-form-item name="username">
+            <a-input
+              size="large"
+              style="width: 400px"
+              v-model:value="formState.username"
+              :placeholder="t('login.username')"
+            >
               <template #prefix>
                 <UserOutlined class="site-form-item-icon" />
               </template>
             </a-input>
           </a-form-item>
 
-          <a-form-item
-            label="Password"
-            name="password"
-            :rules="[
-              { required: true, message: 'Please input your password!' },
-            ]"
-          >
-            <a-input-password v-model:value="formState.password">
+          <a-form-item name="password" class="login-form-password">
+            <a-input-password
+              size="large"
+              v-model:value="formState.password"
+              style="width: 400px"
+              :placeholder="t('login.password')"
+            >
               <template #prefix>
                 <LockOutlined class="site-form-item-icon" />
               </template>
             </a-input-password>
           </a-form-item>
 
-          <a-form-item>
-            <a-form-item name="remember" no-style>
-              <a-checkbox v-model:checked="formState.remember"
-                >Remember me</a-checkbox
-              >
-            </a-form-item>
-            <a class="login-form-forgot" href="">Forgot password</a>
+          <a-form-item class="login-form-lang">
+            <LangSelect />
           </a-form-item>
-
           <a-form-item>
             <a-button
-              :disabled="disabled"
               type="primary"
               html-type="submit"
               class="login-form-button"
             >
-              Log in
+              {{ $t("login.loginBtn") }}
             </a-button>
           </a-form-item>
         </a-form>
@@ -65,28 +61,42 @@
 
 <script setup lang="ts">
 import { loginApi } from "@/api";
-import { reactive, computed } from "vue";
+import { reactive, computed, ref } from "vue";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
+import LangSelect from "@/components/LangSelect/index.vue";
+import { useI18n } from "vue-i18n";
+import { routerTurnByName } from "../../router/util";
+
+const { t } = useI18n();
 interface FormState {
   username: string;
   password: string;
-  remember: boolean;
 }
+
+const rules = computed(() => ({
+  username: [{ required: true, message: t("login.placeholder.username") }],
+  password: [{ required: true, message: t("login.placeholder.password") }],
+}));
+
 const formState = reactive<FormState>({
   username: "",
   password: "",
-  remember: true,
 });
-const onFinish = (values: any) => {
+
+const onFinish = async (values: any) => {
   console.log("Success:", values);
+  // try {
+  //   const res = await loginApi()
+  // } catch(e) {
+  //   console.log(e)
+  // }
+
+  routerTurnByName('Home', false, false)
 };
 
 const onFinishFailed = (errorInfo: any) => {
   console.log("Failed:", errorInfo);
 };
-const disabled = computed(() => {
-  return !(formState.username && formState.password);
-});
 </script>
 
 <style lang="less" scoped>
@@ -100,6 +110,20 @@ const disabled = computed(() => {
     justify-content: center;
     align-items: center;
   }
-}
 
+  &-form {
+    &-password {
+      margin-bottom: 12px;
+    }
+    &-lang {
+      text-align: right;
+      margin-bottom: 12px;
+    }
+
+    &-button {
+      width: 400px;
+      height: 40px;
+    }
+  }
+}
 </style>

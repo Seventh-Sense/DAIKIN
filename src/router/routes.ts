@@ -7,6 +7,11 @@ export const publicRoutes: RouteRecordRaw[] = [
     component: () => import("@/views/Login/index.vue"),
   },
   {
+    path: "/home",
+    name: "Home",
+    component: () => import("@/views/Home/index.vue"),
+  },
+  {
     path: "/HelloWorld",
     name: "HelloWorld",
     component: () => import("@/components/HelloWorld/index.vue"),
