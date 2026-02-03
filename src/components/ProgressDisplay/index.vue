@@ -3,30 +3,39 @@
     <div v-for="(flow, index) in flows" class="flows-block" :key="index">
       <div
         class="flows-num"
-        :class="{ 'flows-num-active': index + 1 <= currentStep }"
+        :class="{
+          'flows-num-completed': index + 1 < currentStep,
+          'flows-num-current': index + 1 === currentStep,
+        }"
       >
         {{ flow.index }}
       </div>
       <div
         class="flows-text"
-        :class="{ 'flows-text-active': index + 1 <= currentStep }"
+        :class="{
+          'flows-text-completed': index + 1 < currentStep,
+          'flows-text-current': index + 1 === currentStep,
+        }"
       >
         {{ flow.label }}
       </div>
       <div
         class="flows-connect"
-        :class="{ 'flows-num-active': index + 1 <= currentStep }"
+        :class="{
+          'flows-num-completed': index + 1 < currentStep,
+          'flows-num-current': index + 1 === currentStep,
+        }"
         v-if="index < flows.length - 1"
       />
     </div>
   </div>
-  <!-- <button
+  <button
     class="next-step-btn"
     @click="handleNextStep"
     :disabled="currentStep >= flows.length"
   >
     下一步 (当前步骤：{{ currentStep }})
-  </button> -->
+  </button>
 </template>
 
 <script setup lang="ts">
@@ -99,10 +108,6 @@ const handleNextStep = () => {
     transition: background-color 0.3s ease;
   }
 
-  .flows-num-active {
-    background-color: var(--header-progress-active-color);
-  }
-
   &-text {
     font-weight: bold;
     font-size: 20px;
@@ -113,14 +118,26 @@ const handleNextStep = () => {
     transition: color 0.3s ease;
   }
 
-  .flows-text-active {
-    color: var(--header-progress-active-color);
-  }
-
   &-connect {
     width: 24px;
     height: 2px;
     background-color: var(--header-progress-color);
   }
+}
+
+.flows-num-completed {
+  background-color: var(--header-progress-completed-color);
+}
+
+.flows-num-current {
+  background-color: var(--header-progress-current-color);
+}
+
+.flows-text-completed {
+  color: var(--header-progress-completed-color);
+}
+
+.flows-text-current {
+  color: var(--header-progress-current-color);
 }
 </style>
