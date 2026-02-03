@@ -19,7 +19,13 @@ export default {
     light: "浅色主题",
     cn: "中文",
     en: "英文",
-    jp: "日文"
+    jp: "日文",
+    flow_1: '添加控制器',
+    flow_2: '固件更新',
+    flow_3: '设备/点位添加',
+    flow_4: 'MQTT配置',
+    flow_5: 'UI配置',
+    flow_6: '连接性检查',
   },
   user: {
     title: "用户列表",

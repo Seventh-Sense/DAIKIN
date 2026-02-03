@@ -19,7 +19,13 @@ export default {
     light: "Light Theme",
     cn: "Chinese",
     en: "English",
-    jp: "Japanese"
+    jp: "Japanese",
+    flow_1: 'Add controller',
+    flow_2: 'Firmware update',
+    flow_3: 'Equipment/Position Addition',
+    flow_4: 'MQTT configuration',
+    flow_5: 'UI configuration',
+    flow_6: 'Connectivity check',
   },
   user: {
     title: "User List",

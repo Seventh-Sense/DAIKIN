@@ -18,10 +18,12 @@
 </template>
 
 <script setup lang="ts">
-import { routerTurnByName } from "@/router/util";
+
 import LocalStorageUtils from "@/utils/local-storage-utils";
 import { onMounted, ref } from "vue";
+import { useUserStore } from "@/pinia/modules/user";
 
+const userStore = useUserStore();
 const user = ref("");
 
 onMounted(() => {
@@ -37,9 +39,7 @@ const handleClick = ({ key }: { key: string }) => {
     case "1":
       break;
     case "2":
-      LocalStorageUtils.removeItem("userToken");
-
-      routerTurnByName("Login", true, false);
+      userStore.logout()
       break;
     default:
       break;
