@@ -1,9 +1,9 @@
 <template>
   <a-dropdown>
-    <a class="ant-dropdown-link" @click.prevent>
+    <span class="lang" @click.prevent>
       {{ currentLocaleName }}
       <DownOutlined />
-    </a>
+    </span>
     <template #overlay>
       <a-menu @click="handleLocaleChange">
         <a-menu-item key="cn">
@@ -36,7 +36,7 @@ const currentLocaleName = computed(() => {
     en: t("layout.en"), // 对应英文名称
     jp: t("layout.jp"), // 对应日文名称
   };
-  
+
   return localeNameMap[localeStore.currentLocale] || localeNameMap.cn;
 });
 
@@ -45,4 +45,13 @@ const handleLocaleChange = (e: { key: string }) => {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="less" scoped>
+.lang {
+  font-weight: bold;
+  font-size: 14px;
+  color: var(--header-text-color);
+  line-height: 20px;
+  text-align: center;
+  font-style: normal;
+}
+</style>

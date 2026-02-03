@@ -49,6 +49,7 @@
               type="primary"
               html-type="submit"
               class="login-form-button"
+              :loading="userStore.isLoading"
             >
               {{ $t("login.loginBtn") }}
             </a-button>
@@ -60,13 +61,14 @@
 </template>
 
 <script setup lang="ts">
-import { loginApi } from "@/api";
 import { reactive, computed, ref } from "vue";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import LangSelect from "@/components/LangSelect/index.vue";
 import { useI18n } from "vue-i18n";
-import { routerTurnByName } from "../../router/util";
+import { routerTurnByName } from "@/router/util";
+import { useUserStore } from "@/pinia/modules/user";
 
+const userStore = useUserStore();
 const { t } = useI18n();
 interface FormState {
   username: string;
@@ -84,13 +86,9 @@ const formState = reactive<FormState>({
 });
 
 const onFinish = async (values: any) => {
-  console.log("Success:", values);
-  // try {
-  //   const res = await loginApi()
-  // } catch(e) {
-  //   console.log(e)
-  // }
+  userStore.login(values)
 
+  //缓存用户信息
   routerTurnByName('Home', false, false)
 };
 

@@ -6,7 +6,7 @@ export type ThemeType = 'light' | 'dark'
 
 export const useThemeStore = defineStore('theme', () => {
   // 状态：当前主题（默认浅色）
-  const currentTheme = ref<ThemeType>('light')
+  const currentTheme = ref<string>('light')
 
   // 初始化：从本地存储读取主题
   const initTheme = () => {
@@ -19,14 +19,14 @@ export const useThemeStore = defineStore('theme', () => {
   }
 
   // 动作：切换主题
-  const switchTheme = (theme: ThemeType) => {
+  const switchTheme = (theme: string) => {
     currentTheme.value = theme
     localStorage.setItem('admin-theme', theme)
     applyTheme(theme)
   }
 
   // 辅助：应用主题到 DOM
-  const applyTheme = (theme: ThemeType) => {
+  const applyTheme = (theme: string) => {
     const html = document.documentElement
     html.classList.remove('light-theme', 'dark-theme')
     html.classList.add(`${theme}-theme`)

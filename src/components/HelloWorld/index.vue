@@ -6,17 +6,17 @@ import { loginApi } from '@/api';
 const count = ref(0)
 
 
-onMounted(async() => {
-  try{
+// onMounted(async() => {
+//   try{
 
-    const res = await loginApi({})
+//     const res = await loginApi({})
 
-    console.log('res',res)
+//     console.log('res',res)
 
-  } catch (e) {
-    console.log(e)
-  }
-})
+//   } catch (e) {
+//     console.log(e)
+//   }
+// })
 </script>
 
 <template>

@@ -1,9 +1,6 @@
 import { post, get } from "../request"
+import type { LoginParams } from "@/types/user";
 
-export interface LoginParams {
-  username: string
-  password: string
-}
 
 
 export const loginApi = (params: LoginParams) => {
