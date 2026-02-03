@@ -17,7 +17,6 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  font-family: "SimSun", "Songti SC", serif !important;
 }
 
 html,
@@ -26,7 +25,18 @@ body,
   height: 100%;
   width: 100%;
   overflow: hidden;
-  font-family: "SimSun", "Songti SC", serif !important;
+  font-family: "SimSun", "Songti SC", serif;
+}
+
+#app * {
+  font-family: inherit;
+}
+
+#app [class^="x-icon"],
+#app [class*=" x-icon"] {
+  font-family: initial !important;
+  //font-family: 'XIcon' !important
+  /* 如果不需要指定字体，仅恢复默认：font-family: initial !important; */
 }
 
 // 主题通用样式

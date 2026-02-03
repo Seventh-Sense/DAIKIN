@@ -40,9 +40,10 @@ const currentLocale = computed(() => {
 });
 
 const antdThemeConfig = computed(() => ({
-  algorithm: themeStore.currentTheme === "dark" 
-    ? theme.darkAlgorithm 
-    : theme.defaultAlgorithm,
+  algorithm:
+    themeStore.currentTheme === "dark"
+      ? theme.darkAlgorithm
+      : theme.defaultAlgorithm,
 }));
 
 const setDayjsLocale = () => {

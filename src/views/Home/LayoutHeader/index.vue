@@ -22,7 +22,7 @@ import ProgressDisplay from "@/components/ProgressDisplay/index.vue";
   justify-content: space-between;
   align-items: center;
   gap: 24px;
-  height: 64px;
+  height: 80px;
 
   &-left {
     display: flex;

@@ -34,15 +34,21 @@ const onBreakpoint = (broken: boolean) => {
 </script>
 
 <style lang="less" scoped>
+@sider-w: 234px;
+
 .layout {
   height: 100%;
 
   &-sider {
     background-color: var(--sidebar-bg);
+    width: @sider-w !important;
+    max-width: @sider-w !important;
+    min-width: @sider-w !important;
   }
 
   &-header {
     background-color: var(--header-bg);
+    height: 80px;
   }
 }
 </style>
