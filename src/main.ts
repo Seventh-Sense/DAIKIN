@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import "@/assets/less/index.less";
-import svgIcon from "./icons/svgIcon.vue";
 
 import router from "./router";
 
@@ -41,6 +40,5 @@ app.use(router);
 app.use(i18n);
 
 app
-  .component("svg-icon", svgIcon)
   .component("FontAwesomeIcon", FontAwesomeIcon)
   .mount("#app");

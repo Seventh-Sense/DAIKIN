@@ -1,10 +1,9 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
-import { createSvg } from "./src/icons/svgIcon";
 
 export default defineConfig({
-  plugins: [vue(), createSvg("./src/icons/svg/")],
+  plugins: [vue()],
   resolve: {
     // 配置别名
     alias: {
@@ -35,12 +34,6 @@ export default defineConfig({
         drop_debugger: true, // 是否删除所有的debugger语句
       },
     },
-    // 是否为生产环境构建产物做优化
-    // 默认process.env.NODE_ENV === 'production'
-    // 为true时，会默认开启生产环境的配置
-    // 比如，terser压缩，tree-shaking等。
-    // 为false时，则不会开启
-    // 生产环境的配置，可以通过配置文件来定制
     rollupOptions: {
       output: {
         chunkFileNames: "static/js/[name]-[hash].js",
