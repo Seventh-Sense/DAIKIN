@@ -29,13 +29,13 @@
       />
     </div>
   </div>
-  <button
+  <!-- <button
     class="next-step-btn"
     @click="handleNextStep"
     :disabled="currentStep >= flows.length"
   >
     下一步 (当前步骤：{{ currentStep }})
-  </button>
+  </button> -->
 </template>
 
 <script setup lang="ts">

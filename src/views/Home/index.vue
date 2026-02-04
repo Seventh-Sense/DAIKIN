@@ -49,6 +49,7 @@ const onBreakpoint = (broken: boolean) => {
   &-header {
     background-color: var(--header-bg);
     height: 80px;
+    border-left: 1px solid var(--sider-menu-border-color);
   }
 }
 </style>

@@ -1,8 +1,12 @@
 <template>
   <div class="sider">
     <div class="sider-top"></div>
-    <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
-      <a-menu-item v-for="(menu, index) in menus" :key="index + 1">
+    <a-menu v-model:selectedKeys="selectedKeys" mode="inline">
+      <a-menu-item
+        v-for="(menu, index) in menus"
+        :key="index + 1"
+        @click="handleClick(menu, index)"
+      >
         <template #icon>
           <template v-if="selectedKeys.includes(index + 1)">
             <Icons
@@ -60,6 +64,10 @@ const menus = computed(() => [
     label: t("layout.flow_6"),
   },
 ]);
+
+const handleClick = (menu: any, index: number) => {
+  console.log(menu);
+};
 </script>
 
 <style lang="less" scoped>
@@ -72,26 +80,37 @@ const menus = computed(() => [
 .nav-text {
   font-weight: 400;
   font-size: 16px;
-  color: rgba(34, 34, 34, 0.6);
-  line-height: 40px;
+  color: var(--sider-text-color);
+  line-height: 48px;
   text-align: left;
   font-style: normal;
 }
 
 :deep(.ant-menu-item) {
   padding-left: 12px !important;
+  width: 100% !important;
+  height: 48px;
+  margin: 0;
+  border-top: 1px solid var(--sider-menu-border-color);
+  border-radius: 0;
+}
+
+:deep(.ant-menu > .ant-menu-item:last-child) {
+  border-bottom: 1px solid var(--sider-menu-border-color);
 }
 
 :deep(.ant-menu-item-selected) {
-  background-color: #e2f2fcff;
+  background-color: var(--sider-menu-select-color);
+  border-radius: 0;
 }
 
 :deep(.ant-menu-item:active) {
-  background-color: #e2f2fcff !important;
+  background-color: var(--sider-menu-select-color);
+  border-radius: 0;
 }
 
 :deep(.ant-menu-item-selected) .nav-text {
   font-weight: bold !important;
-  color: #222222 !important;
+  color: var(--sider-menu-select-font-color) !important;
 }
 </style>
