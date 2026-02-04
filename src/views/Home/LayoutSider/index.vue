@@ -34,39 +34,57 @@
 import { computed, ref } from "vue";
 import Icons from "@/icons/index.vue";
 import { useI18n } from "vue-i18n";
+import { routerTurnByPath } from "@/router/util";
+import { useStepStore } from "@/pinia/modules/step";
 
+const stepStore = useStepStore();
 const { t } = useI18n();
-const selectedKeys = ref<number[]>([4]);
+const selectedKeys = ref<number[]>([stepStore.currentStep]);
 
 const menus = computed(() => [
   {
     icon: "deviceA",
     label: t("layout.flow_1"),
+    path: "/home",
   },
   {
     icon: "refresh",
     label: t("layout.flow_2"),
+    path: "/home/firmwareupdate",
   },
   {
     icon: "addCircle",
     label: t("layout.flow_3"),
+    path: "/home/devices",
   },
   {
     icon: "setting",
     label: t("layout.flow_4"),
+    path: "/home/mqtt",
   },
   {
     icon: "multistate",
     label: t("layout.flow_5"),
+    path: "/home/ui",
   },
   {
     icon: "checkCircle",
     label: t("layout.flow_6"),
+    path: "/home/check",
   },
 ]);
 
 const handleClick = (menu: any, index: number) => {
-  console.log(menu);
+  const step = index + 1;
+
+  selectedKeys.value = [step];
+
+  stepStore.updateCurrentStep(step);
+  //console.log(menu, selectedKeys.value);
+
+  if (menu.path) {
+    routerTurnByPath(menu.path);
+  }
 };
 </script>
 

@@ -11,7 +11,7 @@ export const setupRouterGuard = (router: Router) => {
       from: RouteLocationNormalized,
       next: NavigationGuardNext,
     ) => {
-        console.log(to, from)
+        //console.log(to, from)
 
         next()
     },

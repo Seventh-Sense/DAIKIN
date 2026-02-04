@@ -29,22 +29,17 @@
       />
     </div>
   </div>
-  <!-- <button
-    class="next-step-btn"
-    @click="handleNextStep"
-    :disabled="currentStep >= flows.length"
-  >
-    下一步 (当前步骤：{{ currentStep }})
-  </button> -->
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
+import { useStepStore } from "@/pinia/modules/step";
 
 const { t } = useI18n();
 
-const currentStep = ref(1);
+const stepStore = useStepStore();
+const currentStep = computed(() => stepStore.currentStep);
 
 const flows = computed(() => [
   {
@@ -73,11 +68,7 @@ const flows = computed(() => [
   },
 ]);
 
-const handleNextStep = () => {
-  if (currentStep.value < flows.value.length) {
-    currentStep.value += 1;
-  }
-};
+
 </script>
 
 <style lang="less" scoped>
