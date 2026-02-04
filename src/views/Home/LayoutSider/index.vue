@@ -31,13 +31,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import Icons from "@/icons/index.vue";
 import { useI18n } from "vue-i18n";
 import { routerTurnByPath } from "@/router/util";
 import { useStepStore } from "@/pinia/modules/step";
+import { useRoute } from "vue-router";
 
 const stepStore = useStepStore();
+const route = useRoute();
+
 const { t } = useI18n();
 const selectedKeys = ref<number[]>([stepStore.currentStep]);
 
@@ -86,6 +89,19 @@ const handleClick = (menu: any, index: number) => {
     routerTurnByPath(menu.path);
   }
 };
+
+watch(
+  () => route.path,
+  (newPath) => {
+    const menuIndex = menus.value.findIndex(menu => menu.path === newPath);
+    if (menuIndex !== -1) {
+      const step = menuIndex + 1;
+      selectedKeys.value = [step];
+      stepStore.updateCurrentStep(step);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style lang="less" scoped>
