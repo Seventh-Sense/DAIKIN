@@ -13,7 +13,7 @@
       <a-layout-header class="layout-header">
         <LayoutHeader />
       </a-layout-header>
-      <a-layout-content :style="{ margin: '24px 16px 0' }">
+      <a-layout-content>
         <router-view></router-view>
       </a-layout-content>
     </a-layout>
@@ -50,6 +50,7 @@ const onBreakpoint = (broken: boolean) => {
     background-color: var(--header-bg);
     height: 80px;
     border-left: 1px solid var(--sider-menu-border-color);
+    border-bottom: 1px solid var(--sider-menu-border-color);
   }
 }
 </style>
