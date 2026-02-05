@@ -1,34 +1,34 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { defineStore } from "pinia";
+import { ref } from "vue";
 
-export type LocaleType = 'cn' | 'en' | 'jp'
+export type LocaleType = "cn" | "en" | "jp";
 
-export const useLocaleStore = defineStore('locale', () => {
-  // 状态：当前语言（默认中文）
-  const currentLocale = ref<string>('cn')
+export const useLocaleStore = defineStore(
+  "locale",
+  () => {
+    // 状态：当前语言（默认中文）
+    const currentLocale = ref<string>("cn");
 
-  // 初始化：从本地存储读取语言
-  const initLocale = () => {
-    const savedLocale = localStorage.getItem('admin-locale') as LocaleType | null
-    if (savedLocale && ['cn', 'en', 'jp'].includes(savedLocale)) {
-      currentLocale.value = savedLocale
-    }
-  }
+    // 动作：切换语言
+    const switchLocale = (locale: string) => {
+      currentLocale.value = locale;
 
-  // 动作：切换语言
-  const switchLocale = (locale: string) => {
-    currentLocale.value = locale
-    localStorage.setItem('admin-locale', locale)
-    
-    const i18n = window.$i18n
-    if (i18n) {
-      i18n.global.locale.value = locale as LocaleType
-    }
-  }
+      const i18n = window.$i18n;
+      if (i18n) {
+        i18n.global.locale.value = locale as LocaleType;
+      }
+    };
 
-  return {
-    currentLocale,
-    initLocale,
-    switchLocale
-  }
-})
+    return {
+      currentLocale,
+      switchLocale,
+    };
+  },
+  {
+    persist: {
+      key: "admin-locale",
+      storage: localStorage,
+      paths: ["currentLocale"],
+    } as any,
+  },
+);

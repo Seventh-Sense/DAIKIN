@@ -16,6 +16,7 @@
     "ant-design-vue": "^4.2.5",
     "axios": "^1.7.7",
     "pinia": "^3.0.4",
+    "pinia-plugin-persistedstate": "^4.7.1",
     "terser": "^5.36.0",
     "vue": "^3.5.12",
     "vue-i18n": "^9.14.4",

@@ -26,7 +26,6 @@ const app = createApp(App);
 app.use(pinia);
 
 const localeStore = useLocaleStore();
-localeStore.initLocale();
 
 const currentLocale = localeStore.currentLocale as LocaleType;
 

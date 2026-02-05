@@ -26,6 +26,9 @@ export default {
     flow_4: 'MQTT Configuration',
     flow_5: 'UI Configuration',
     flow_6: 'Connectivity Check',
+    lite: 'Lite',
+    standard: 'Standard',
+    professional: 'Professional'
   },
   user: {
     title: "User List",
