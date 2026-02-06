@@ -20,7 +20,7 @@ export default {
     cn: "Chinese",
     en: "English",
     jp: "Japanese",
-    flow_1: "Add Controller",
+    flow_1: "Device Information",
     flow_2: "Firmware Update",
     flow_3: "Equipment/Position Addition",
     flow_4: "MQTT Configuration",

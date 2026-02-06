@@ -20,7 +20,7 @@ export default {
     cn: "中文",
     en: "英文",
     jp: "日文",
-    flow_1: "添加控制器",
+    flow_1: "设备信息",
     flow_2: "固件更新",
     flow_3: "设备/点位添加",
     flow_4: "MQTT配置",
