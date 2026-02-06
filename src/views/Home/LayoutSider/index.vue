@@ -9,7 +9,7 @@
         class="custom-menu"
       >
         <!-- 渲染一级菜单 -->
-        <a-sub-menu v-for="(menu, index) in menus" :key="menu.key">
+        <a-sub-menu v-for="(menu, index) in stepStore.menus" :key="menu.key">
           <template #icon>
             <Icons
               :name="menu.icon"
@@ -134,82 +134,6 @@ watch(
   },
   { immediate: true, deep: true },
 );
-
-const menus = computed(() => [
-  {
-    key: "1",
-    icon: "deviceA",
-    label: t("layout.professional"),
-    children: [
-      {
-        key: "1-1",
-        icon: "deviceA",
-        label: "192.168.10.9",
-        children: [
-          {
-            key: "1-1-1",
-            icon: "deviceA",
-            label: t("layout.flow_1"),
-            path: "/home",
-          },
-          {
-            key: "1-1-2",
-            icon: "refresh",
-            label: t("layout.flow_2"),
-            path: "/home/firmwareupdate",
-          },
-          {
-            key: "1-1-3",
-            icon: "addCircle",
-            label: t("layout.flow_3"),
-            path: "/home/devices",
-          },
-          {
-            key: "1-1-4",
-            icon: "setting",
-            label: t("layout.flow_4"),
-            path: "/home/mqtt",
-          },
-          {
-            key: "1-1-5",
-            icon: "multistate",
-            label: t("layout.flow_5"),
-            path: "/home/ui",
-          },
-          {
-            key: "1-1-6",
-            icon: "checkCircle",
-            label: t("layout.flow_6"),
-            path: "/home/check",
-          },
-        ],
-      },
-      {
-        key: "1-2",
-        icon: "deviceA",
-        label: "192.168.10.10",
-      },
-    ],
-  },
-  {
-    key: "2",
-    icon: "deviceA",
-    label: t("layout.standard"),
-    children: [],
-  },
-  {
-    key: "3",
-    icon: "deviceA",
-    label: t("layout.lite"),
-    children: [
-      {
-        key: "3-1",
-        icon: "deviceA",
-        label: "192.168.10.10",
-      },
-    ],
-  },
-]);
 
 const handleRightIconClick = (menu: any) => {
   showModal.value = true

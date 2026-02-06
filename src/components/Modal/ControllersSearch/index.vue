@@ -52,8 +52,8 @@ const props = defineProps({
 const emit = defineEmits(["update:modelShow"]);
 const { t } = useI18n();
 
-const selectedRowKeys = ref<string[]>([]); // 存储选中行的key
-const selectedRows = ref<any[]>([]); // 存储选中行的完整数据
+const selectedRowKeys = ref<string[]>([]);
+const selectedRows = ref<any[]>([]); 
 
 const columns = computed(() => [
   { title: t("device_search.name"), dataIndex: "name" },
@@ -118,7 +118,7 @@ const handleRowSelectChange = (keys: string[], rows: any[]) => {
 const handleOk = (e: MouseEvent) => {
     console.log("选中的行keys:", selectedRowKeys.value);
   if (selectedRowKeys.value.length > 0) {
-    
+
     emit("update:modelShow", false);
   } else {
     message.warn('未选中数据!')
