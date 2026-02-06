@@ -154,7 +154,7 @@ const handleModalOpenChange = (newOpenState: boolean) => {
     data.value = [];
   }
 
-  console.log("handleModalOpenChange", newOpenState);
+  //console.log("handleModalOpenChange", newOpenState);
   emit("update:modelShow", newOpenState);
 };
 
@@ -165,13 +165,7 @@ const handleRowSelectChange = (keys: string[], rows: any[]) => {
 
 const handleOk = (e: MouseEvent) => {
   e.preventDefault();
-  console.log("选中的行keys:", selectedRowKeys.value, props.type);
-
-  if (selectedRowKeys.value.length === 0) {
-    message.warn("未选中数据!");
-    emit("update:modelShow", false);
-    return;
-  }
+  //console.log("选中的行keys:", selectedRowKeys.value, props.type);
 
   try {
     const currentRawMenus = [...stepStore.rawMenus];
@@ -179,61 +173,87 @@ const handleOk = (e: MouseEvent) => {
     const targetMenuIndex = currentRawMenus.findIndex(
       (menu) => menu.key === props.type,
     );
-    if (targetMenuIndex === -1) {
-      message.error("未找到对应的菜单分类!");
-      return;
+
+    // 1. 获取已添加地址、当前搜索结果的地址、当前勾选地址
+    const addedAddresses = getAddedAddresses();
+    const searchResultAddresses = data.value.map((item: any) => item.address);
+    const selectedAddresses = selectedRows.value.map((item) => item.address);
+
+    // 2. 关键判断：当前搜索结果中是否包含已添加的地址（交集）
+    const hasAddedInSearch = addedAddresses.some((addr: any) =>
+      searchResultAddresses.includes(addr),
+    );
+
+    let deleteCount = 0;
+    // 仅当「搜索结果包含已添加地址」时，才执行删除逻辑
+    if (hasAddedInSearch) {
+      // 找出需要删除的地址：已添加+在当前搜索结果中+当前未勾选
+      const needDeleteAddresses = addedAddresses.filter(
+        (addr: any) =>
+          searchResultAddresses.includes(addr) &&
+          !selectedAddresses.includes(addr),
+      );
+      deleteCount = needDeleteAddresses.length;
+      // 执行删除
+      if (deleteCount > 0) {
+        currentRawMenus[targetMenuIndex].children = currentRawMenus[
+          targetMenuIndex
+        ].children.filter(
+          (subMenu: any) => !needDeleteAddresses.includes(subMenu.label),
+        );
+      }
     }
 
-    // 1. 获取已添加的地址列表
-    const addedAddresses = getAddedAddresses();
     // 2. 过滤选中行中未添加过的地址（去重）
     const newSelectedRows = selectedRows.value.filter(
       (item) => !addedAddresses.includes(item.address),
     );
 
-    if (newSelectedRows.length === 0) {
-      message.info("所选地址已全部添加，无需重复添加!");
-      emit("update:modelShow", false);
-      return;
+    const addCount = newSelectedRows.length;
+    if (addCount > 0) {
+      const newSubMenus = newSelectedRows.map((item, index) => {
+        const secondLevelKey = `${props.type}-${currentRawMenus[targetMenuIndex].children.length + index + 1}`;
+        const thirdLevelTemplate =
+          props.type === "1"
+            ? FlowPro
+            : props.type === "2"
+              ? FlowStandard
+              : FlowLite;
+        const thirdLevelMenus = thirdLevelTemplate.map((third) => ({
+          ...third,
+          key: `${secondLevelKey}-${third.key}`,
+        }));
+        return {
+          key: secondLevelKey,
+          icon: "deviceA",
+          label: item.address,
+          children: thirdLevelMenus,
+        };
+      });
+      currentRawMenus[targetMenuIndex].children = [
+        ...currentRawMenus[targetMenuIndex].children,
+        ...newSubMenus,
+      ];
     }
 
-    const newSubMenus = newSelectedRows.map((item, index) => {
-      // 生成唯一key（避免重复）：分类key + 自增序号
-      const secondLevelKey  = `${props.type}-${currentRawMenus[targetMenuIndex].children.length + index + 1}`;
-
-      const thirdLevelTemplate =
-        props.type === "1"
-          ? FlowPro
-          : props.type === "2"
-            ? FlowStandard
-            : FlowLite;
-      const thirdLevelMenus = thirdLevelTemplate.map((third) => ({
-        ...third,
-        key: `${secondLevelKey}-${third.key}`, 
-      }));
-
-      return {
-        key: secondLevelKey ,
-        icon: "deviceA",
-        label: item.address,
-        children: thirdLevelMenus
-      };
+    const tipMessage = computed(() => {
+      if (deleteCount > 0 && addCount > 0) {
+        return `${t("device_search.msg_3")} ${deleteCount}${t("device_search.msg_7")} ${addCount}${t("device_search.msg_6")}`;
+      } else if (deleteCount > 0) {
+        return `${t("device_search.msg_3")} ${deleteCount}${t("device_search.msg_6")}`;
+      } else if (addCount > 0) {
+        return `${t("device_search.msg_4")} ${addCount}${t("device_search.msg_5")}`;
+      } else {
+        return t("device_search.msg_2");
+      }
     });
 
-    console.log("newSubMenus(去重后)", newSubMenus);
-
-    currentRawMenus[targetMenuIndex].children = [
-      ...currentRawMenus[targetMenuIndex].children, // 保留原有子菜单
-      ...newSubMenus, // 添加新选中的设备子菜单
-    ];
-
     stepStore.updateRawMenus(currentRawMenus);
-    message.success(`成功添加 ${newSubMenus.length} 个设备到菜单!`);
-
+    message.success(tipMessage.value);
     emit("update:modelShow", false);
   } catch (error) {
     console.error("更新菜单失败:", error);
-    message.error("更新菜单失败，请重试!");
+    message.error(t("device_search.msg_1"));
   }
 };
 </script>

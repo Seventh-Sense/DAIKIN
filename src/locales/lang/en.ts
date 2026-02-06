@@ -59,5 +59,12 @@ export default {
     address: "Address",
     slave_sn: "Device SN",
     model: "Model",
+    msg_1: "Failed to update menu, please try again!",
+    msg_2: "No changes made!",
+    msg_3: "Successfully deleted",
+    msg_4: "Successfully added",
+    msg_5: " device(s) to the menu!",
+    msg_6: " device(s)!",
+    msg_7: " device(s), added ",
   },
 };
