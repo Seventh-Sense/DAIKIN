@@ -39,21 +39,57 @@
 
 <script setup lang="ts">
 import { message } from "ant-design-vue";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { FlowLite, FlowPro, FlowStandard } from "./optons";
+import { useStepStore } from "@/pinia/modules/step";
 
 const props = defineProps({
   modelShow: {
     type: Boolean,
     default: false,
   },
+  type: {
+    type: String,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["update:modelShow"]);
+
 const { t } = useI18n();
+const stepStore = useStepStore();
 
 const selectedRowKeys = ref<string[]>([]);
-const selectedRows = ref<any[]>([]); 
+const selectedRows = ref<any[]>([]);
+
+//自动勾选逻辑
+const autoCheckAddedRows = () => {
+  // 数据为空时不执行
+  if (data.value.length === 0) return;
+
+  // 1. 获取已添加的地址列表
+  const addedAddresses = getAddedAddresses();
+  // 2. 匹配已添加的行并勾选
+  const matchedKeys = data.value
+    .filter((item: any) => addedAddresses.includes(item.address))
+    .map((item: any) => item.key);
+
+  selectedRowKeys.value = matchedKeys;
+  selectedRows.value = data.value.filter((item: any) =>
+    matchedKeys.includes(item.key),
+  );
+};
+
+//获取已添加的地址列表
+const getAddedAddresses = () => {
+  const targetMenu = stepStore.rawMenus.find(
+    (menu: any) => menu.key === props.type,
+  );
+  if (!targetMenu || !targetMenu.children) return [];
+
+  return targetMenu.children.map((subMenu: any) => subMenu.label);
+};
 
 const columns = computed(() => [
   { title: t("device_search.name"), dataIndex: "name" },
@@ -63,50 +99,62 @@ const columns = computed(() => [
   { title: t("device_search.model"), dataIndex: "model" },
 ]);
 
-const data = ref([
-  {
-    key: "1",
-    name: "John Brown",
-    slaveid: 32,
-    address: "192.168.1.1",
-    slavesn: "asd",
-    model: "asda",
-  },
-  {
-    key: "2",
-    name: "John Brown",
-    slaveid: 32,
-    address: "192.168.1.2",
-    slavesn: "asd",
-    model: "asda",
-  },
-  {
-    key: "3",
-    name: "John Brown",
-    slaveid: 32,
-    address: "192.168.1.3",
-    slavesn: "asd",
-    model: "asda",
-  },
-  {
-    key: "4",
-    name: "John Brown",
-    slaveid: 32,
-    address: "192.168.1.4",
-    slavesn: "asd",
-    model: "asda",
-  },
-]);
+const data = ref<any>([]);
 
 const onSearch = () => {
   console.log("onSearch");
+  data.value = [
+    {
+      key: "1",
+      name: "John Brown",
+      slaveid: 32,
+      address: "192.168.1.1",
+      slavesn: "asd",
+      model: "asda",
+    },
+    {
+      key: "2",
+      name: "John Brown",
+      slaveid: 32,
+      address: "192.168.1.2",
+      slavesn: "asd",
+      model: "asda",
+    },
+    {
+      key: "3",
+      name: "John Brown",
+      slaveid: 32,
+      address: "192.168.1.3",
+      slavesn: "asd",
+      model: "asda",
+    },
+    {
+      key: "4",
+      name: "John Brown",
+      slaveid: 32,
+      address: "192.168.1.4",
+      slavesn: "asd",
+      model: "asda",
+    },
+  ];
+
+  // 数据加载完成后，执行自动勾选逻辑
+  autoCheckAddedRows();
 };
 
 const getRowClassName = (_record: any, index: number) => {
   return index % 2 === 1 ? "table-striped" : "table-striped-1";
 };
 
+//只在取消按钮和右上角关闭时触发
 const handleModalOpenChange = (newOpenState: boolean) => {
+  if (!newOpenState) {
+    selectedRowKeys.value = [];
+    selectedRows.value = [];
+    data.value = [];
+  }
+
+  console.log("handleModalOpenChange", newOpenState);
   emit("update:modelShow", newOpenState);
 };
 
@@ -116,14 +164,77 @@ const handleRowSelectChange = (keys: string[], rows: any[]) => {
 };
 
 const handleOk = (e: MouseEvent) => {
-    console.log("选中的行keys:", selectedRowKeys.value);
-  if (selectedRowKeys.value.length > 0) {
+  e.preventDefault();
+  console.log("选中的行keys:", selectedRowKeys.value, props.type);
+
+  if (selectedRowKeys.value.length === 0) {
+    message.warn("未选中数据!");
+    emit("update:modelShow", false);
+    return;
+  }
+
+  try {
+    const currentRawMenus = [...stepStore.rawMenus];
+
+    const targetMenuIndex = currentRawMenus.findIndex(
+      (menu) => menu.key === props.type,
+    );
+    if (targetMenuIndex === -1) {
+      message.error("未找到对应的菜单分类!");
+      return;
+    }
+
+    // 1. 获取已添加的地址列表
+    const addedAddresses = getAddedAddresses();
+    // 2. 过滤选中行中未添加过的地址（去重）
+    const newSelectedRows = selectedRows.value.filter(
+      (item) => !addedAddresses.includes(item.address),
+    );
+
+    if (newSelectedRows.length === 0) {
+      message.info("所选地址已全部添加，无需重复添加!");
+      emit("update:modelShow", false);
+      return;
+    }
+
+    const newSubMenus = newSelectedRows.map((item, index) => {
+      // 生成唯一key（避免重复）：分类key + 自增序号
+      const secondLevelKey  = `${props.type}-${currentRawMenus[targetMenuIndex].children.length + index + 1}`;
+
+      const thirdLevelTemplate =
+        props.type === "1"
+          ? FlowPro
+          : props.type === "2"
+            ? FlowStandard
+            : FlowLite;
+      const thirdLevelMenus = thirdLevelTemplate.map((third) => ({
+        ...third,
+        key: `${secondLevelKey}-${third.key}`, 
+      }));
+
+      return {
+        key: secondLevelKey ,
+        icon: "deviceA",
+        label: item.address,
+        children: thirdLevelMenus
+      };
+    });
+
+    console.log("newSubMenus(去重后)", newSubMenus);
+
+    currentRawMenus[targetMenuIndex].children = [
+      ...currentRawMenus[targetMenuIndex].children, // 保留原有子菜单
+      ...newSubMenus, // 添加新选中的设备子菜单
+    ];
+
+    stepStore.updateRawMenus(currentRawMenus);
+    message.success(`成功添加 ${newSubMenus.length} 个设备到菜单!`);
 
     emit("update:modelShow", false);
-  } else {
-    message.warn('未选中数据!')
+  } catch (error) {
+    console.error("更新菜单失败:", error);
+    message.error("更新菜单失败，请重试!");
   }
-  
 };
 </script>
 

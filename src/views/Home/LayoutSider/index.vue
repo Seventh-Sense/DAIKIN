@@ -86,23 +86,18 @@
         </a-sub-menu>
       </a-menu>
     </div>
-    <ControllersSearch v-if="showModal" v-model:modelShow="showModal"/>
+    <ControllersSearch v-if="showModal" v-model:modelShow="showModal" :type="clickType"/>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import Icons from "@/icons/index.vue";
-import { useI18n } from "vue-i18n";
 import { routerTurnByPath } from "@/router/util";
 import { useStepStore } from "@/pinia/modules/step";
-import { useRoute } from "vue-router";
 import ControllersSearch from "@/components/Modal/ControllersSearch/index.vue"
 
 const stepStore = useStepStore();
-const route = useRoute();
-
-const { t } = useI18n();
 
 const showModal = ref(false)
 
@@ -137,7 +132,10 @@ watch(
   { immediate: true, deep: true },
 );
 
+const clickType = ref("1")
+
 const handleRightIconClick = (menu: any) => {
+  clickType.value = menu.key
   showModal.value = true
 };
 
