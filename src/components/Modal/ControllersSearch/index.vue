@@ -92,6 +92,13 @@ const getAddedAddresses = () => {
   return targetMenu.children.map((subMenu: any) => subMenu.label);
 };
 
+const generateUniqueKey = () => {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 1000000).toString(16);
+  // 拼接结果示例："11234567890abcdef"（无任何 '-'）
+  return `${timestamp}${random}`;
+};
+
 const columns = computed(() => [
   { title: t("device_search.name"), dataIndex: "name" },
   { title: t("device_search.slave_id"), dataIndex: "slaveid" },
@@ -213,7 +220,7 @@ const handleOk = (e: MouseEvent) => {
     const addCount = newSelectedRows.length;
     if (addCount > 0) {
       const newSubMenus = newSelectedRows.map((item, index) => {
-        const secondLevelKey = `${props.type}-${currentRawMenus[targetMenuIndex].children.length + index + 1}`;
+        const secondLevelKey = `${props.type}-${generateUniqueKey()}`;
         const thirdLevelTemplate =
           props.type === "1"
             ? FlowPro

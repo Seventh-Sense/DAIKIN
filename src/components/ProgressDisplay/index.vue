@@ -1,74 +1,77 @@
 <template>
-  <div class="flows">
-    <div v-for="(flow, index) in flows" class="flows-block" :key="index">
-      <div
-        class="flows-num"
-        :class="{
-          'flows-num-completed': index + 1 < currentStep,
-          'flows-num-current': index + 1 === currentStep,
-        }"
-      >
-        {{ flow.index }}
+  <div class="flows" v-if="shouldShowFlows">
+    <div v-for="(flow, index) in currentFlows" class="flows-block" :key="index">
+      <div class="flows-num" :class="getStepStatusClass(Number(index), 'num')">
+        {{ Number(index) + 1 }}
       </div>
-      <div
-        class="flows-text"
-        :class="{
-          'flows-text-completed': index + 1 < currentStep,
-          'flows-text-current': index + 1 === currentStep,
-        }"
-      >
-        {{ flow.label }}
+      <div class="flows-text" :class="getStepStatusClass(Number(index), 'text')">
+        {{ t(flow.labelKey) }}
       </div>
       <div
         class="flows-connect"
-        :class="{
-          'flows-num-completed': index + 1 < currentStep,
-          'flows-num-current': index + 1 === currentStep,
-        }"
-        v-if="index < flows.length - 1"
+        :class="getStepStatusClass(Number(index), 'num')"
+        v-if="Number(index) < currentFlows.length - 1"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useStepStore } from "@/pinia/modules/step";
+import {
+  FlowPro,
+  FlowStandard,
+  FlowLite,
+} from "../Modal/ControllersSearch/optons";
 
 const { t } = useI18n();
-
 const stepStore = useStepStore();
-const currentStep = computed(() => stepStore.currentStep);
 
-const flows = computed(() => [
-  {
-    index: 1,
-    label: t("layout.flow_1"),
-  },
-  {
-    index: 2,
-    label: t("layout.flow_2"),
-  },
-  {
-    index: 3,
-    label: t("layout.flow_3"),
-  },
-  {
-    index: 4,
-    label: t("layout.flow_4"),
-  },
-  {
-    index: 5,
-    label: t("layout.flow_5"),
-  },
-  {
-    index: 6,
-    label: t("layout.flow_6"),
-  },
-]);
+const parseCurrentKey = computed(() => {
+  const key = stepStore.currentStep || "";
+  const parts = key.split("-");
 
+  return {
+    stepNumber: Number(parts[2] || 0), // 当前步骤数字
+    flowType: parts[0] || "", // 流程类型
+    separatorCount: parts.length - 1, // 分隔符数量
+  };
+});
 
+const currentStep = computed(() => parseCurrentKey.value.stepNumber);
+
+const flowType = computed(() => parseCurrentKey.value.flowType);
+
+const shouldShowFlows = computed(
+  () => parseCurrentKey.value.separatorCount === 2,
+);
+
+const currentFlows = computed(() => {
+  const flowMap: any = {
+    "1": FlowPro,
+    "2": FlowStandard,
+    "3": FlowLite,
+  };
+  return flowMap[flowType.value] || FlowPro;
+});
+
+const getStepStatusClass = (index: number, type: 'num' | 'text'): string => {
+  // 明确step是number类型
+  const step: number = index + 1;
+  const current: number = currentStep.value;
+  
+  const baseClass = `flows-${type}`;
+  
+  if (step < current) {
+    return `${baseClass}-completed`;
+  }
+  if (step === current) {
+    return `${baseClass}-current`;
+  }
+  return '';
+};
 </script>
 
 <style lang="less" scoped>
