@@ -43,6 +43,7 @@ import { ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { FlowLite, FlowPro, FlowStandard } from "./optons";
 import { useStepStore } from "@/pinia/modules/step";
+import { routerTurnByName } from "../../../router/util";
 
 const props = defineProps({
   modelShow: {
@@ -238,22 +239,82 @@ const handleOk = (e: MouseEvent) => {
 
     const tipMessage = computed(() => {
       if (deleteCount > 0 && addCount > 0) {
-        return `${t("device_search.msg_3")} ${deleteCount}${t("device_search.msg_7")} ${addCount}${t("device_search.msg_6")}`;
+        return t("device_search.msg_8", {
+          delnum: deleteCount,
+          addnum: addCount,
+        });
       } else if (deleteCount > 0) {
-        return `${t("device_search.msg_3")} ${deleteCount}${t("device_search.msg_6")}`;
+        return t("device_search.msg_9", { delnum: deleteCount });
       } else if (addCount > 0) {
-        return `${t("device_search.msg_4")} ${addCount}${t("device_search.msg_5")}`;
+        return t("device_search.msg_10", { addnum: addCount });
       } else {
         return t("device_search.msg_2");
       }
     });
 
     stepStore.updateRawMenus(currentRawMenus);
+
+    if (deleteCount > 0) {
+      handlePageRedirectAfterDelete();
+    }
+
     message.success(tipMessage.value);
     emit("update:modelShow", false);
   } catch (error) {
     console.error("更新菜单失败:", error);
     message.error(t("device_search.msg_1"));
+  }
+};
+
+//从三级菜单key中提取二级菜单key
+const extractSecondLevelKey = (fullKey: string): string => {
+  if (!fullKey || !fullKey.includes("-")) return "";
+  const keyParts = fullKey.split("-");
+  if (keyParts.length < 2) return "";
+  return keyParts.slice(0, 2).join("-");
+};
+
+//递归检查菜单key是否存在
+const checkMenuKeyExists = (menus: any[], key: string): boolean => {
+  for (const menu of menus) {
+    if (menu.key === key) {
+      return true;
+    }
+    if (menu.children && menu.children.length > 0) {
+      const exists = checkMenuKeyExists(menu.children, key);
+      if (exists) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+const handlePageRedirectAfterDelete = () => {
+  // 获取当前选中的三级菜单key
+  const currentSelectedKey = stepStore.menuSelectedKeys[0];
+
+  // 如果没有选中的key，直接返回
+  if (!currentSelectedKey) return;
+
+  // 1. 提取二级菜单key
+  const secondLevelKey = extractSecondLevelKey(currentSelectedKey);
+  if (!secondLevelKey) return;
+
+  // 2. 检查该二级菜单是否还存在
+  const secondLevelExists = checkMenuKeyExists(
+    stepStore.rawMenus,
+    secondLevelKey,
+  );
+
+  // 3. 如果二级菜单不存在，跳转到首页
+  if (!secondLevelExists) {
+    // 重置菜单状态
+    stepStore.updateMenuSelectedKeys([]);
+    stepStore.updateMenuOpenKeys([]);
+    stepStore.updateCurrentStep("");
+
+    routerTurnByName("Home", false, false);
   }
 };
 </script>

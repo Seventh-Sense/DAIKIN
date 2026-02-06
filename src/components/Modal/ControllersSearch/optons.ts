@@ -4,7 +4,7 @@ export const FlowPro = [
     key: "1", // 三级菜单基础key
     icon: "informationCircle",
     labelKey: "layout.flow_1",
-    path: "/home",
+    path: "/home/controller",
   },
   {
     key: "2",
@@ -43,7 +43,7 @@ export const FlowStandard = [
     key: "1",
     icon: "informationCircle",
     labelKey: "layout.flow_1",
-    path: "/home",
+    path: "/home/controller",
   },
   {
     key: "2",
@@ -76,7 +76,7 @@ export const FlowLite = [
     key: "1",
     icon: "informationCircle",
     labelKey: "layout.flow_1",
-    path: "/home",
+    path: "/home/controller",
   },
   {
     key: "2",

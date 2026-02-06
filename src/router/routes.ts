@@ -12,7 +12,7 @@ export const publicRoutes: RouteRecordRaw[] = [
     component: () => import("@/views/Home/index.vue"),
     children: [
       {
-        path: "",
+        path: "controller",
         name: "AddController",
         component: () => import("@/views/Flows/ControllerAdd/index.vue"),
       },

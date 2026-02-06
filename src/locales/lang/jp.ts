@@ -29,6 +29,13 @@ export default {
     lite: "Lite",
     standard: "Standard",
     professional: "Professional",
+    confirm_delete: " 削除の確定 ",
+    confirm: " 確定 ",
+    cancel: " キャンセル ",
+    is_confirm: " 本当に削除しますか ",
+    this_menu: " このメニュー項目を？",
+    msg_1: " メニュー項目の削除に失敗しました、もう一度お試しください！",
+    msg_2: "「{name}」というメニュー項目を正常に削除しました！",
   },
   user: {
     title: "ユーザーリスト",
@@ -61,10 +68,9 @@ export default {
     model: " 機種 ",
     msg_1: " メニューの更新に失敗しました、再試行してください！",
     msg_2: " 変更はありません！",
-    msg_3: " 正常に削除しました ",
-    msg_4: " 正常に追加しました ",
-    msg_5: " 台のデバイスをメニューに追加しました！",
-    msg_6: " 台のデバイス！",
-    msg_7: " 台のデバイス、追加しました ",
+    msg_8:
+      "「{delnum}」台のデバイスを正常に削除し、「{addnum}」台のデバイスを追加しました！",
+    msg_9: "「{delnum}」台のデバイスを正常に削除しました！",
+    msg_10: "「{addnum}」台のデバイスを正常に追加しました！",
   },
 };

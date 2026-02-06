@@ -1,7 +1,7 @@
 <template>
   <div class="sider">
     <div class="sider-top">
-      <img src="@/assets/logo.png" width="128" height="27" alt="">
+      <img src="@/assets/logo.png" width="128" height="27" alt="" />
     </div>
     <div class="menu-wrapper">
       <a-menu
@@ -27,9 +27,9 @@
               <span class="menu-title">{{ menu.label }}</span>
               <Icons
                 name="addCircle"
-                type="color-white"
+                type="mono-line"
                 :size="24"
-                :color="{ normal: '#00A0E4FF' }"
+                :color="{ normal: '#22222299' }"
                 @click.stop="handleRightIconClick(menu)"
               />
             </div>
@@ -39,6 +39,7 @@
             <a-sub-menu
               v-for="(subMenu, subIndex) in menu.children"
               :key="subMenu.key"
+              class="second-submenu"
             >
               <template #icon>
                 <Icons
@@ -54,14 +55,24 @@
                   class="second-menu-title"
                   :class="{ highlight: isMenuHighlighted(subMenu.key) }"
                 >
-                  <Icons
-                    :name="subMenu.icon"
-                    :size="20"
-                    :color="{ normal: '#22222299' }"
-                  />
-                  <span class="menu-title">
-                    {{ subMenu.label }}
-                  </span>
+                  <div class="second-menu-title-front">
+                    <Icons
+                      :name="subMenu.icon"
+                      :size="20"
+                      :color="{ normal: '#22222299' }"
+                    />
+                    <span class="menu-title">
+                      {{ subMenu.label }}
+                    </span>
+                  </div>
+                  <div class="delete-icon-wrapper">
+                    <Icons
+                      name="delete"
+                      :size="20"
+                      :color="{ normal: '#22222299' }"
+                      @click.stop="() => handleDeleteSubMenu(menu, subMenu)"
+                    />
+                  </div>
                 </div>
               </template>
               <!-- 二级菜单有子菜单：渲染三级可点击菜单（唯一保留点击事件） -->
@@ -86,7 +97,26 @@
         </a-sub-menu>
       </a-menu>
     </div>
-    <ControllersSearch v-if="showModal" v-model:modelShow="showModal" :type="clickType"/>
+    <a-modal
+      v-model:open="deleteModalVisible"
+      :title="t('layout.confirm_delete')"
+      :closable="false"
+      :maskClosable="false"
+      :ok-text="t('layout.confirm')"
+      :cancel-text="t('layout.cancel')"
+      @ok="confirmDelete"
+      @cancel="deleteModalVisible = false"
+    >
+      <p>
+        {{ t("layout.is_confirm") }} "{{ deleteSubMenuName }}"
+        {{ t("layout.this_menu") }}
+      </p>
+    </a-modal>
+    <ControllersSearch
+      v-if="showModal"
+      v-model:modelShow="showModal"
+      :type="clickType"
+    />
   </div>
 </template>
 
@@ -95,11 +125,15 @@ import { computed, ref, watch } from "vue";
 import Icons from "@/icons/index.vue";
 import { routerTurnByPath } from "@/router/util";
 import { useStepStore } from "@/pinia/modules/step";
-import ControllersSearch from "@/components/Modal/ControllersSearch/index.vue"
+import ControllersSearch from "@/components/Modal/ControllersSearch/index.vue";
+import { message } from "ant-design-vue";
+import { useI18n } from "vue-i18n";
+import { routerTurnByName } from "../../../router/util";
 
+const { t } = useI18n();
 const stepStore = useStepStore();
 
-const showModal = ref(false)
+const showModal = ref(false);
 
 const initSelectedKey = stepStore.menuSelectedKeys.length
   ? stepStore.menuSelectedKeys
@@ -113,6 +147,12 @@ const initOpenKeys = stepStore.menuOpenKeys.length
 
 const selectedKeys = ref<string[]>(initSelectedKey);
 const openKeys = ref<string[]>(initOpenKeys);
+
+//删除弹窗相关状态
+const deleteModalVisible = ref(false); // 删除弹窗显示状态
+const deleteTargetMenu = ref<any>(null); // 要删除的一级菜单
+const deleteTargetSubMenu = ref<any>(null); // 要删除的二级菜单
+const deleteSubMenuName = ref(""); // 要删除的菜单项名称
 
 // 监听选中状态变化，同步到store
 watch(
@@ -132,11 +172,11 @@ watch(
   { immediate: true, deep: true },
 );
 
-const clickType = ref("1")
+const clickType = ref("1");
 
 const handleRightIconClick = (menu: any) => {
-  clickType.value = menu.key
-  showModal.value = true
+  clickType.value = menu.key;
+  showModal.value = true;
 };
 
 const handleClick = (menu: any) => {
@@ -170,6 +210,76 @@ const parentKeysOfSelected = computed(() => {
 const isMenuHighlighted = (key: string) => {
   return parentKeysOfSelected.value.includes(key);
 };
+
+const handleDeleteSubMenu = (menu: any, subMenu: any) => {
+  deleteTargetMenu.value = menu; // 保存一级菜单
+  deleteTargetSubMenu.value = subMenu; // 保存二级菜单
+  deleteSubMenuName.value = subMenu.label; // 保存菜单项名称（用于弹窗提示）
+  deleteModalVisible.value = true; // 打开确认弹窗
+};
+
+const confirmDelete = () => {
+  try {
+    const currentRawMenus = [...stepStore.rawMenus];
+
+    const targetMenuIndex = currentRawMenus.findIndex(
+      (item) => item.key === deleteTargetMenu.value.key,
+    );
+    if (targetMenuIndex === -1) {
+      message.error("未找到对应的一级菜单！");
+      deleteModalVisible.value = false;
+      return;
+    }
+
+    const deletedSubMenuKey = deleteTargetSubMenu.value.key;
+    currentRawMenus[targetMenuIndex].children = currentRawMenus[
+      targetMenuIndex
+    ].children.filter((subItem: any) => subItem.key !== deletedSubMenuKey);
+
+    stepStore.updateRawMenus(currentRawMenus);
+
+    //清理选中/展开状态
+    const newSelectedKeys = stepStore.menuSelectedKeys.filter(
+      (key: any) =>
+        !key.startsWith(`${deletedSubMenuKey}-`) && key !== deletedSubMenuKey,
+    );
+    stepStore.updateMenuSelectedKeys(newSelectedKeys);
+    selectedKeys.value = newSelectedKeys;
+
+    const newOpenKeys = stepStore.menuOpenKeys.filter(
+      (key: any) => key !== deletedSubMenuKey,
+    );
+    stepStore.updateMenuOpenKeys(newOpenKeys);
+    openKeys.value = newOpenKeys;
+
+    // 判断是否需要跳转到首页
+    const needRedirectToHome =
+      stepStore.currentStep === deletedSubMenuKey ||
+      (typeof stepStore.currentStep === "string" &&
+        stepStore.currentStep.startsWith(`${deletedSubMenuKey}-`));
+
+    if (needRedirectToHome) {
+      stepStore.updateCurrentStep("");
+      routerTurnByName("Home", false, false);
+    }
+
+    message.success(
+      t("layout.msg_2", {
+        name: deleteSubMenuName.value,
+      }),
+    );
+    deleteModalVisible.value = false;
+
+    // 重置删除相关状态
+    deleteTargetMenu.value = null;
+    deleteTargetSubMenu.value = null;
+    deleteSubMenuName.value = "";
+  } catch (error) {
+    console.error("删除菜单项失败：", error);
+    message.error(t("layout.msg_1"));
+    deleteModalVisible.value = false;
+  }
+};
 </script>
 
 <style lang="less" scoped>
@@ -199,11 +309,33 @@ const isMenuHighlighted = (key: string) => {
   width: 100%;
 }
 
+.delete-icon-wrapper {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.second-menu-title:hover .delete-icon-wrapper {
+  opacity: 1;
+  visibility: visible;
+  display: flex;
+  align-items: center;
+}
+
 .second-menu-title {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 48px;
+  height: 32px;
+  gap: 4px;
+}
+
+.second-menu-title-front {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 32px;
   gap: 4px;
 }
 

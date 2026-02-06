@@ -29,6 +29,13 @@ export default {
     lite: "Lite",
     standard: "Standard",
     professional: "Professional",
+    confirm_delete: "Confirm Delete",
+    confirm: "Confirm",
+    cancel: "Cancel",
+    is_confirm: "Are you sure you want to delete",
+    this_menu: "this menu item?",
+    msg_1: "Failed to delete the menu item, please try again!",
+    msg_2: 'Successfully deleted the menu item "{name}"!',
   },
   user: {
     title: "User List",
@@ -61,10 +68,9 @@ export default {
     model: "Model",
     msg_1: "Failed to update menu, please try again!",
     msg_2: "No changes made!",
-    msg_3: "Successfully deleted",
-    msg_4: "Successfully added",
-    msg_5: " device(s) to the menu!",
-    msg_6: " device(s)!",
-    msg_7: " device(s), added ",
+    msg_8:
+      'Successfully deleted "{delnum}" devices and added "{addnum}" devices!',
+    msg_9: 'Successfully deleted "{delnum}" devices!',
+    msg_10: 'Successfully added "{addnum}" devices!',
   },
 };
