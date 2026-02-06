@@ -26,9 +26,9 @@ export default {
     flow_4: 'MQTT配置',
     flow_5: 'UI配置',
     flow_6: '连接性检查',
-    lite: 'Lite',
-    standard: 'Standard',
-    professional: 'Professional'
+    lite: 'Lite系列控制器',
+    standard: 'Standard系列控制器',
+    professional: 'Pro系列控制器'
   },
   user: {
     title: "用户列表",
@@ -49,5 +49,15 @@ export default {
     confirm: "确认",
     reload: "刷新",
     empty: "暂无数据"
+  },
+  device_search: {
+    title: '搜索设备',
+    ok: '确定',
+    search: '搜索',
+    name: '名称',
+    slave_id: '设备ID',
+    address: '地址',
+    slave_sn: '设备SN',
+    model: '型号',
   }
 }

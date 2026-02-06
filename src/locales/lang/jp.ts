@@ -6,8 +6,8 @@ export default {
     loginBtn: "ログイン",
     placeholder: {
       username: "ユーザー名を入力してください",
-      password: "パスワードを入力してください"
-    }
+      password: "パスワードを入力してください",
+    },
   },
   layout: {
     home: "ホーム",
@@ -20,15 +20,15 @@ export default {
     cn: "中国語",
     en: "英語",
     jp: "日本語",
-    flow_1: ' コントローラー追加',
-    flow_2: 'ファームウェア更新',
-    flow_3: 'デバイス / ポイント追加 ',
-    flow_4: 'MQTT 設定',
-    flow_5: 'UI 設定',
-    flow_6: '接続性確認',
-    lite: 'Lite',
-    standard: 'Standard',
-    professional: 'Professional'
+    flow_1: " コントローラー追加",
+    flow_2: "ファームウェア更新",
+    flow_3: "デバイス / ポイント追加 ",
+    flow_4: "MQTT 設定",
+    flow_5: "UI 設定",
+    flow_6: "接続性確認",
+    lite: "Lite",
+    standard: "Standard",
+    professional: "Professional",
   },
   user: {
     title: "ユーザーリスト",
@@ -40,7 +40,7 @@ export default {
     age: "年齢",
     email: "メールアドレス",
     role: "役割",
-    operation: "操作"
+    operation: "操作",
   },
   common: {
     success: "操作に成功しました",
@@ -48,6 +48,16 @@ export default {
     cancel: "キャンセル",
     confirm: "確認",
     reload: "リロード",
-    empty: "データがありません"
-  }
-}
+    empty: "データがありません",
+  },
+  device_search: {
+    title: " 機器検索 ",
+    ok: " 確定 ",
+    search: " 検索 ",
+    name: " 名称 ",
+    slave_id: " 機器 ID",
+    address: " アドレス ",
+    slave_sn: " 機器 SN",
+    model: " 機種 ",
+  },
+};

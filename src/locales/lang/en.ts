@@ -6,8 +6,8 @@ export default {
     loginBtn: "Login",
     placeholder: {
       username: "Please enter username",
-      password: "Please enter password"
-    }
+      password: "Please enter password",
+    },
   },
   layout: {
     home: "Home",
@@ -20,15 +20,15 @@ export default {
     cn: "Chinese",
     en: "English",
     jp: "Japanese",
-    flow_1: 'Add Controller',
-    flow_2: 'Firmware Update',
-    flow_3: 'Equipment/Position Addition',
-    flow_4: 'MQTT Configuration',
-    flow_5: 'UI Configuration',
-    flow_6: 'Connectivity Check',
-    lite: 'Lite',
-    standard: 'Standard',
-    professional: 'Professional'
+    flow_1: "Add Controller",
+    flow_2: "Firmware Update",
+    flow_3: "Equipment/Position Addition",
+    flow_4: "MQTT Configuration",
+    flow_5: "UI Configuration",
+    flow_6: "Connectivity Check",
+    lite: "Lite",
+    standard: "Standard",
+    professional: "Professional",
   },
   user: {
     title: "User List",
@@ -40,7 +40,7 @@ export default {
     age: "Age",
     email: "Email",
     role: "Role",
-    operation: "Operation"
+    operation: "Operation",
   },
   common: {
     success: "Operation Success",
@@ -48,6 +48,16 @@ export default {
     cancel: "Cancel",
     confirm: "Confirm",
     reload: "Reload",
-    empty: "No Data"
-  }
-}
+    empty: "No Data",
+  },
+  device_search: {
+    title: "Search Device",
+    ok: "Confirm",
+    search: "Search",
+    name: "Name",
+    slave_id: "Device ID",
+    address: "Address",
+    slave_sn: "Device SN",
+    model: "Model",
+  },
+};

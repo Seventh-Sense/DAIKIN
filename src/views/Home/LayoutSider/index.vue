@@ -84,6 +84,7 @@
         </a-sub-menu>
       </a-menu>
     </div>
+    <ControllersSearch v-if="showModal" v-model:modelShow="showModal"/>
   </div>
 </template>
 
@@ -94,11 +95,14 @@ import { useI18n } from "vue-i18n";
 import { routerTurnByPath } from "@/router/util";
 import { useStepStore } from "@/pinia/modules/step";
 import { useRoute } from "vue-router";
+import ControllersSearch from "@/components/Modal/ControllersSearch/index.vue"
 
 const stepStore = useStepStore();
 const route = useRoute();
 
 const { t } = useI18n();
+
+const showModal = ref(false)
 
 const initSelectedKey = stepStore.menuSelectedKeys.length
   ? stepStore.menuSelectedKeys
@@ -208,7 +212,7 @@ const menus = computed(() => [
 ]);
 
 const handleRightIconClick = (menu: any) => {
-  console.log("onAdd");
+  showModal.value = true
 };
 
 const handleClick = (menu: any) => {
