@@ -1,12 +1,17 @@
 <template>
   <a-row class="login">
-    <a-col :span="12">
-      <div style="background-color: antiquewhite; height: 100vh">
-        <a-input v-model:value="formState.username" size="large"></a-input>
-      </div>
+    <a-col :span="15" class="login-left">
+      <img
+        src="@/assets/login.png"
+        alt="login background"
+        class="login-bg-img"
+      />
     </a-col>
-    <a-col :span="12">
+    <a-col :span="9">
       <div class="login-box">
+        <img src="@/assets/logo.png" alt="logo" class="logo-img" />
+        <span class="login-box-title"> 大金空调 </span>
+        <span class="login-box-name"> 研奇试运行工具 </span>
         <a-form
           :model="formState"
           :rules="rules"
@@ -86,10 +91,10 @@ const formState = reactive<FormState>({
 });
 
 const onFinish = async (values: any) => {
-  userStore.login(values)
+  userStore.login(values);
 
   //缓存用户信息
-  routerTurnByName('Home', false, false)
+  routerTurnByName("Home", false, false);
 };
 
 const onFinishFailed = (errorInfo: any) => {
@@ -102,11 +107,51 @@ const onFinishFailed = (errorInfo: any) => {
   height: 100vh;
   width: 100%;
 
+  &-left {
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  &-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
   &-box {
     height: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    &-title {
+      font-weight: bold;
+      font-size: 48px;
+      color: #222222;
+      line-height: 70px;
+      text-align: center;
+      font-style: normal;
+      margin-bottom: 26px;
+    }
+
+    &-name {
+      font-weight: bold;
+      font-size: 20px;
+      color: #222222;
+      line-height: 29px;
+      text-align: center;
+      font-style: normal;
+      margin-bottom: 105px;
+    }
+  }
+
+  &-img {
+    width: 190px;
+    height: 42px;
+    margin-bottom: 14px;
   }
 
   &-form {
