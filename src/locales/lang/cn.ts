@@ -58,6 +58,7 @@ export default {
     confirm: "确认",
     reload: "刷新",
     empty: "暂无数据",
+    edit_complete: '编辑完成',
   },
   device_search: {
     title: "搜索设备",
@@ -74,4 +75,7 @@ export default {
     msg_9: '成功删除 "{delnum}" 个设备!',
     msg_10: '成功添加 "{addnum}" 个设备!',
   },
+  device_info: {
+    
+  }
 };

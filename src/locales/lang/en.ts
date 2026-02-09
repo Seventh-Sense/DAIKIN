@@ -58,6 +58,7 @@ export default {
     confirm: "Confirm",
     reload: "Reload",
     empty: "No Data",
+    edit_complete: 'Edit Complete'
   },
   device_search: {
     title: "Search Device",

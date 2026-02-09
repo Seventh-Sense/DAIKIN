@@ -8,8 +8,8 @@ export default {
       username: "ユーザー名を入力してください",
       password: "パスワードを入力してください",
     },
-    appname: ' 研奇試運転ツール ',
-manufacturer: ' ダイキンエアコン '
+    appname: " 研奇試運転ツール ",
+    manufacturer: " ダイキンエアコン ",
   },
   layout: {
     home: "ホーム",
@@ -58,6 +58,7 @@ manufacturer: ' ダイキンエアコン '
     confirm: "確認",
     reload: "リロード",
     empty: "データがありません",
+    edit_complete: '編集完了'
   },
   device_search: {
     title: " 機器検索 ",

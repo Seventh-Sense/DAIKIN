@@ -1,14 +1,16 @@
 <template>
   <div class="card">
     <div class="card-finish">
-      <a-button type="primary" class="card-btn" @click="onClick">编辑完成</a-button>
+      <a-button type="primary" class="card-btn" @click="onClick">{{ t("common.edit_complete") }}</a-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { handleEditCompleteJump } from "../until.ts/util";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const onClick = () => {
   handleEditCompleteJump()
 }
