@@ -1,3 +1,6 @@
+import { routerTurnByPath } from "@/router/util";
+import { useStepStore } from "@/pinia/modules/step";
+
 /**
  * 已知二级菜单，查找当前三级菜单的下一个key
  * @param currentKey 当前三级菜单key（如：1-17706046352452bd91-1）
@@ -27,3 +30,30 @@ export const findNextMenu = (
   // 4. 返回下一个key
   return secondMenu.children[currentIndex + 1];
 };
+
+/**
+ * 编辑完成后跳转到下一步的通用方法
+ * @returns {Promise<void>}
+ */
+export async function handleEditCompleteJump() {
+  const stepStore = useStepStore();
+  
+  try {
+    // 1. 获取下一个菜单信息
+    const nextMenu: any = findNextMenu(stepStore.currentStep, stepStore.currentMenuData);
+    
+    if (!nextMenu) {
+      console.warn("未找到下一个菜单，跳转失败");
+      return;
+    }
+
+    // 2. 更新步骤存储状态
+    stepStore.updateMenuSelectedKeys([nextMenu.key]);
+    stepStore.updateCurrentStep(nextMenu.key);
+
+    // 3. 路由跳转
+    routerTurnByPath(nextMenu.path);
+  } catch (error) {
+    console.error("编辑完成跳转失败:", error);
+  }
+}

@@ -135,42 +135,33 @@ const stepStore = useStepStore();
 
 const showModal = ref(false);
 
-const initSelectedKey = stepStore.menuSelectedKeys.length
-  ? stepStore.menuSelectedKeys
-  : typeof stepStore.currentStep === "string"
-    ? [stepStore.currentStep]
-    : [];
+const selectedKeys = computed({
+  get() {
+    return stepStore.menuSelectedKeys.length
+      ? stepStore.menuSelectedKeys
+      : typeof stepStore.currentStep === "string"
+        ? [stepStore.currentStep]
+        : [];
+  },
+  set(newVal) {
+    stepStore.updateMenuSelectedKeys(newVal);
+  },
+});
 
-const initOpenKeys = stepStore.menuOpenKeys.length
-  ? stepStore.menuOpenKeys
-  : [];
-
-const selectedKeys = ref<string[]>(initSelectedKey);
-const openKeys = ref<string[]>(initOpenKeys);
+const openKeys = computed({
+  get() {
+    return stepStore.menuOpenKeys.length ? stepStore.menuOpenKeys : [];
+  },
+  set(newVal) {
+    stepStore.updateMenuOpenKeys(newVal);
+  },
+});
 
 //删除弹窗相关状态
 const deleteModalVisible = ref(false); // 删除弹窗显示状态
 const deleteTargetMenu = ref<any>(null); // 要删除的一级菜单
 const deleteTargetSubMenu = ref<any>(null); // 要删除的二级菜单
 const deleteSubMenuName = ref(""); // 要删除的菜单项名称
-
-// 监听选中状态变化，同步到store
-watch(
-  selectedKeys,
-  (newVal) => {
-    stepStore.updateMenuSelectedKeys(newVal);
-  },
-  { immediate: true, deep: true },
-);
-
-// 监听展开状态变化，同步到store
-watch(
-  openKeys,
-  (newVal) => {
-    stepStore.updateMenuOpenKeys(newVal);
-  },
-  { immediate: true, deep: true },
-);
 
 const clickType = ref("1");
 
@@ -246,13 +237,11 @@ const confirmDelete = () => {
         !key.startsWith(`${deletedSubMenuKey}-`) && key !== deletedSubMenuKey,
     );
     stepStore.updateMenuSelectedKeys(newSelectedKeys);
-    selectedKeys.value = newSelectedKeys;
 
     const newOpenKeys = stepStore.menuOpenKeys.filter(
       (key: any) => key !== deletedSubMenuKey,
     );
     stepStore.updateMenuOpenKeys(newOpenKeys);
-    openKeys.value = newOpenKeys;
 
     // 判断是否需要跳转到首页
     const needRedirectToHome =

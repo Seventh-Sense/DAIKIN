@@ -8,13 +8,17 @@
 
     </div>
     <div class="list-finish">
-      <a-button type="primary" class="list-btn">编辑完成</a-button>
+      <a-button type="primary" class="list-btn" @click="onClick">编辑完成</a-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { handleEditCompleteJump } from "../until.ts/util";
 
+const onClick = () => {
+  handleEditCompleteJump()
+}
 </script>
 
 <style lang="less" scoped>
@@ -43,6 +47,7 @@
     width: 74px;
     height: 32px;
     padding: 0;
+    border-radius: 0;
   }
 
   &-finish {
