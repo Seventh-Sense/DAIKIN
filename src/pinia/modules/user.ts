@@ -28,7 +28,7 @@ export const useUserStore = defineStore(
       userInfo.value = null;
 
       const stepStore = useStepStore();
-      stepStore.resetAll();
+      stepStore.reset();
 
       routerTurnByName("Login", true, false);
     };

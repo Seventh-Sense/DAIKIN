@@ -88,12 +88,11 @@ export const useStepStore = defineStore(
       currentMenuData.value = data;
     };
 
-    const resetAll = () => {
+    const reset = () => {
       const init = getInitialState();
       currentStep.value = init.currentStep;
       menuSelectedKeys.value = init.menuSelectedKeys;
       menuOpenKeys.value = init.menuOpenKeys;
-      rawMenus.value = init.rawMenus;
       currentMenuData.value = init.currentMenuData;
     };
 
@@ -109,7 +108,7 @@ export const useStepStore = defineStore(
       updateMenuOpenKeys,
       updateRawMenus,
       updateCurrentMenuData,
-      resetAll,
+      reset,
     };
   },
   {
