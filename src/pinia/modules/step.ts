@@ -8,38 +8,46 @@ interface PersistOptions {
   paths: string[];
 }
 
+const getInitialState = () => ({
+  currentStep: "" as string | number,
+  menuSelectedKeys: [] as string[],
+  menuOpenKeys: [] as string[],
+  rawMenus: [
+    {
+      key: "1",
+      icon: "deviceA",
+      labelKey: "layout.professional",
+      children: [],
+    },
+    {
+      key: "2",
+      icon: "deviceA",
+      labelKey: "layout.standard",
+      children: [],
+    },
+    {
+      key: "3",
+      icon: "deviceA",
+      labelKey: "layout.lite",
+      children: [],
+    },
+  ],
+  currentMenuData: {} as any,
+});
+
 export const useStepStore = defineStore(
   "step",
   () => {
     const { t } = useI18n();
 
-    const currentStep = ref<string | number>("");
-    const menuSelectedKeys = ref<string[]>([]);
-    const menuOpenKeys = ref<string[]>([]);
+    const initialState = getInitialState();
 
-    const rawMenus = ref([
-      {
-        key: "1",
-        icon: "deviceA",
-        labelKey: "layout.professional",
-        children: [],
-      },
-      {
-        key: "2",
-        icon: "deviceA",
-        labelKey: "layout.standard",
-        children: [],
-      },
-      {
-        key: "3",
-        icon: "deviceA",
-        labelKey: "layout.lite",
-        children: [],
-      },
-    ]);
-
+    const currentStep = ref<string | number>(initialState.currentStep);
+    const menuSelectedKeys = ref<string[]>(initialState.menuSelectedKeys);
+    const menuOpenKeys = ref<string[]>(initialState.menuOpenKeys);
+    const rawMenus = ref(initialState.rawMenus);
     //当前点击项的数据(二级菜单的地址，添加的控制器信息，当前步骤，所有步骤)
-    const currentMenuData = ref<any>({});
+    const currentMenuData = ref(initialState.currentMenuData);
 
     const menus = computed(() => {
       const processMenu = (menu: any) => {
@@ -80,6 +88,15 @@ export const useStepStore = defineStore(
       currentMenuData.value = data;
     };
 
+    const resetAll = () => {
+      const init = getInitialState();
+      currentStep.value = init.currentStep;
+      menuSelectedKeys.value = init.menuSelectedKeys;
+      menuOpenKeys.value = init.menuOpenKeys;
+      rawMenus.value = init.rawMenus;
+      currentMenuData.value = init.currentMenuData;
+    };
+
     return {
       currentStep,
       menuSelectedKeys,
@@ -92,6 +109,7 @@ export const useStepStore = defineStore(
       updateMenuOpenKeys,
       updateRawMenus,
       updateCurrentMenuData,
+      resetAll,
     };
   },
   {

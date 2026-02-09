@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { loginApi } from "@/api";
 import { routerTurnByName } from "@/router/util";
+import { useStepStore } from "./step";
 
 export const useUserStore = defineStore(
   "user",
@@ -25,7 +26,9 @@ export const useUserStore = defineStore(
 
     const logout = () => {
       userInfo.value = null;
-      //清理sider保存的数据  TODO
+
+      const stepStore = useStepStore();
+      stepStore.resetAll();
 
       routerTurnByName("Login", true, false);
     };
