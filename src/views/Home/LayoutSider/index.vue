@@ -218,8 +218,9 @@ const confirmDelete = () => {
     const targetMenuIndex = currentRawMenus.findIndex(
       (item) => item.key === deleteTargetMenu.value.key,
     );
+    
     if (targetMenuIndex === -1) {
-      message.error("未找到对应的一级菜单！");
+      message.error(t('layout.msg_3'));
       deleteModalVisible.value = false;
       return;
     }

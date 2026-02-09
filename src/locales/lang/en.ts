@@ -38,6 +38,7 @@ export default {
     this_menu: "this menu item?",
     msg_1: "Failed to delete the menu item, please try again!",
     msg_2: 'Successfully deleted the menu item "{name}"!',
+    msg_3: 'No corresponding device found!',
   },
   user: {
     title: "User List",
@@ -58,7 +59,7 @@ export default {
     confirm: "Confirm",
     reload: "Reload",
     empty: "No Data",
-    edit_complete: 'Edit Complete'
+    edit_complete: 'Finish'
   },
   device_search: {
     title: "Search Device",
@@ -76,4 +77,7 @@ export default {
     msg_9: 'Successfully deleted "{delnum}" devices!',
     msg_10: 'Successfully added "{addnum}" devices!',
   },
+  device_info: {
+    del_device: 'Delete'
+  }
 };

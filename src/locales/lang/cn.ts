@@ -38,6 +38,7 @@ export default {
     this_menu: "这个菜单项?",
     msg_1: "删除菜单项失败，请重试！",
     msg_2: '成功删除 "{name}" 菜单项！',
+    msg_3: '未找到对应设备！'
   },
   user: {
     title: "用户列表",
@@ -76,6 +77,6 @@ export default {
     msg_10: '成功添加 "{addnum}" 个设备!',
   },
   device_info: {
-    
+    del_device: '删除设备'
   }
 };
