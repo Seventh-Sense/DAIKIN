@@ -2,9 +2,9 @@
   <div class="card">
     <div class="card-content">
       <div class="card-top">
-        <span class="card-title">{{
-          stepStore.currentMenuData.data.address
-        }}</span>
+        <span class="card-title">
+          {{ stepStore.currentMenuData.data.address }}
+        </span>
         <a-button class="card-del" @click="onDelete">
           <Icons
             name="delete"

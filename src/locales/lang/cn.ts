@@ -78,5 +78,22 @@ export default {
   },
   device_info: {
     del_device: '删除设备'
+  },
+  firmware: {
+    title: '固件更新',
+    select_btn: '选择',
+    start_btn: '开始更新',
+    upgrade_file: '升级文件',
+    placeholder: {
+      select_file: '请选取文件',
+    },
+    please_select_file: '请先选择升级文件!',
+    upgrade_fail: '固件升级失败，请重试！',
+    no_file_selected: '未选择任何文件!',
+    file_too_large: '文件大小不能超过100MB!',
+    file_selected: '已选择文件："{name}"!',
+    file_read_fail: '文件读取失败，请重新选择！',
+
+
   }
 };

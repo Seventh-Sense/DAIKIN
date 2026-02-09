@@ -79,5 +79,20 @@ export default {
   },
   device_info: {
     del_device: 'Delete'
+  },
+  firmware: {
+    title: 'Firmware Update',
+    select_btn: 'Select',
+    start_btn: 'Start Update',
+    upgrade_file: 'Upgrade File',
+    placeholder: {
+      select_file: 'Please select a file',
+    },
+    please_select_file: 'Please select an upgrade file first!',
+    upgrade_fail: 'Firmware upgrade failed, please try again!',
+    no_file_selected: 'No files selected!',
+    file_too_large: 'File size cannot exceed 100MB!',
+    file_selected: 'File selected: "{name}"!',
+    file_read_fail: 'File reading failed, please select again!',
   }
 };

@@ -79,5 +79,20 @@ export default {
   },
   device_info: {
     del_device: '削除'
+  },
+  firmware: {
+    title: 'ファームウェア更新',
+    select_btn: '選択',
+    start_btn: '更新開始',
+    upgrade_file: 'アップグレードファイル',
+    placeholder: {
+      select_file: 'ファイルを選択してください',
+    },
+    please_select_file: 'アップグレードファイルを先に選択してください!',
+    upgrade_fail: 'ファームウェアのアップグレードに失敗しました、再試行してください！',
+    no_file_selected: 'ファイルが選択されていません!',
+    file_too_large: 'ファイルサイズは100MBを超えられません!',
+    file_selected: 'ファイルを選択しました："{name}"!',
+    file_read_fail: 'ファイルの読み取りに失敗しました、再度選択してください！',
   }
 };
