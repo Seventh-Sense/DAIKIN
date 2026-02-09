@@ -8,6 +8,8 @@ export default {
       username: "Please enter username",
       password: "Please enter password",
     },
+    appname: "Yanqi Trial Operation Tool",
+    manufacturer: "Daikin Air Conditioning",
   },
   layout: {
     home: "Home",

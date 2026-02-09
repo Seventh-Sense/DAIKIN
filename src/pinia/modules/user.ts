@@ -25,6 +25,8 @@ export const useUserStore = defineStore(
 
     const logout = () => {
       userInfo.value = null;
+      //清理sider保存的数据  TODO
+
       routerTurnByName("Login", true, false);
     };
 

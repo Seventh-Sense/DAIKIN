@@ -38,6 +38,9 @@ export const useStepStore = defineStore(
       },
     ]);
 
+    //当前点击项的数据(二级菜单的地址，添加的控制器信息，当前步骤，所有步骤)
+    const currentMenuData = ref<any>({});
+
     const menus = computed(() => {
       const processMenu = (menu: any) => {
         const processed = {
@@ -73,16 +76,22 @@ export const useStepStore = defineStore(
       menuOpenKeys.value = keys;
     };
 
+    const updateCurrentMenuData = (data: any) => {
+      currentMenuData.value = data;
+    };
+
     return {
       currentStep,
       menuSelectedKeys,
       menuOpenKeys,
       rawMenus,
       menus,
+      currentMenuData,
       updateCurrentStep,
       updateMenuSelectedKeys,
       updateMenuOpenKeys,
       updateRawMenus,
+      updateCurrentMenuData,
     };
   },
   {
@@ -90,7 +99,13 @@ export const useStepStore = defineStore(
     persist: {
       key: "step-store",
       storage: sessionStorage,
-      paths: ["currentStep", "menuSelectedKeys", "menuOpenKeys", "rawMenus"],
+      paths: [
+        "currentStep",
+        "menuSelectedKeys",
+        "menuOpenKeys",
+        "rawMenus",
+        "currentMenuData",
+      ],
     } as PersistOptions,
   },
 );

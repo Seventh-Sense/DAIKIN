@@ -8,6 +8,8 @@ export default {
       username: "请输入用户名",
       password: "请输入密码",
     },
+    appname: '研奇试运行工具',
+    manufacturer: '大金空调',
   },
   layout: {
     home: "首页",

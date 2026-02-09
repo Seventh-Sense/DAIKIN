@@ -80,7 +80,7 @@
                 <a-menu-item
                   v-for="(item, itemIndex) in subMenu.children"
                   :key="item.key"
-                  @click="handleClick(item)"
+                  @click="handleClick(item, subMenu)"
                 >
                   <template #icon>
                     <Icons
@@ -179,11 +179,13 @@ const handleRightIconClick = (menu: any) => {
   showModal.value = true;
 };
 
-const handleClick = (menu: any) => {
+const handleClick = (menu: any, secondMenu: any) => {
   selectedKeys.value = [menu.key];
   stepStore.updateCurrentStep(menu.key);
 
   if (menu.path) {
+    //存储当前点击项的二级菜单数据
+    stepStore.updateCurrentMenuData(secondMenu)
     routerTurnByPath(menu.path);
   }
 };

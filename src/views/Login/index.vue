@@ -10,8 +10,8 @@
     <a-col :span="9">
       <div class="login-box">
         <img src="@/assets/logo.png" alt="logo" class="logo-img" />
-        <span class="login-box-title"> 大金空调 </span>
-        <span class="login-box-name"> 研奇试运行工具 </span>
+        <span class="login-box-title"> {{ t('login.manufacturer')}} </span>
+        <span class="login-box-name"> {{ t('login.appname')}} </span>
         <a-form
           :model="formState"
           :rules="rules"

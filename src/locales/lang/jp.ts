@@ -8,6 +8,8 @@ export default {
       username: "ユーザー名を入力してください",
       password: "パスワードを入力してください",
     },
+    appname: ' 研奇試運転ツール ',
+manufacturer: ' ダイキンエアコン '
   },
   layout: {
     home: "ホーム",
