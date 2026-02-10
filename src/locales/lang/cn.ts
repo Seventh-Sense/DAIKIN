@@ -95,6 +95,21 @@ export default {
     file_read_fail: '文件读取失败，请重新选择！',
     upgrading: '更新中，请稍后...',
     upgrade_success: '固件升级成功！',
-
+  },
+  mqtt: {
+    title: 'MQTT',
+    host: '地址',
+    port: '端口',
+    topics: '主题列表',
+    add: '添加',
+    sub_topic: 'Sub Topic',
+    pub_topic: 'Pub Topic',
+    interval: '间隔时间',
+    cancel: '取消',
+    save: '确定',
+    sub_topic_empty: '订阅主题不能为空！',
+    pub_topic_empty: '发布主题不能为空！',
+    interval_invalid: '间隔时间必须是大于0的数字！',
+    confirm_delete: '确认删除"{name}"这个卡片吗？',
   }
 };

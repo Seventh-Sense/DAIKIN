@@ -25,7 +25,7 @@
 
       <a-button
         type="primary"
-        class="card-btn"
+        class="card-tbtn"
         @click="startUpdate"
         :disabled="!selectedFile"
       >
@@ -217,6 +217,13 @@ const uploadFile = (
   }
 
   &-btn {
+    width: 74px;
+    height: 32px;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  &-tbtn {
     width: 96px;
     height: 32px;
     padding: 0;
@@ -286,6 +293,7 @@ const uploadFile = (
   border-right: 0;
   border-radius: 0;
   border-bottom: 1px solid var(--header-text-color);
+  padding-left: 0;
 }
 
 :deep(.ant-input:focus) {

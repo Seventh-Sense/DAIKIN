@@ -38,7 +38,7 @@ export default {
     this_menu: " このメニュー項目を？",
     msg_1: " メニュー項目の削除に失敗しました、もう一度お試しください！",
     msg_2: "「{name}」というメニュー項目を正常に削除しました！",
-    msg_3: '対応するデバイスが見つかりません！',
+    msg_3: "対応するデバイスが見つかりません！",
   },
   user: {
     title: "ユーザーリスト",
@@ -59,7 +59,7 @@ export default {
     confirm: "確認",
     reload: "リロード",
     empty: "データがありません",
-    edit_complete: '編集完了'
+    edit_complete: "編集完了",
   },
   device_search: {
     title: " 機器検索 ",
@@ -78,23 +78,40 @@ export default {
     msg_10: "「{addnum}」台のデバイスを正常に追加しました！",
   },
   device_info: {
-    del_device: '削除'
+    del_device: "削除",
   },
   firmware: {
-    title: 'ファームウェア更新',
-    select_btn: '選択',
-    start_btn: '更新開始',
-    upgrade_file: 'アップグレードファイル',
+    title: "ファームウェア更新",
+    select_btn: "選択",
+    start_btn: "更新開始",
+    upgrade_file: "アップグレードファイル",
     placeholder: {
-      select_file: 'ファイルを選択してください',
+      select_file: "ファイルを選択してください",
     },
-    please_select_file: 'アップグレードファイルを先に選択してください!',
-    upgrade_fail: 'ファームウェアのアップグレードに失敗しました、再試行してください！',
-    no_file_selected: 'ファイルが選択されていません!',
-    file_too_large: 'ファイルサイズは100MBを超えられません!',
+    please_select_file: "アップグレードファイルを先に選択してください!",
+    upgrade_fail:
+      "ファームウェアのアップグレードに失敗しました、再試行してください！",
+    no_file_selected: "ファイルが選択されていません!",
+    file_too_large: "ファイルサイズは100MBを超えられません!",
     file_selected: 'ファイルを選択しました："{name}"!',
-    file_read_fail: 'ファイルの読み取りに失敗しました、再度選択してください！',
-    upgrading: '更新中です、しばらくお待ちください...',
-    upgrade_success: 'ファームウェアのアップグレードに成功しました！',
-  }
+    file_read_fail: "ファイルの読み取りに失敗しました、再度選択してください！",
+    upgrading: "更新中です、しばらくお待ちください...",
+    upgrade_success: "ファームウェアのアップグレードに成功しました！",
+  },
+  mqtt: {
+    title: "MQTT",
+    host: "ホスト",
+    port: "ポート",
+    topics: "トピックス",
+    add: "追加",
+    sub_topic: "Sub Topic",
+    pub_topic: "Pub Topic",
+    interval: "周期",
+    cancel: "キャンセル",
+    save: "決定",
+    sub_topic_empty: "購読トピックを入力してください。",
+    pub_topic_empty: "配信トピックを入力してください。",
+    interval_invalid: "インターバルは0より大きい数値を入力してください。",
+    confirm_delete: 'カード "{name}" を削除してもよろしいですか？',
+  },
 };
