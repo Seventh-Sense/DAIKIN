@@ -94,5 +94,7 @@ export default {
     file_too_large: 'File size cannot exceed 100MB!',
     file_selected: 'File selected: "{name}"!',
     file_read_fail: 'File reading failed, please select again!',
+    upgrading: 'Updating, please wait...',
+    upgrade_success: 'Firmware upgrade succeeded!',
   }
 };

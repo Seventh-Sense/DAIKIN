@@ -93,7 +93,8 @@ export default {
     file_too_large: '文件大小不能超过100MB!',
     file_selected: '已选择文件："{name}"!',
     file_read_fail: '文件读取失败，请重新选择！',
-
+    upgrading: '更新中，请稍后...',
+    upgrade_success: '固件升级成功！',
 
   }
 };

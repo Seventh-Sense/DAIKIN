@@ -94,5 +94,7 @@ export default {
     file_too_large: 'ファイルサイズは100MBを超えられません!',
     file_selected: 'ファイルを選択しました："{name}"!',
     file_read_fail: 'ファイルの読み取りに失敗しました、再度選択してください！',
+    upgrading: '更新中です、しばらくお待ちください...',
+    upgrade_success: 'ファームウェアのアップグレードに成功しました！',
   }
 };

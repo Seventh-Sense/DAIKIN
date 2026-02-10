@@ -11,6 +11,10 @@
           v-model:value="file_name"
           :placeholder="t('firmware.placeholder.select_file')"
           style="width: 498px"
+          :class="{
+            'input-success': updateStatus === 'success',
+            'input-error': updateStatus === 'error',
+          }"
           readonly
         />
       </div>
@@ -28,16 +32,30 @@
         {{ t("firmware.start_btn") }}
       </a-button>
     </div>
+    <div v-if="updateStatus === 'success'" class="status-tip success">
+      {{ t("firmware.upgrade_success") }}
+    </div>
+    <div v-if="updateStatus === 'error'" class="status-tip error">
+      {{ t("firmware.upgrade_fail") }}
+    </div>
     <div class="card-finish">
       <a-button type="primary" class="card-btn" @click="onClick">{{
         t("common.edit_complete")
       }}</a-button>
     </div>
   </div>
+  <Teleport v-if="isUpgrading" to="body">
+    <div class="global-upgrade-mask">
+      <div class="upgrade-loading">
+        <a-spin size="large" />
+        <span class="loading-text">{{ t("firmware.upgrading") }}</span>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { handleEditCompleteJump } from "../until.ts/util";
 import { useI18n } from "vue-i18n";
 import { message } from "ant-design-vue";
@@ -47,8 +65,24 @@ const { t } = useI18n();
 const file_name = ref<string>("");
 const selectedFile = ref<File | null>(null);
 const fileContent = ref<string | null>(null);
+const isUpgrading = ref<boolean>(false);
+
+const isBodyReady = ref<boolean>(false);
+
+//升级状态
+const updateStatus = ref<"idle" | "success" | "error">("idle");
+
+onMounted(() => {
+  // 确保DOM完全加载后再允许渲染Teleport
+  isBodyReady.value = !!document.body;
+});
 
 const onSelect = () => {
+  if (isUpgrading.value) return;
+
+  updateStatus.value = "idle";
+  file_name.value = "";
+
   uploadFile((file: File, content: string) => {
     // 可选：文件选择完成后的回调逻辑
     console.log("文件选择完成：", file.name, "内容长度：", content.length);
@@ -62,13 +96,30 @@ const startUpdate = () => {
   }
 
   try {
+    isUpgrading.value = true;
+
+    setTimeout(() => {
+      message.success(t("firmware.upgrade_success"));
+
+      updateStatus.value = "error";
+
+      isUpgrading.value = false;
+      // 重置状态
+      //file_name.value = "";
+      selectedFile.value = null;
+      fileContent.value = null;
+    }, 1500);
   } catch (error) {
     console.error("升级失败：", error);
     message.error(t("firmware.upgrade_fail"));
+    updateStatus.value = "error";
+    isUpgrading.value = false;
   }
 };
 
 const onClick = () => {
+  if (isUpgrading.value) return;
+
   handleEditCompleteJump();
 };
 
@@ -203,6 +254,32 @@ const uploadFile = (
   }
 }
 
+.status-tip {
+  margin-top: 4px;
+  margin-left: 6px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 17px;
+  text-align: left;
+  font-style: normal;
+  &.success {
+    color: var(--success-color); // 成功绿色
+  }
+  &.error {
+    color: var(--fail-color); // 失败红色
+  }
+}
+
+// 成功状态 - 绿色边框
+:deep(.input-success.ant-input) {
+  border-bottom-color: var(--success-color) !important;
+}
+
+// 失败状态 - 红色边框
+:deep(.input-error.ant-input) {
+  border-bottom-color: var(--fail-color) !important;
+}
+
 :deep(.ant-input) {
   border-top: 0;
   border-left: 0;
@@ -216,6 +293,39 @@ const uploadFile = (
 }
 
 :deep(.ant-btn-primary:disabled) {
-  color: var(#ffffff);
+  color: var(--header-bg);
+}
+</style>
+
+<style lang="less">
+.global-upgrade-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--mask-color);
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upgrade-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 60px;
+  border-radius: 8px;
+}
+
+.loading-text {
+  font-weight: bold;
+  font-size: 16px;
+  color: var(--header-text-color);
+  line-height: 24px;
+  text-align: center;
+  font-style: normal;
 }
 </style>
