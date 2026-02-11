@@ -123,7 +123,7 @@ const resetForm = () => {
     &-property {
       font-weight: 400;
       font-size: 12px;
-      color: #22222299;
+      color: var(--sider-text-color);
       line-height: 17px;
       text-align: left;
       font-style: normal;

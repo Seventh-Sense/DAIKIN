@@ -112,7 +112,26 @@ export default {
     pub_topic_empty: "Publish topic cannot be empty!",
     interval_invalid: "Interval must be a number greater than 0!",
     confirm_delete: 'Are you sure you want to delete the card "{name}"?',
-    modal_title: 'Add Topic',
+    modal_title: "Add Topic",
     serial_number: "Serial Number",
+  },
+  connectivity_check: {
+    title: "Connectivity Check",
+    all_check: "Check All",
+    communication: "Communication",
+    data_accuracy: "Data Accuracy",
+    basic_function: "Basic Function",
+    check: "Check",
+    logic_control: "Logic Control",
+    trial_run_result: "Trial Run Result",
+    clear: "Clear",
+    export_result: "Export Result",
+    check_result_label: "Check Result",
+    check_result_comm:
+      "Communication Check: {total} items checked ({failed} items failed)",
+    check_result_data:
+      "Data Accuracy Check: {total} items checked ({failed} items failed)",
+    check_result_func:
+      "Basic Function Check: {total} items checked ({failed} items failed)",
   },
 };

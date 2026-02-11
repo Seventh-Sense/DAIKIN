@@ -4,7 +4,10 @@
       <div class="flows-num" :class="getStepStatusClass(Number(index), 'num')">
         {{ Number(index) + 1 }}
       </div>
-      <div class="flows-text" :class="getStepStatusClass(Number(index), 'text')">
+      <div
+        class="flows-text"
+        :class="getStepStatusClass(Number(index), 'text')"
+      >
         {{ t(flow.labelKey) }}
       </div>
       <div
@@ -57,20 +60,20 @@ const currentFlows = computed(() => {
   return flowMap[flowType.value] || FlowPro;
 });
 
-const getStepStatusClass = (index: number, type: 'num' | 'text'): string => {
+const getStepStatusClass = (index: number, type: "num" | "text"): string => {
   // 明确step是number类型
   const step: number = index + 1;
   const current: number = currentStep.value;
-  
+
   const baseClass = `flows-${type}`;
-  
+
   if (step < current) {
     return `${baseClass}-completed`;
   }
   if (step === current) {
     return `${baseClass}-current`;
   }
-  return '';
+  return "";
 };
 </script>
 
@@ -79,6 +82,10 @@ const getStepStatusClass = (index: number, type: 'num' | 'text'): string => {
   display: flex;
   align-items: center;
   gap: 12px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 
   &-block {
     display: flex;

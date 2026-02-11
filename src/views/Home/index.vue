@@ -3,9 +3,11 @@
     <a-layout-sider
       breakpoint="lg"
       collapsed-width="0"
+      v-model:collapsed="collapsed"
       @collapse="onCollapse"
       @breakpoint="onBreakpoint"
       class="layout-sider"
+      :width="234"
     >
       <LayoutSider />
     </a-layout-sider>
@@ -23,13 +25,23 @@
 <script setup lang="ts">
 import LayoutHeader from "@/views/Home/LayoutHeader/index.vue";
 import LayoutSider from "@/views/Home/LayoutSider/index.vue";
+import { ref } from "vue";
 
-const onCollapse = (collapsed: boolean, type: string) => {
+const collapsed = ref(false);
+
+const onCollapse = (val: boolean, type: string) => {
   console.log(collapsed, type);
+  collapsed.value = val;
 };
 
 const onBreakpoint = (broken: boolean) => {
   console.log(broken);
+  // 当屏幕小于lg断点时，自动收缩侧边栏
+  if (broken) {
+    collapsed.value = true;
+  } else {
+    collapsed.value = false;
+  }
 };
 </script>
 
@@ -41,9 +53,13 @@ const onBreakpoint = (broken: boolean) => {
 
   &-sider {
     background-color: var(--sidebar-bg);
-    width: @sider-w !important;
-    max-width: @sider-w !important;
-    min-width: @sider-w !important;
+    transition: all 0.2s ease;
+
+    :deep(.ant-layout-sider-collapsed) {
+      width: 0 !important;
+      flex: 0 0 0;
+      min-width: 0 !important;
+    }
   }
 
   &-header {
