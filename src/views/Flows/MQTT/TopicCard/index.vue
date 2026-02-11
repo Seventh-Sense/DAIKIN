@@ -13,7 +13,7 @@
           @click="enterEdit"
         />
         <a-popconfirm
-          :title='t("mqtt.confirm_delete", {name: cardName})'
+          :title="t('mqtt.confirm_delete', { name: cardName })"
           @confirm="handleDelete"
         >
           <Icons
@@ -59,8 +59,9 @@
       <div class="topic-item">
         <span class="topic-label">{{ t("mqtt.interval") }}</span>
         <template v-if="isEditing">
-          <a-input
+          <a-input-number
             v-model:value="editInterval"
+            :min="1"
             class="topic-input"
             style="width: 400px"
           />
@@ -236,5 +237,24 @@ const handleDelete = () => {
 
 :deep(.topic-input) {
   background-color: transparent !important;
+}
+
+:deep(.ant-input-number) {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--header-text-color) !important;
+
+  &:focus,
+  &:hover,
+  &.ant-input-number-focused {
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  .ant-input-number-input {
+    padding-left: 0;
+  }
 }
 </style>

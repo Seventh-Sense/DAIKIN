@@ -112,5 +112,7 @@ export default {
     pub_topic_empty: "Publish topic cannot be empty!",
     interval_invalid: "Interval must be a number greater than 0!",
     confirm_delete: 'Are you sure you want to delete the card "{name}"?',
+    modal_title: 'Add Topic',
+    serial_number: "Serial Number",
   },
 };

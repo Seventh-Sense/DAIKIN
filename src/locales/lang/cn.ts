@@ -100,7 +100,7 @@ export default {
     title: 'MQTT',
     host: '地址',
     port: '端口',
-    topics: '主题列表',
+    topics: 'Topics',
     add: '添加',
     sub_topic: 'Sub Topic',
     pub_topic: 'Pub Topic',
@@ -111,5 +111,7 @@ export default {
     pub_topic_empty: '发布主题不能为空！',
     interval_invalid: '间隔时间必须是大于0的数字！',
     confirm_delete: '确认删除"{name}"这个卡片吗？',
+    modal_title: '添加Topic',
+    serial_number: '序列号',
   }
 };

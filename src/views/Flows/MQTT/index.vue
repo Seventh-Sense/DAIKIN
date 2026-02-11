@@ -14,7 +14,7 @@
       </div>
       <div class="card-content-row">
         <span class="card-content-row-title">{{ t("mqtt.topics") }}</span>
-        <a-button type="primary" class="card-btn-add">
+        <a-button type="primary" class="card-btn-add" @click="onAdd">
           {{ t("mqtt.add") }}
           <Icons
             name="addCircle"
@@ -39,17 +39,25 @@
         {{ t("common.edit_complete") }}
       </a-button>
     </div>
+    <TopicModal
+      v-if="showModal"
+      v-model:modelShow="showModal"
+      @add="handleAdd"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { handleEditCompleteJump } from "../until.ts/util";
 import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
 import TopicCard from "./TopicCard/index.vue";
+import TopicModal from "./TopicModal/index.vue";
 
 const { t } = useI18n();
+
+const showModal = ref(false);
 
 const info = reactive({
   host: "47.103.19.245",
@@ -61,37 +69,37 @@ const list = reactive([
     name: "ABCD-1234",
     sub_topic: "/cloud/YANHUA/AC/cmd/set",
     pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: "10",
+    interval: 10,
   },
   {
     name: "ABCD-12",
     sub_topic: "/cloud/YANHUA/AC/cmd/set",
     pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: "10",
+    interval: 10,
   },
   {
     name: "ABCD-34",
     sub_topic: "/cloud/YANHUA/AC/cmd/set",
     pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: "10",
+    interval: 10,
   },
   {
     name: "ABCD-1234",
     sub_topic: "/cloud/YANHUA/AC/cmd/set",
     pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: "10",
+    interval: 10,
   },
   {
     name: "ABCD-12",
     sub_topic: "/cloud/YANHUA/AC/cmd/set",
     pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: "10",
+    interval: 10,
   },
   {
     name: "ABCD-34",
     sub_topic: "/cloud/YANHUA/AC/cmd/set",
     pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: "10",
+    interval: 10,
   },
 ]);
 
@@ -106,8 +114,15 @@ const handleUpdate = (index: number, newData: any) => {
 
 // 处理卡片删除
 const handleDelete = (index: number) => {
-  // 删除对应索引的项
   list.splice(index, 1);
+};
+
+const onAdd = () => {
+  showModal.value = true;
+};
+
+const handleAdd = (newTopic: any) => {
+  list.push(newTopic);
 };
 </script>
 
