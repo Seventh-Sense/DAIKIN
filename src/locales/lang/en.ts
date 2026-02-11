@@ -134,4 +134,8 @@ export default {
     check_result_func:
       "Basic Function Check: {total} items checked ({failed} items failed)",
   },
+  ui: {
+    title: 'Controller List',
+    add: 'Add',
+  }
 };

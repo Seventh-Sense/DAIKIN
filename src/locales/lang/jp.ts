@@ -133,4 +133,8 @@ export default {
       "データ正確性チェック：計{total}項目（不合格{failed}項目）",
     check_result_func: "基本機能チェック：計{total}項目（不合格{failed}項目）",
   },
+  ui: {
+    title: 'コントローラーリスト',
+    add: '追加',
+  }
 };

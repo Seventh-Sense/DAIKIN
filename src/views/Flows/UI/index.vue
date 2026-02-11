@@ -1,14 +1,22 @@
 <template>
-  <div class="list">
-    <div class="list-title">
-      <span class="list-title-text">控制器列表</span>
-      <a-button type="primary" class="list-btn">添加</a-button>
+  <div class="card">
+    <div class="card-top">
+      <span class="card-top-title">{{ t("ui.title") }}</span>
+      <a-button type="primary" class="btn-add">
+        {{ t("ui.add") }}
+        <Icons
+          name="addCircle"
+          type="mono-line"
+          :size="20"
+          :color="{ normal: '#ffffff' }"
+        />
+      </a-button>
     </div>
-    <div>
-
-    </div>
-    <div class="list-finish">
-      <a-button type="primary" class="list-btn" @click="onClick">{{ t("common.edit_complete") }}</a-button>
+    <div class="card-content"></div>
+    <div class="card-finish">
+      <a-button type="primary" class="card-finish-btn" @click="onClick">
+        {{ t("common.edit_complete") }}
+      </a-button>
     </div>
   </div>
 </template>
@@ -16,26 +24,28 @@
 <script setup lang="ts">
 import { handleEditCompleteJump } from "../until.ts/util";
 import { useI18n } from "vue-i18n";
+import Icons from "@/icons/index.vue";
 
 const { t } = useI18n();
+
 const onClick = () => {
-  handleEditCompleteJump()
-}
+  handleEditCompleteJump();
+};
 </script>
 
 <style lang="less" scoped>
-.list {
+.card {
   background-color: var(--sidebar-bg);
   height: 100%;
   padding: 0 24px;
 
-  &-title {
+  &-top {
     height: 52px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    &-text {
+    &-title {
       font-weight: bold;
       font-size: 14px;
       color: #222222;
@@ -45,17 +55,30 @@ const onClick = () => {
     }
   }
 
-  &-btn {
-    width: 74px;
-    height: 32px;
-    padding: 0;
-    border-radius: 0;
+  &-content {
+    flex: 1;
+    
   }
 
   &-finish {
     position: fixed;
     right: 24px;
     bottom: 20px;
+
+    &-btn {
+      width: 74px;
+      height: 32px;
+      padding: 0;
+      border-radius: 0;
+    }
   }
+}
+
+.btn-add {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 0;
 }
 </style>

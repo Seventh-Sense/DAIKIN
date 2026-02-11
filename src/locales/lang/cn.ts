@@ -130,4 +130,8 @@ export default {
     check_result_data: "数据准确性检查：共检查{total}项（不通过{failed}项）",
     check_result_func: "基本功能检查：共检查{total}项（不通过{failed}项）",
   },
+  ui: {
+    title: '控制器列表',
+    add: '添加',
+  }
 };
