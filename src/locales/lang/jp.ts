@@ -145,5 +145,6 @@ export default {
     name_not_empty: "名前を入力してください",
     rename_success: "名前の変更に成功しました",
     rename_fail: "名前の変更に失敗しました",
+    add_success: "追加しました",
   },
 };

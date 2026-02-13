@@ -142,5 +142,6 @@ export default {
     name_not_empty: "名称不能为空",
     rename_success: "重命名成功",
     rename_fail: "重命名失败",
+    add_success: "添加成功",
   },
 };

@@ -146,5 +146,6 @@ export default {
     name_not_empty: "Name cannot be empty",
     rename_success: "Renamed successfully",
     rename_fail: "Renamed failed",
+    add_success: "Add successful",
   },
 };

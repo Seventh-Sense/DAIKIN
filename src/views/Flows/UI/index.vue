@@ -28,7 +28,11 @@
         {{ t("common.edit_complete") }}
       </a-button>
     </div>
-    <CreateModal v-if="showModal" v-model:modelShow="showModal" />
+    <CreateModal
+      v-if="showModal"
+      v-model:modelShow="showModal"
+      @add="handleAddNewItem"
+    />
     <RenameModal
       v-if="renameShow"
       v-model:modelShow="renameShow"
@@ -104,6 +108,13 @@ const onClick = () => {
 
 const onAdd = () => {
   showModal.value = true;
+};
+
+const handleAddNewItem = (newItem: any) => {
+  // 将新项添加到列表开头（也可以用 push 添加到末尾）
+  list.value.unshift(newItem);
+  // 或者添加到末尾：list.value.push(newItem);
+  message.success(t("ui.add_success"));
 };
 
 const handleRename = (data: any) => {
