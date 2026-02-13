@@ -176,7 +176,7 @@ const handleClick = (menu: any, secondMenu: any) => {
 
   if (menu.path) {
     //存储当前点击项的二级菜单数据
-    stepStore.updateCurrentMenuData(secondMenu)
+    stepStore.updateCurrentMenuData(secondMenu);
     routerTurnByPath(menu.path);
   }
 };
@@ -218,9 +218,9 @@ const confirmDelete = () => {
     const targetMenuIndex = currentRawMenus.findIndex(
       (item) => item.key === deleteTargetMenu.value.key,
     );
-    
+
     if (targetMenuIndex === -1) {
-      message.error(t('layout.msg_3'));
+      message.error(t("layout.msg_3"));
       deleteModalVisible.value = false;
       return;
     }
@@ -410,6 +410,12 @@ const confirmDelete = () => {
 :deep(.ant-menu-item-selected) {
   background-color: var(--sider-menu-select-color);
   border-radius: 0;
+
+  .menu-title,
+  .menu-title-1 {
+    font-weight: bold !important;
+    color: var(--sider-menu-select-font-color) !important;
+  }
 }
 
 :deep(.ant-menu-item:active) {

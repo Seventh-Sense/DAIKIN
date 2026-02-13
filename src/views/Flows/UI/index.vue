@@ -35,7 +35,7 @@
 import { handleEditCompleteJump } from "../until.ts/util";
 import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import UICard from "./UICard/index.vue";
 
 const { t } = useI18n();
@@ -83,20 +83,20 @@ const onClick = () => {
   handleEditCompleteJump();
 };
 
-const handleRename  = (data: any) => {
-  console.log('handleRename', data)
+const handleRename = (data: any) => {
+  console.log("handleRename", data);
 };
 
-const handleDelete  = (data: any) => {
-  console.log('handleDelete', data)
+const handleDelete = (data: any) => {
+  console.log("handleDelete", data);
 };
 
-const handleEdit  = (data: any) => {
-  console.log('handleEdit', data)
+const handleEdit = (data: any) => {
+  console.log("handleEdit", data);
 };
 
-const handlePreview  = (data: any) => {
-  console.log('handlePreview', data)
+const handlePreview = (data: any) => {
+  console.log("handlePreview", data);
 };
 </script>
 
