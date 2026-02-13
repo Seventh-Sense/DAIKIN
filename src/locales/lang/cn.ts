@@ -131,7 +131,16 @@ export default {
     check_result_func: "基本功能检查：共检查{total}项（不通过{failed}项）",
   },
   ui: {
-    title: '控制器列表',
-    add: '添加',
-  }
+    title: "控制器列表",
+    add: "添加",
+    add_dashboard: "添加可视化",
+    name: "名称",
+    type: "类型",
+    rename: "重命名",
+    export: "导出",
+    import: "导入",
+    name_not_empty: "名称不能为空",
+    rename_success: "重命名成功",
+    rename_fail: "重命名失败",
+  },
 };

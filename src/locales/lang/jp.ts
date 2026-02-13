@@ -134,7 +134,16 @@ export default {
     check_result_func: "基本機能チェック：計{total}項目（不合格{failed}項目）",
   },
   ui: {
-    title: 'コントローラーリスト',
-    add: '追加',
-  }
+    title: "コントローラーリスト",
+    add: "追加",
+    add_dashboard: "ダッシュボードを追加",
+    name: "名前",
+    type: "タイプ",
+    rename: "名前の変更",
+    export: "エクスポート",
+    import: "インポート",
+    name_not_empty: "名前を入力してください",
+    rename_success: "名前の変更に成功しました",
+    rename_fail: "名前の変更に失敗しました",
+  },
 };

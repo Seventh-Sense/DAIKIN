@@ -135,7 +135,16 @@ export default {
       "Basic Function Check: {total} items checked ({failed} items failed)",
   },
   ui: {
-    title: 'Controller List',
-    add: 'Add',
-  }
+    title: "Controller List",
+    add: "Add",
+    add_dashboard: "Add Dashboard",
+    name: "Name",
+    type: "Type",
+    rename: "Rename",
+    export: "Export",
+    import: "Import",
+    name_not_empty: "Name cannot be empty",
+    rename_success: "Renamed successfully",
+    rename_fail: "Renamed failed",
+  },
 };

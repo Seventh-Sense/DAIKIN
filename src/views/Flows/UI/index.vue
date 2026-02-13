@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-top">
       <span class="card-top-title">{{ t("ui.title") }}</span>
-      <a-button type="primary" class="btn-add">
+      <a-button type="primary" class="btn-add" @click="onAdd">
         {{ t("ui.add") }}
         <Icons
           name="addCircle"
@@ -15,7 +15,7 @@
     <div class="card-content">
       <UICard
         v-for="(item, index) in list"
-        :key="index"
+        :key="item.id"
         :data="item"
         @rename="handleRename"
         @edit="handleEdit"
@@ -28,6 +28,14 @@
         {{ t("common.edit_complete") }}
       </a-button>
     </div>
+    <CreateModal v-if="showModal" v-model:modelShow="showModal" />
+    <RenameModal
+      v-if="renameShow"
+      v-model:modelShow="renameShow"
+      :item-id="currentRenameItem.id"
+      :current-name="currentRenameItem.name"
+      @confirmRename="handleConfirmRename"
+    />
   </div>
 </template>
 
@@ -37,6 +45,9 @@ import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
 import { onMounted, ref } from "vue";
 import UICard from "./UICard/index.vue";
+import RenameModal from "./RenameModal/index.vue";
+import CreateModal from "./CreateModal/index.vue";
+import { message } from "ant-design-vue";
 
 const { t } = useI18n();
 
@@ -79,12 +90,42 @@ const list = ref([
   },
 ]);
 
+const showModal = ref(false);
+const renameShow = ref(false);
+
+const currentRenameItem = ref({
+  id: "",
+  name: "",
+});
+
 const onClick = () => {
   handleEditCompleteJump();
 };
 
+const onAdd = () => {
+  showModal.value = true;
+};
+
 const handleRename = (data: any) => {
-  console.log("handleRename", data);
+  currentRenameItem.value = {
+    id: data.id,
+    name: data.name,
+  };
+
+  renameShow.value = true;
+};
+
+const handleConfirmRename = (payload: { id: string; newName: string }) => {
+  const { id, newName } = payload;
+  // 找到对应卡片并更新名称
+  const targetItem = list.value.find((item) => item.id === id);
+  if (targetItem) {
+    targetItem.name = newName;
+    // 提示重命名成功（可选）
+    message.success(t("ui.rename_success"));
+  } else {
+    message.error(t("ui.rename_fail"));
+  }
 };
 
 const handleDelete = (data: any) => {
