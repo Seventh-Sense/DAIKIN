@@ -33,6 +33,23 @@
         {{ t("common.edit_complete") }}
       </a-button>
     </div>
+    <a-modal
+      v-model:open="deleteModalVisible"
+      :title="t('layout.confirm_delete')"
+      :closable="false"
+      :maskClosable="false"
+      :ok-text="t('layout.confirm')"
+      :cancel-text="t('layout.cancel')"
+      @ok="confirmDelete"
+      @cancel="deleteModalVisible = false"
+    >
+      <p>
+        {{ t("layout.is_confirm") }} "{{
+          stepStore.currentMenuData.data.address
+        }}"
+        {{ t("layout.this_menu") }}
+      </p>
+    </a-modal>
   </div>
 </template>
 
@@ -43,15 +60,23 @@ import { useI18n } from "vue-i18n";
 import { message } from "ant-design-vue";
 import { routerTurnByName } from "../../../router/util";
 import Icons from "@/icons/index.vue";
+import { ref } from "vue";
 
 const { t } = useI18n();
 const stepStore = useStepStore();
+
+const deleteModalVisible = ref(false);
+const deleteSubMenuName = ref("");
 
 const onClick = () => {
   handleEditCompleteJump();
 };
 
 const onDelete = () => {
+  deleteModalVisible.value = true;
+};
+
+const confirmDelete = () => {
   try {
     const currentRawMenus = [...stepStore.rawMenus];
 
