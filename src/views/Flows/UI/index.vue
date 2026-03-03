@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { handleEditCompleteJump } from "../until.ts/util";
+import { handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
 import { onMounted, ref } from "vue";
@@ -170,7 +170,7 @@ const handlePreview = (data: any) => {
     &-title {
       font-weight: bold;
       font-size: 14px;
-      color: #222222;
+      color: var(--header-text-color);
       line-height: 20px;
       text-align: left;
       font-style: normal;

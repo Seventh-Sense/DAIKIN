@@ -59,4 +59,18 @@ export async function handleEditCompleteJump() {
 }
 
 
+/**
+ * 校验IPv4地址格式 (严格模式)
+ * @param ip 待校验的IP地址字符串
+ * @returns 是否合法的IPv4地址
+ */
+export const validateIPv4 = (ip: string): boolean => {
+  // 正则说明：
+  // 1. 0-255的数字，不允许前导零（01无效，0本身有效）
+  // 2. 四组数字用点分隔
+  const ipv4Regex = /^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/
+  return ipv4Regex.test(ip)
+}
+
+
 

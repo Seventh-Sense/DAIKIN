@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { useStepStore } from "@/pinia/modules/step";
-import { handleEditCompleteJump } from "../until.ts/util";
+import { handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
 import { message } from "ant-design-vue";
 import { routerTurnByName } from "../../../router/util";

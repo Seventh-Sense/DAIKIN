@@ -130,7 +130,7 @@ const onFinishFailed = (errorInfo: any) => {
     &-title {
       font-weight: bold;
       font-size: 48px;
-      color: #222222;
+      color: var(--header-text-color);
       line-height: 70px;
       text-align: center;
       font-style: normal;
@@ -140,7 +140,7 @@ const onFinishFailed = (errorInfo: any) => {
     &-name {
       font-weight: bold;
       font-size: 20px;
-      color: #222222;
+      color: var(--header-text-color);
       line-height: 29px;
       text-align: center;
       font-style: normal;

@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { handleEditCompleteJump } from "../until.ts/util";
+import { handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
 import { message } from "ant-design-vue";
 

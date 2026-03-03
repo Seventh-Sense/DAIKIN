@@ -147,4 +147,29 @@ export default {
     rename_fail: "名前の変更に失敗しました",
     add_success: "追加しました",
   },
+  device_manage: {
+    d_title: "デバイス一覧",
+    p_title: "ポイント一覧",
+    name: "名称",
+    type: "種別",
+    polling: "ポーリング（秒）",
+    address: "アドレス",
+    enabled: "有効",
+    tags: "タグ",
+    desc: "説明",
+    record_count: "合計 {count} 件のレコード",
+    emptyFile:
+      "Excelファイルのデータが空です。有効なファイルをアップロードしてください",
+    sheetCountError:
+      "Excelファイルのワークシート数が不足しています。少なくとも2つのワークシートを含むファイルをアップロードしてください",
+    processError: "Excelの処理に失敗しました: ",
+    fileProcessError:
+      "Excelファイルの処理に失敗しました。ファイル形式が正しいか確認してください",
+    excelSelectTip: "Excelファイルを選択してください（.xlsx/.xls）",
+    fileReadError: "ファイルの読み取りに失敗しました。再度お試しください",
+    no_component_tip:
+      "このデバイスタイプの設定コンポーネントはありません。他のデバイスタイプを選択してください",
+    emptyField: "設定項目は空にできません",
+    invalidIp: "IPアドレス形式が無効です",
+  },
 };

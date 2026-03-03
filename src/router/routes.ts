@@ -27,6 +27,11 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/Flows/DeviceManage/index.vue"),
       },
       {
+        path: "points/:id",
+        name: "Points",
+        component: () => import("@/views/Flows/Points/index.vue"),
+      },
+      {
         path: "mqtt",
         name: "MQTTConfiguration",
         component: () => import("@/views/Flows/MQTT/index.vue"),

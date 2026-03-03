@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { handleEditCompleteJump } from "../until.ts/util";
+import { handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
 import TopicCard from "./TopicCard/index.vue";

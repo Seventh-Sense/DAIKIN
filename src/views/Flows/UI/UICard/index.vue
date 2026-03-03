@@ -95,14 +95,14 @@ const formatTime = (timeStr: string) => {
 <style lang="less" scoped>
 .block {
   height: 193px;
-  background-color: #22222212;
+  background-color: var(--topic-card-bg-color);
   border-radius: 6px;
   display: flex;
   flex-direction: column;
 
   &-top {
     height: 145px;
-    background-color: #22222212;
+    background-color: var(--topic-card-bg-color);
     display: flex;
     justify-content: space-between;
     padding: 8px 8px 0 8px;
@@ -131,7 +131,7 @@ const formatTime = (timeStr: string) => {
   &-name {
     font-weight: 400;
     font-size: 14px;
-    color: #222222;
+    color: var(--header-text-color);
     line-height: 20px;
     text-align: left;
     font-style: normal;
@@ -140,7 +140,7 @@ const formatTime = (timeStr: string) => {
   &-time {
     font-weight: 400;
     font-size: 12px;
-    color: #22222299;
+    color: var(--ui-time);
     line-height: 17px;
     text-align: left;
     font-style: normal;

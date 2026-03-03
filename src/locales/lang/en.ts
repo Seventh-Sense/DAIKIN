@@ -148,4 +148,28 @@ export default {
     rename_fail: "Renamed failed",
     add_success: "Add successful",
   },
+  device_manage: {
+    d_title: "Device List",
+    p_title: "Point List",
+    name: "Name",
+    type: "Type",
+    polling: "Polling (s)",
+    address: "Address",
+    enabled: "Enabled",
+    tags: "Tags",
+    desc: "Description",
+    record_count: "Total {count} records",
+    emptyFile: "Excel file data is empty, please upload a valid file",
+    sheetCountError:
+      "The Excel file has insufficient worksheets, please upload a file containing at least 2 worksheets",
+    processError: "Excel processing failed: ",
+    fileProcessError:
+      "Excel file processing failed, please check if the file format is correct",
+    excelSelectTip: "Please select an Excel file (.xlsx/.xls)",
+    fileReadError: "File reading failed, please try again",
+    no_component_tip:
+      "No configuration component for this device type, please select another type",
+    emptyField: "Configuration items cannot be empty",
+    invalidIp: "Invalid IP address format",
+  },
 };

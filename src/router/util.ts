@@ -46,6 +46,78 @@ export const routerTurnByName = (
   }
 };
 
+// routerTurnByNameWithParams(
+//   "userDetail", // 路由名称
+//   { id: 1001 }, // 路径参数（对应路由 /user/:id）
+//   { tab: "info", tags: [1, 2] }, // 查询参数（URL最终为 /user/1001?tab=info&tags=1&tags=2）
+//   false, // 不替换路由
+//   false // 不新窗口打开
+// );
+/**
+ * 根据名称跳转路由（携带参数）
+ * @param pageName 路由名称
+ * @param params 路径参数（对应路由配置中的 :param 占位符）
+ * @param query 查询参数（拼接在URL后的 ?key=value 形式）
+ * @param isReplace 是否替换当前路由（不产生历史记录）
+ * @param windowOpen 是否在新窗口打开
+ */
+export const routerTurnByNameWithParams = (
+  pageName: string,
+  params?: Record<string, string | number>,
+  query?: Record<string, string | number | (string | number)[]>,
+  isReplace?: boolean,
+  windowOpen?: boolean,
+) => {
+  // 前置校验：路由名称不能为空
+  if (!pageName?.trim()) {
+    console.warn("routerTurnByNameWithParams：路由名称不能为空");
+    return;
+  }
+
+  // 构建路由配置（包含名称、参数、查询参数）
+  const routeConfig: RouteLocationRaw = {
+    name: pageName,
+    // 过滤空的params（避免参数值为null/undefined导致跳转异常）
+    ...(params && Object.keys(params).length > 0 
+      ? { params: Object.fromEntries(
+          Object.entries(params).filter(([_, value]) => value != null && value.toString().trim() !== "")
+        )} 
+      : {}),
+    // 过滤空的query
+    ...(query && Object.keys(query).length > 0 
+      ? { query: Object.fromEntries(
+          Object.entries(query).filter(([_, value]) => {
+            if (Array.isArray(value)) {
+              return value.length > 0 && value.every(item => item != null && item.toString().trim() !== "");
+            }
+            return value != null && value.toString().trim() !== "";
+          })
+        )} 
+      : {})
+  };
+
+  if (windowOpen) {
+    // 解析带参数的完整URL
+    const pathData = router.resolve(routeConfig);
+    if (pathData.href) {
+      openNewWindow(pathData.href);
+    } else {
+      console.warn(`routerTurnByNameWithParams：未找到名称为${pageName}的路由路径（带参数）`);
+    }
+    return;
+  }
+
+  try {
+    if (isReplace) {
+      router.replace(routeConfig);
+    } else {
+      router.push(routeConfig);
+    }
+  } catch (error) {
+    console.error(`routerTurnByNameWithParams：跳转路由${pageName}失败（参数：${JSON.stringify(params)}, 查询参数：${JSON.stringify(query)}）`, error);
+  }
+};
+
 /**
  * 根据路径跳转路由
  * @param path 路由路径
