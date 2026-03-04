@@ -2,7 +2,11 @@
   <a-modal
     :open="modelShow"
     @update:open="handleModalOpenChange"
-    :title="t('device_manage.add_device')"
+    :title="
+      props.isEdit
+        ? t('device_manage.device_info')
+        : t('device_manage.add_device')
+    "
     :width="800"
     centered
     :maskClosable="false"
@@ -67,11 +71,15 @@ import {
   createModbusTCPParams,
   createModbusRTUParams,
   createKNXParams,
+  ModbusRTUData,
+  ModbusTCPData,
+  KNXData,
 } from "../../utils/utils";
 import BACnet from "../../component/BACnet/index.vue";
 import ModbusTCP from "../../component/ModbusTCP/index.vue";
 import ModbusRTU from "../../component/ModbusRTU/index.vue";
 import KNX from "../../component/KNX/index.vue";
+import { cloneDeep } from "lodash";
 
 const { t } = useI18n();
 const stepStore = useStepStore();
@@ -91,7 +99,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:modelShow"]);
+const emit = defineEmits(["update:modelShow", "onSaveSuccess"]);
 
 const data = ref<DataType>({
   id: "",
@@ -139,6 +147,7 @@ const resetForm = () => {
 
 const handleOk = () => {
   if (data.value.type === DeviceTypeEnum.BACnet) {
+    emit("onSaveSuccess");
     emit("update:modelShow", false);
   } else {
     if (props.isEdit) {
@@ -151,22 +160,23 @@ const handleOk = () => {
   }
 };
 
-const handleSubmitByType = async (deviceData: DataType) => {
+const handleSubmitByType = async (data: DataType) => {
+  console.log("Submitting data:", data);
   try {
     let params;
 
-    switch (deviceData.type) {
+    switch (data.type) {
       case DeviceTypeEnum.ModbusTCP:
-        params = createModbusTCPParams(deviceData);
+        params = createModbusTCPParams(data);
         break;
       case DeviceTypeEnum.ModbusRTU:
-        params = createModbusRTUParams(deviceData);
+        params = createModbusRTUParams(data);
         break;
       case DeviceTypeEnum.KNX:
-        params = createKNXParams(deviceData);
+        params = createKNXParams(data);
         break;
       default:
-        console.log("Submitting params:", deviceData);
+        console.log("Submitting params:", data);
         return;
     }
 
@@ -178,9 +188,10 @@ const handleSubmitByType = async (deviceData: DataType) => {
     //   return;
     // }
 
+    emit("onSaveSuccess");
     onClose();
   } catch (error) {
-    console.error(`Error handling ${deviceData.type}:`, error);
+    console.error(`Error handling ${data.type}:`, error);
     //window["$message"].error(t("msg.msg_error_2"));
   }
 };
@@ -195,27 +206,40 @@ const handleEditClose = () => {
   emit("update:modelShow", false);
 };
 
-const insertContent = (type: DeviceTypeEnum, edit: boolean) => {
-  switch (type) {
-    case DeviceTypeEnum.BACnet:
-      content.value = BACnet;
-      data.value.property = {};
-      break;
-    case DeviceTypeEnum.ModbusTCP:
-      content.value = ModbusTCP;
+const componentConfigMap = {
+  [DeviceTypeEnum.BACnet]: {
+    component: BACnet,
+    defaultProperty: () => ({}),
+  },
+  [DeviceTypeEnum.ModbusTCP]: {
+    component: ModbusTCP,
+    defaultProperty: () => cloneDeep(ModbusTCPData),
+  },
+  [DeviceTypeEnum.ModbusRTU]: {
+    component: ModbusRTU,
+    defaultProperty: () => cloneDeep(ModbusRTUData),
+  },
+  [DeviceTypeEnum.KNX]: {
+    component: KNX,
+    defaultProperty: () => cloneDeep(KNXData),
+  },
+};
 
-      break;
-    case DeviceTypeEnum.ModbusRTU:
-      content.value = ModbusRTU;
+/**
+ * 根据设备类型加载对应的动态组件并初始化属性
+ * @param type 设备类型枚举值
+ * @param isEdit 是否为编辑模式
+ */
+const insertContent = (type: DeviceTypeEnum, isEdit: boolean) => {
+  // 1. 获取当前设备类型对应的配置
+  const currentConfig = componentConfigMap[type];
 
-      break;
-    case DeviceTypeEnum.KNX:
-      content.value = KNX;
+  // 2. 设置动态组件（无配置则设为null）
+  content.value = currentConfig?.component || null;
 
-      break;
-    default:
-      content.value = null;
-      data.value.property = {};
+  // 3. 非编辑模式下初始化默认属性（编辑模式保留原有数据）
+  if (!isEdit && currentConfig) {
+    data.value.property = currentConfig.defaultProperty();
   }
 };
 

@@ -1,3 +1,14 @@
+
+export const formatMessage = (key: string, params?: Record<string, any>) => {
+  // 安全校验：确保i18n实例存在
+  if (!window.$i18n) {
+    console.warn("i18n instance is not initialized");
+    return key; // 回退返回原始key
+  }
+
+  // 使用global.t方法进行翻译
+  return window.$i18n.global.t(key);
+};
 export interface DataType {
   id: string;
   name: string;
@@ -37,7 +48,7 @@ export const TypeOptions = [
   {
     label: "KNX",
     value: DeviceTypeEnum.KNX,
-  }
+  },
 ];
 
 export const pollOptions = [
@@ -94,3 +105,81 @@ export const pollOptions = [
     value: 60,
   },
 ];
+
+export const baudOptions = [
+  300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 56000, 57600, 115200,
+  128000, 256000,
+].map((v) => ({
+  label: v,
+  value: v,
+}));
+
+export const databitOptions = [7, 8].map((v) => ({
+  label: v,
+  value: v,
+}));
+
+export const connectionOptions = [
+  {
+    label: () => formatMessage('device_manage.serialport'),
+    value: 'SerialPort'
+  }
+]
+
+export const parityOptions = [
+  {
+    label: () => formatMessage('device_manage.none'),
+    value: 'N'
+  },
+  {
+    label: () => formatMessage('device_manage.odd'),
+    value: 'O'
+  },
+  {
+    label: () => formatMessage('device_manage.even'),
+    value: 'E'
+  }
+]
+
+export const stopbitOptions = [1, 2].map(v => ({
+  label: v,
+  value: v
+}))
+
+export const addrFormatOptions = [
+  {
+    label: () => formatMessage('device_manage.free'),
+    value: 0
+  },
+  {
+    label: () => formatMessage('device_manage.short'),
+    value: 2
+  },
+  {
+    label: () => formatMessage('device_manage.long'),
+    value: 3
+  }
+]
+
+export const connectTypeOptions = [
+  {
+    label: () => formatMessage('device_manage.automatic'),
+    value: 1
+  },
+  {
+    label: () => formatMessage('device_manage.routing'),
+    value: 2
+  },
+  {
+    label: () => formatMessage('device_manage.routing_secure'),
+    value: 3
+  },
+  {
+    label: () => formatMessage('device_manage.tunneling'),
+    value: 4
+  },
+  {
+    label: () => formatMessage('device_manage.tunneling_tcp'),
+    value: 5
+  }
+]

@@ -88,6 +88,7 @@
       v-model:modelShow="showModal"
       :isEdit="isEdit"
       :initData="deviceData"
+      @onSaveSuccess="refreshTableData"
     />
     <!-- 隐藏的文件输入 -->
     <input
@@ -103,9 +104,9 @@
 <script setup lang="ts">
 import { handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
-import { onMounted, ref, computed, nextTick, onUnmounted } from "vue";
+import { onMounted, ref, computed, nextTick, onUnmounted, provide } from "vue";
 import Icons from "@/icons/index.vue";
-import { getDeviceTypeLabel } from "./utils/utils";
+import { getDeviceTypeLabel, generateTestData } from "./utils/utils";
 import { routerTurnByNameWithParams } from "../../../router/util";
 import { exportToExcel, defaultFormatter, processExcel } from "./utils/xlsx";
 import { message } from "ant-design-vue";
@@ -142,57 +143,6 @@ const columns = computed(() => [
     customClassName: "actions-column-cell",
   },
 ]);
-
-const generateTestData = (count: number): any[] => {
-  const dataList: any[] = [];
-
-  // 设备型号列表，用于生成差异化数据
-  const deviceModels = [
-    "BAC-3551-240",
-    "BAC-3551-241",
-    "BAC-3552-242",
-    "BAC-3553-243",
-    "BAC-3554-244",
-  ];
-  // 轮询时间选项
-  const pollingOptions = [1, 2, 3, 4, 5];
-
-  for (let i = 1; i <= count; i++) {
-    // 生成唯一的UUID格式key
-    const uuid = `${Math.random().toString(36).substring(2, 10)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 12)}`;
-    // 随机选择设备型号
-    const randomModel =
-      deviceModels[Math.floor(Math.random() * deviceModels.length)];
-    // 随机轮询时间
-    const randomPolling =
-      pollingOptions[Math.floor(Math.random() * pollingOptions.length)];
-    // 生成模拟IP地址
-    const ipAddress = `192.168.20.${50 + i}`;
-    // 随机enabled状态（80%概率为true）
-    const isEnabled = Math.random() > 0.2;
-    // 随机点数
-    const pointCount = Math.floor(Math.random() * 5000) + 500;
-
-    dataList.push({
-      key: uuid,
-      device_id: `device,${50 + i}`,
-      device_name: `${randomModel}_IP${50 + i}_${pointCount}点`,
-      device_type: "bacnet",
-      polling: randomPolling,
-      address: ipAddress,
-      status: "",
-      enabled: isEnabled,
-      properties: {
-        "model-name": randomModel,
-        "vendor-name": "Adveco",
-      },
-      tags: i % 10 === 0 ? `tag_${i}` : "", // 每10条数据加一个标签
-      description: i % 20 === 0 ? `设备描述${i}` : "", // 每20条数据加一个描述
-    });
-  }
-
-  return dataList;
-};
 
 // 定义card容器的引用
 const cardRef = ref<HTMLDivElement | null>(null);
@@ -259,6 +209,7 @@ onUnmounted(() => {
 });
 
 const onAdd = () => {
+  deviceData.value = {};
   showModal.value = true;
   isEdit.value = false;
 };
@@ -342,7 +293,7 @@ const onExport = () => {
 //table操作
 const onEdit = (record: any) => {
   console.log("编辑", record);
-  deviceData.value = record;
+  deviceData.value = { ...record };
 
   if (record.device_type === DeviceTypeEnum.BACnet) {
   } else {
@@ -368,6 +319,21 @@ const onEnter = (record: any) => {
 const onClick = () => {
   handleEditCompleteJump();
 };
+
+const refreshTableData = async () => {
+  loading.value = true;
+
+  console.log("刷新表格数据...");
+  try {
+    data.value = generateTestData(100);
+  } catch (error) {
+    console.error("刷新数据失败:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+provide("deviceList", data);
 </script>
 
 <style lang="less" scoped>
