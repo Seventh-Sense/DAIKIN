@@ -17,7 +17,11 @@
     <div class="modal">
       <div v-if="data.type !== DeviceTypeEnum.BACnet">
         <div class="modal-porperty">{{ $t("device_manage.name") }}</div>
-        <a-input v-model:value="data.name" style="margin-bottom: 12px" />
+        <a-input
+          v-model:value="data.name"
+          style="margin-bottom: 12px"
+          :disabled="isEdit"
+        />
       </div>
       <a-row :gutter="32">
         <a-col :span="12">
@@ -25,6 +29,7 @@
           <a-select
             v-model:value="data.type"
             :options="options"
+            :disabled="isEdit"
             style="width: 100%"
           />
         </a-col>
@@ -119,7 +124,6 @@ const options = ref<any[]>([]);
 
 onMounted(() => {
   controllerType.value = getControllerType(stepStore.currentStep);
-
   options.value = getOptions(controllerType.value);
 });
 
@@ -243,13 +247,43 @@ const insertContent = (type: DeviceTypeEnum, isEdit: boolean) => {
   }
 };
 
-// 监听弹窗显示状态，初始化组件
-watchEffect(() => {
-  if (props.modelShow && !props.isEdit) {
-    // 新增模式打开弹窗时，默认加载BACnet组件
-    insertContent(data.value.type as DeviceTypeEnum, false);
+// 初始化编辑数据
+const initEditData = () => {
+  if (props.isEdit && props.initData) {
+    data.value = {
+      id: props.initData.id || props.initData.key || "",
+      name: props.initData.device_name || "",
+      type: props.initData.device_type || DeviceTypeEnum.BACnet,
+      polling: props.initData.polling || 3,
+      enabled:
+        props.initData.enabled !== undefined ? props.initData.enabled : true,
+      address: props.initData.address || 1,
+      property: cloneDeep(props.initData.properties) || {},
+    };
+
+    // 加载对应类型的组件
+    insertContent(data.value.type as DeviceTypeEnum, true);
   }
-});
+};
+
+watch(
+  () => props.modelShow,
+  (newVal) => {
+    if (newVal) {
+      // 弹窗打开时才初始化数据
+      if (props.isEdit) {
+        initEditData();
+      } else {
+        resetForm();
+        insertContent(data.value.type as DeviceTypeEnum, false);
+      }
+    } else {
+      // 弹窗关闭时重置
+      resetForm();
+    }
+  },
+  { immediate: true }, // 立即执行一次，处理初始状态
+);
 
 // 监听设备类型变化
 watch(

@@ -292,7 +292,6 @@ const onExport = () => {
 
 //table操作
 const onEdit = (record: any) => {
-  console.log("编辑", record);
   deviceData.value = { ...record };
 
   if (record.device_type === DeviceTypeEnum.BACnet) {

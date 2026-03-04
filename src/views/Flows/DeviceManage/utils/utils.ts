@@ -247,6 +247,7 @@ export const generateTestData = (count: number): any[] => {
     [DeviceTypeEnum.ModbusTCP]: ["MB-TCP-4001", "MB-TCP-4002", "MB-TCP-5001", "MB-TCP-5002", "MB-TCP-6001"],
     [DeviceTypeEnum.KNX]: ["KNX-EIB-101", "KNX-EIB-102", "KNX-EIB-201", "KNX-EIB-202", "KNX-EIB-301"]
   };
+  
   // 轮询时间选项
   const pollingOptions = [1, 2, 3, 4, 5];
   // 所有设备类型数组（用于随机选择）
@@ -265,28 +266,61 @@ export const generateTestData = (count: number): any[] => {
     // 3. 随机轮询时间
     const randomPolling = pollingOptions[Math.floor(Math.random() * pollingOptions.length)];
     
-    // 4. 生成对应类型的地址/端口等差异化数据
+    // 4. 生成对应类型的地址和标准化properties
     let address = '';
-    let properties: any = { "model-name": randomModel };
+    let properties: any = { "model-name": randomModel }; // 基础属性
+    
+    // 按标准格式生成各类型的properties
     switch (randomDeviceType) {
       case DeviceTypeEnum.BACnet:
         address = `192.168.20.${50 + i}`;
-        properties["vendor-name"] = "Adveco";
+        properties = {
+          ...properties,
+          "vendor-name": "Adveco"
+        };
         break;
+        
       case DeviceTypeEnum.ModbusRTU:
-        address = `/dev/ttyUSB${Math.floor(Math.random() * 10)}`; // 串口地址
-        properties["baudrate"] = [9600, 19200, 38400][Math.floor(Math.random() * 3)];
-        properties["parity"] = ["N", "O", "E"][Math.floor(Math.random() * 3)];
+        const serialPort = `/dev/ttyUSB${Math.floor(Math.random() * 10)}`;
+        address = serialPort;
+        // 严格匹配ModbusRTUData格式
+        properties = {
+          ...properties,
+          slaveid: Math.floor(Math.random() * 247) + 1, // 1-247
+          connectionOption: 'SerialPort',
+          port: serialPort,
+          baudrate: [9600, 19200, 38400, 57600][Math.floor(Math.random() * 4)],
+          bytesize: 8, // 固定8位
+          stopbits: [1, 2][Math.floor(Math.random() * 2)], // 1或2位
+          parity: ["N", "O", "E"][Math.floor(Math.random() * 3)] // 无/奇/偶校验
+        };
         break;
+        
       case DeviceTypeEnum.ModbusTCP:
-        address = `192.168.30.${50 + i}`; // 不同网段区分TCP
-        properties["port"] = 502 + Math.floor(Math.random() * 10); // 502-511端口
-        properties["slaveId"] = Math.floor(Math.random() * 247) + 1; // 1-247从站ID
+        const tcpHost = `192.168.30.${50 + i}`;
+        const tcpPort = 502 + Math.floor(Math.random() * 10); // 502-511
+        address = `${tcpHost}:${tcpPort}`;
+        // 严格匹配ModbusTCPData格式
+        properties = {
+          ...properties,
+          slaveid: Math.floor(Math.random() * 247) + 1, // 1-247
+          host: tcpHost,
+          port: tcpPort,
+          connectionOption: 'tcp'
+        };
         break;
+        
       case DeviceTypeEnum.KNX:
-        address = `192.168.40.${50 + i}`; // 不同网段区分KNX
-        properties["gateway-port"] = 3671;
-        properties["address-format"] = [2, 3][Math.floor(Math.random() * 2)];
+        const knxGatewayIp = `192.168.40.${50 + i}`;
+        address = knxGatewayIp;
+        // 严格匹配KNXData格式
+        properties = {
+          ...properties,
+          address_format: [2, 3][Math.floor(Math.random() * 2)], // 2或3格式
+          connection_type: [1, 2][Math.floor(Math.random() * 2)], // 1或2类型
+          gateway_ip: knxGatewayIp,
+          gateway_port: 3671 // 固定KNX网关端口
+        };
         break;
     }
     
@@ -297,16 +331,16 @@ export const generateTestData = (count: number): any[] => {
 
     dataList.push({
       key: uuid,
-      device_id: `device_${50 + i}`, // 修正原代码逗号错误
+      device_id: `device_${50 + i}`,
       device_name: `${randomModel}_${randomDeviceType}_${50 + i}_${pointCount}点`,
-      device_type: randomDeviceType, // 使用随机选择的设备类型
+      device_type: randomDeviceType,
       polling: randomPolling,
       address: address,
       status: "",
       enabled: isEnabled,
-      properties: properties,
-      tags: i % 10 === 0 ? `tag_${i}` : "", // 每10条数据加一个标签
-      description: i % 20 === 0 ? `${randomDeviceType}设备描述${i}` : "", // 描述包含设备类型
+      properties: properties, // 标准化的属性格式
+      tags: i % 10 === 0 ? `tag_${i}` : "",
+      description: i % 20 === 0 ? `${randomDeviceType}设备描述${i}` : "",
     });
   }
 

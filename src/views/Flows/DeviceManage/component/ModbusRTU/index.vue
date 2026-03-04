@@ -2,10 +2,16 @@
   <div class="content">
     <div class="content-porperty">{{ $t("device_manage.slave_id") }}</div>
     <a-input-number
+      v-if="!isEdit"
       v-model:value="data.property.slaveid"
       :min="1"
       :max="254"
-      :disabled="isEdit"
+      style="width: 100%; margin-bottom: 12px"
+    />
+    <a-input
+      v-else
+      v-model:value="data.property.slaveid"
+      disabled
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.connection") }}</div>
@@ -86,7 +92,7 @@ const serialOptions = ref([
   {
     label: "COM1",
     value: "COM1",
-  }
+  },
 ]);
 
 onMounted(() => {

@@ -24,9 +24,15 @@
     />
     <div class="content-porperty">{{ $t("device_manage.gateway_port") }}</div>
     <a-input-number
+      v-if="!isEdit"
       v-model:value="data.property.gateway_port"
       :min="0"
-      :disabled="isEdit"
+      style="width: 100%; margin-bottom: 12px"
+    />
+    <a-input
+      v-else
+      v-model:value="data.property.gateway_port"
+      disabled
       style="width: 100%; margin-bottom: 12px"
     />
   </div>
