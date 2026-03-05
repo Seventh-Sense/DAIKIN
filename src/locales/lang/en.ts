@@ -219,8 +219,8 @@ export default {
     search_no_result: "No devices found",
     search_failed_status: "Device search failed: API returned status {status}",
     search_failed_exception: "Device search exception: {reason}",
-    download_success: "Device downloaded successfully",
-    download_failed_status: "Device download failed",
-    download_failed_exception: "Device download exception",
+    download_success: "Device added successfully",
+    download_failed_status: "Device add failed",
+    download_failed_exception: "Device add exception",
   },
 };

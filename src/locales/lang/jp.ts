@@ -223,8 +223,8 @@ export default {
     search_failed_status:
       "デバイス検索に失敗しました：APIがステータス {status} を返しました",
     search_failed_exception: "デバイス検索例外：{reason}",
-    download_success: "デバイスのダウンロードに成功しました",
-    download_failed_status: "デバイスのダウンロードに失敗しました",
-    download_failed_exception: "デバイスのダウンロード例外",
+    download_success: "デバイスの追加に成功しました",
+    download_failed_status: "デバイスの追加に失敗しました",
+    download_failed_exception: "デバイスの追加例外",
   },
 };
