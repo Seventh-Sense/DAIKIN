@@ -23,8 +23,8 @@ export const routerTurnByName = (
 
   if (windowOpen) {
     const path = fetchPathByName(pageName, "href");
-    // 新窗口打开时，路径不能为空
-    if (path) {
+    // 新窗口打开时，路径不能为空且必须是字符串
+    if (path && typeof path === "string") {
       openNewWindow(path);
     } else {
       console.warn(`routerTurnByName：未找到名称为${pageName}的路由路径`);

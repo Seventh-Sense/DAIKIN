@@ -49,5 +49,13 @@ export const discoveryDevices = () => {
 };
 
 export const addDevice = (data: any) => {
-  return post('/device', data);
-}
+  return post("/device", data);
+};
+
+export const readSubscribePoints = (deviceId: any) => {
+  return get(`/metrics/` + deviceId);
+};
+
+export const readPointValue = (deviceId: any) => {
+  return get(`/points/latest?device_id=${deviceId}`);
+};

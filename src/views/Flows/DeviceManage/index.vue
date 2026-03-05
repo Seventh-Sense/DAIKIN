@@ -47,7 +47,7 @@
           <template v-else-if="column.dataIndex === 'actions'">
             <div class="table-actions">
               <Icons
-                name="edit"
+                name="informationCircle"
                 type="mono-line"
                 :size="24"
                 :color="{ normal: '#222222FF' }"
@@ -115,7 +115,6 @@ import { onMounted, ref, computed, nextTick, onUnmounted, provide } from "vue";
 import Icons from "@/icons/index.vue";
 import {
   getDeviceTypeLabel,
-  generateTestData,
   transformDeviceItem,
   transformDeviceData,
 } from "./utils/utils";
@@ -190,7 +189,7 @@ const calculateTableHeight = () => {
     const topBarHeight = topBar ? topBar.clientHeight : 52;
     // 获取按钮栏高度（增加空值判断）
     const actionsBar = cardRef.value.querySelector(".card-actions");
-    const actionsBarHeight = actionsBar ? actionsBar.clientHeight : 40;
+    const actionsBarHeight = actionsBar ? actionsBar.clientHeight : 52;
     // 底部按钮区域的预留高度（包含margin）
     const bottomReservedHeight = 80;
     // 表格头部和内边距的预留高度
@@ -479,7 +478,11 @@ const onEnableClick = async (checked: boolean, event: Event, record: any) => {
 
 const onEnter = (record: any) => {
   //console.log("进入点位:", record);
-  routerTurnByNameWithParams("Points", { id: record.key });
+  routerTurnByNameWithParams("Points", {
+    id: record.device_id,
+    type: record.device_type,
+    key: record.key,
+  });
 };
 
 const onClick = () => {
@@ -519,7 +522,7 @@ provide("deviceList", data);
   }
 
   &-actions {
-    height: 40px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: flex-end;

@@ -208,175 +208,6 @@ export const KNXData = {
   gateway_port: 3671,
 };
 
-//生成模拟数据
-export const generateMockDeviceData = (count: number = 10): any[] => {
-  // 预设厂商列表
-  const vendorList = [
-    "华为技术有限公司",
-    "西门子（中国）有限公司",
-    "施耐德电气",
-    "三菱电机",
-    "ABB集团",
-    "罗克韦尔自动化",
-    "欧姆龙自动化",
-    "研华科技",
-    "台达电子",
-    "汇川技术",
-  ];
-
-  // 生成指定条数的模拟数据
-  return Array.from({ length: count }, (_, index) => {
-    const deviceId = `DEV-${1000 + index}`;
-    return {
-      object_name: `工业设备${index + 1}`,
-      id: deviceId,
-      address: `${Math.floor(Math.random() * 255) + 1}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
-      // 若count超过厂商列表长度，循环使用厂商名称
-      vendor_name: vendorList[index % vendorList.length],
-      actions: "",
-    };
-  });
-};
-
-export const generateTestData = (count: number): any[] => {
-  const dataList: any[] = [];
-
-  // 按设备类型分类的型号列表
-  const deviceModels = {
-    [DeviceTypeEnum.BACnet]: [
-      "BAC-3551-240",
-      "BAC-3551-241",
-      "BAC-3552-242",
-      "BAC-3553-243",
-      "BAC-3554-244",
-    ],
-    [DeviceTypeEnum.ModbusRTU]: [
-      "MB-RTU-1001",
-      "MB-RTU-1002",
-      "MB-RTU-2001",
-      "MB-RTU-2002",
-      "MB-RTU-3001",
-    ],
-    [DeviceTypeEnum.ModbusTCP]: [
-      "MB-TCP-4001",
-      "MB-TCP-4002",
-      "MB-TCP-5001",
-      "MB-TCP-5002",
-      "MB-TCP-6001",
-    ],
-    [DeviceTypeEnum.KNX]: [
-      "KNX-EIB-101",
-      "KNX-EIB-102",
-      "KNX-EIB-201",
-      "KNX-EIB-202",
-      "KNX-EIB-301",
-    ],
-  };
-
-  // 轮询时间选项
-  const pollingOptions = [1, 2, 3, 4, 5];
-  // 所有设备类型数组（用于随机选择）
-  const deviceTypes = Object.values(DeviceTypeEnum);
-
-  for (let i = 1; i <= count; i++) {
-    // 生成唯一的UUID格式key
-    const uuid = `${Math.random().toString(36).substring(2, 10)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 12)}`;
-
-    // 1. 随机选择设备类型
-    const randomDeviceType =
-      deviceTypes[Math.floor(Math.random() * deviceTypes.length)];
-
-    // 2. 根据设备类型选择对应型号
-    const randomModel =
-      deviceModels[randomDeviceType][
-        Math.floor(Math.random() * deviceModels[randomDeviceType].length)
-      ];
-
-    // 3. 随机轮询时间
-    const randomPolling =
-      pollingOptions[Math.floor(Math.random() * pollingOptions.length)];
-
-    // 4. 生成对应类型的地址和标准化properties
-    let address = "";
-    let properties: any = { "model-name": randomModel }; // 基础属性
-
-    // 按标准格式生成各类型的properties
-    switch (randomDeviceType) {
-      case DeviceTypeEnum.BACnet:
-        address = `192.168.20.${50 + i}`;
-        properties = {
-          ...properties,
-          "vendor-name": "Adveco",
-        };
-        break;
-
-      case DeviceTypeEnum.ModbusRTU:
-        const serialPort = `/dev/ttyUSB${Math.floor(Math.random() * 10)}`;
-        address = serialPort;
-        // 严格匹配ModbusRTUData格式
-        properties = {
-          ...properties,
-          slaveid: Math.floor(Math.random() * 247) + 1, // 1-247
-          connectionOption: "SerialPort",
-          port: serialPort,
-          baudrate: [9600, 19200, 38400, 57600][Math.floor(Math.random() * 4)],
-          bytesize: 8, // 固定8位
-          stopbits: [1, 2][Math.floor(Math.random() * 2)], // 1或2位
-          parity: ["N", "O", "E"][Math.floor(Math.random() * 3)], // 无/奇/偶校验
-        };
-        break;
-
-      case DeviceTypeEnum.ModbusTCP:
-        const tcpHost = `192.168.30.${50 + i}`;
-        const tcpPort = 502 + Math.floor(Math.random() * 10); // 502-511
-        address = `${tcpHost}:${tcpPort}`;
-        // 严格匹配ModbusTCPData格式
-        properties = {
-          ...properties,
-          slaveid: Math.floor(Math.random() * 247) + 1, // 1-247
-          host: tcpHost,
-          port: tcpPort,
-          connectionOption: "tcp",
-        };
-        break;
-
-      case DeviceTypeEnum.KNX:
-        const knxGatewayIp = `192.168.40.${50 + i}`;
-        address = knxGatewayIp;
-        // 严格匹配KNXData格式
-        properties = {
-          ...properties,
-          address_format: [2, 3][Math.floor(Math.random() * 2)], // 2或3格式
-          connection_type: [1, 2][Math.floor(Math.random() * 2)], // 1或2类型
-          gateway_ip: knxGatewayIp,
-          gateway_port: 3671, // 固定KNX网关端口
-        };
-        break;
-    }
-
-    // 随机enabled状态（80%概率为true）
-    const isEnabled = Math.random() > 0.2;
-    // 随机点数
-    const pointCount = Math.floor(Math.random() * 5000) + 500;
-
-    dataList.push({
-      key: uuid,
-      device_id: `device_${50 + i}`,
-      device_name: `${randomModel}_${randomDeviceType}_${50 + i}_${pointCount}点`,
-      device_type: randomDeviceType,
-      polling: randomPolling,
-      address: address,
-      status: "",
-      enabled: isEnabled,
-      properties: properties, // 标准化的属性格式
-      tags: i % 10 === 0 ? `tag_${i}` : "",
-      description: i % 20 === 0 ? `${randomDeviceType}设备描述${i}` : "",
-    });
-  }
-
-  return dataList;
-};
-
 /**
  * 转换单个设备项的格式
  * 职责：统一处理设备字段的映射、默认值、类型保证
@@ -465,4 +296,46 @@ export const transformDeviceData = (
   });
 
   return transformedData;
+};
+
+export enum TypeEnum {
+  AI = "Analog Input",
+  AO = "Analog Output",
+  AV = "Analog Value",
+  BI = "Binary Input",
+  BO = "Binary Output",
+  BV = "Binary Value",
+  MV = "Multi-state Value",
+  Calendar = "Calendar",
+  Device = "Device",
+  MI = "Multi-state Input",
+  MO = "Multi-state Output",
+  Notification = "Notification",
+  Schedule = "Schedule",
+  TrendLog = "Trend Log",
+  NetworkPort = "Network Port",
+  Accumulator = "Accumulator",
+}
+
+export const DEVICE_TYPE_MAP: { [key: number]: string } = {
+  0: TypeEnum.AI,
+  1: TypeEnum.AO,
+  2: TypeEnum.AV,
+  3: TypeEnum.BI,
+  4: TypeEnum.BO,
+  5: TypeEnum.BV,
+  6: TypeEnum.Calendar,
+  8: TypeEnum.Device,
+  13: TypeEnum.MI,
+  14: TypeEnum.MO,
+  15: TypeEnum.Notification,
+  17: TypeEnum.Schedule,
+  19: TypeEnum.MV,
+  20: TypeEnum.TrendLog,
+  23: TypeEnum.Accumulator,
+  56: TypeEnum.NetworkPort,
+};
+
+export const getDeviceTypeName = (key: number): string => {
+  return DEVICE_TYPE_MAP[key] ?? String(key);
 };

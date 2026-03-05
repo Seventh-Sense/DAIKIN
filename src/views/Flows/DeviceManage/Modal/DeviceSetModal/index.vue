@@ -85,6 +85,7 @@ import ModbusTCP from "../../component/ModbusTCP/index.vue";
 import ModbusRTU from "../../component/ModbusRTU/index.vue";
 import KNX from "../../component/KNX/index.vue";
 import { cloneDeep } from "lodash";
+import { addDevice } from "@/api";
 
 const { t } = useI18n();
 const stepStore = useStepStore();
@@ -133,7 +134,7 @@ const handleModalOpenChange = (newOpenState: boolean) => {
   if (!newOpenState && data.value.type === DeviceTypeEnum.BACnet) {
     emit("onSaveSuccess");
   }
-  
+
   if (!newOpenState) {
     resetForm();
   }
@@ -159,7 +160,7 @@ const handleOk = () => {
     emit("update:modelShow", false);
   } else {
     if (props.isEdit) {
-      handleEditClose();
+      onClose();
     } else {
       if (!deviceDataCheck(data.value)) {
         handleSubmitByType(data.value);
@@ -188,28 +189,24 @@ const handleSubmitByType = async (data: DataType) => {
         return;
     }
 
-    // const res: any = await addDevice(params);
+    const res: any = await addDevice(params);
 
-    // if (res.status !== "OK") {
-    //   console.warn("Non-OK response status:", res.data);
-    //   window["$message"].warning(res.status);
-    //   return;
-    // }
+    if (res.status !== "OK") {
+      console.warn("Non-OK response status:", res.data);
+      message.error(t("msg.download_failed_status"));
+      return;
+    }
 
+    message.success(t("msg.download_success"));
     emit("onSaveSuccess");
     onClose();
   } catch (error) {
     console.error(`Error handling ${data.type}:`, error);
-    //window["$message"].error(t("msg.msg_error_2"));
+    message.error(t("msg.download_failed_exception"));
   }
 };
 
 const onClose = () => {
-  resetForm();
-  emit("update:modelShow", false);
-};
-
-const handleEditClose = () => {
   resetForm();
   emit("update:modelShow", false);
 };
