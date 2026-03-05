@@ -199,5 +199,20 @@ export default {
     connection_type: "Connection Type",
     gateway_ip: "Gateway IP",
     gateway_port: "Gateway Port",
+    detail: "Detail",
+  },
+  msg: {
+    updateSuccess: "Device status updated successfully",
+    updateFailed: "Failed to update device status, please try again later",
+    deleteSuccess: "Device deleted successfully",
+    deleteFailed: "Failed to delete device, please try again later",
+    bacnetDeviceDisabled:
+      "BACnet device is not enabled, cannot read properties",
+    bacnetReadFailedDetail: "Failed to read BACnet device properties: {reason}",
+    bacnetNoProperties: "No property data found for this BACnet device",
+    bacnetReadException:
+      "An exception occurred while reading BACnet device properties: {error}",
+    unknownError: "Unknown error",
+    export_failed: "Export failed: {reason}",
   },
 };

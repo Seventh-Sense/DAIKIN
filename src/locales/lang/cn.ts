@@ -193,5 +193,18 @@ export default {
     connection_type: "连接类型",
     gateway_ip: "网关IP",
     gateway_port: "网关端口",
+    detail: "详情",
+  },
+  msg: {
+    updateSuccess: "设备状态更新成功",
+    updateFailed: "更新设备状态失败，请稍后再试",
+    deleteSuccess: "设备删除成功",
+    deleteFailed: "删除设备失败，请稍后再试",
+    bacnetDeviceDisabled: "BACnet设备未启用，无法读取属性",
+    bacnetReadFailedDetail: "读取BACnet设备属性失败：{reason}",
+    bacnetNoProperties: "未查询到该BACnet设备的属性数据",
+    bacnetReadException: "读取BACnet设备属性时发生异常：{error}",
+    unknownError: "未知错误",
+    export_failed: "导出失败：{reason}",
   },
 };

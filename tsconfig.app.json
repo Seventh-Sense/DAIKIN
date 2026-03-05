@@ -6,6 +6,10 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
 
+    /* 修复 JSON 导入核心配置 */
+    "resolveJsonModule": true, // 必须显式开启（关键！）
+    "esModuleInterop": true,   // 兼容 JSON 模块的默认导入
+
     /* Bundler mode */
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
@@ -15,7 +19,15 @@
     "noEmit": true,
     "jsx": "preserve",
     "composite": false,
-    "types": ["vue", "vite/client"],
+
+    /* 修复路径别名 */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    /* 类型声明 */
+    "types": ["vue", "vite/client", "node"],
 
     /* Linting */
     "strict": true,
@@ -24,5 +36,12 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/views/Flows/until"]
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.d.ts", 
+    "src/**/*.tsx", 
+    "src/**/*.vue", 
+    "src/**/*.json",
+    "src/views/Flows/until"
+  ]
 }

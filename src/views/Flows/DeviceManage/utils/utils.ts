@@ -6,6 +6,7 @@ import {
   DataType,
 } from "./options";
 import { validateIPv4 } from "../../until/util";
+import { PropertyConstants } from "./propertyID";
 
 export const formatMessage = (key: string, params?: Record<string, any>) => {
   // 安全校验：确保i18n实例存在
@@ -185,27 +186,27 @@ export const markExistingIds = (arrayA: any[], arrayB: any[]) => {
 
 export const ModbusRTUData = {
   slaveid: 1,
-  connectionOption: 'SerialPort',
-  port: '',
+  connectionOption: "SerialPort",
+  port: "",
   baudrate: 9600,
   bytesize: 8,
   stopbits: 1,
-  parity: 'N'
-}
+  parity: "N",
+};
 
 export const ModbusTCPData = {
   slaveid: 1,
-  host: '127.0.0.1',
+  host: "127.0.0.1",
   port: 5020,
-  connectionOption: 'tcp'
-}
+  connectionOption: "tcp",
+};
 
 export const KNXData = {
   address_format: 3,
   connection_type: 1,
-  gateway_ip: '127.0.0.255',
-  gateway_port: 3671
-}
+  gateway_ip: "127.0.0.255",
+  gateway_port: 3671,
+};
 
 //生成模拟数据
 export const generateMockDeviceData = (count: number = 10): any[] => {
@@ -242,12 +243,36 @@ export const generateTestData = (count: number): any[] => {
 
   // 按设备类型分类的型号列表
   const deviceModels = {
-    [DeviceTypeEnum.BACnet]: ["BAC-3551-240", "BAC-3551-241", "BAC-3552-242", "BAC-3553-243", "BAC-3554-244"],
-    [DeviceTypeEnum.ModbusRTU]: ["MB-RTU-1001", "MB-RTU-1002", "MB-RTU-2001", "MB-RTU-2002", "MB-RTU-3001"],
-    [DeviceTypeEnum.ModbusTCP]: ["MB-TCP-4001", "MB-TCP-4002", "MB-TCP-5001", "MB-TCP-5002", "MB-TCP-6001"],
-    [DeviceTypeEnum.KNX]: ["KNX-EIB-101", "KNX-EIB-102", "KNX-EIB-201", "KNX-EIB-202", "KNX-EIB-301"]
+    [DeviceTypeEnum.BACnet]: [
+      "BAC-3551-240",
+      "BAC-3551-241",
+      "BAC-3552-242",
+      "BAC-3553-243",
+      "BAC-3554-244",
+    ],
+    [DeviceTypeEnum.ModbusRTU]: [
+      "MB-RTU-1001",
+      "MB-RTU-1002",
+      "MB-RTU-2001",
+      "MB-RTU-2002",
+      "MB-RTU-3001",
+    ],
+    [DeviceTypeEnum.ModbusTCP]: [
+      "MB-TCP-4001",
+      "MB-TCP-4002",
+      "MB-TCP-5001",
+      "MB-TCP-5002",
+      "MB-TCP-6001",
+    ],
+    [DeviceTypeEnum.KNX]: [
+      "KNX-EIB-101",
+      "KNX-EIB-102",
+      "KNX-EIB-201",
+      "KNX-EIB-202",
+      "KNX-EIB-301",
+    ],
   };
-  
+
   // 轮询时间选项
   const pollingOptions = [1, 2, 3, 4, 5];
   // 所有设备类型数组（用于随机选择）
@@ -256,30 +281,35 @@ export const generateTestData = (count: number): any[] => {
   for (let i = 1; i <= count; i++) {
     // 生成唯一的UUID格式key
     const uuid = `${Math.random().toString(36).substring(2, 10)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 12)}`;
-    
+
     // 1. 随机选择设备类型
-    const randomDeviceType = deviceTypes[Math.floor(Math.random() * deviceTypes.length)];
-    
+    const randomDeviceType =
+      deviceTypes[Math.floor(Math.random() * deviceTypes.length)];
+
     // 2. 根据设备类型选择对应型号
-    const randomModel = deviceModels[randomDeviceType][Math.floor(Math.random() * deviceModels[randomDeviceType].length)];
-    
+    const randomModel =
+      deviceModels[randomDeviceType][
+        Math.floor(Math.random() * deviceModels[randomDeviceType].length)
+      ];
+
     // 3. 随机轮询时间
-    const randomPolling = pollingOptions[Math.floor(Math.random() * pollingOptions.length)];
-    
+    const randomPolling =
+      pollingOptions[Math.floor(Math.random() * pollingOptions.length)];
+
     // 4. 生成对应类型的地址和标准化properties
-    let address = '';
+    let address = "";
     let properties: any = { "model-name": randomModel }; // 基础属性
-    
+
     // 按标准格式生成各类型的properties
     switch (randomDeviceType) {
       case DeviceTypeEnum.BACnet:
         address = `192.168.20.${50 + i}`;
         properties = {
           ...properties,
-          "vendor-name": "Adveco"
+          "vendor-name": "Adveco",
         };
         break;
-        
+
       case DeviceTypeEnum.ModbusRTU:
         const serialPort = `/dev/ttyUSB${Math.floor(Math.random() * 10)}`;
         address = serialPort;
@@ -287,15 +317,15 @@ export const generateTestData = (count: number): any[] => {
         properties = {
           ...properties,
           slaveid: Math.floor(Math.random() * 247) + 1, // 1-247
-          connectionOption: 'SerialPort',
+          connectionOption: "SerialPort",
           port: serialPort,
           baudrate: [9600, 19200, 38400, 57600][Math.floor(Math.random() * 4)],
           bytesize: 8, // 固定8位
           stopbits: [1, 2][Math.floor(Math.random() * 2)], // 1或2位
-          parity: ["N", "O", "E"][Math.floor(Math.random() * 3)] // 无/奇/偶校验
+          parity: ["N", "O", "E"][Math.floor(Math.random() * 3)], // 无/奇/偶校验
         };
         break;
-        
+
       case DeviceTypeEnum.ModbusTCP:
         const tcpHost = `192.168.30.${50 + i}`;
         const tcpPort = 502 + Math.floor(Math.random() * 10); // 502-511
@@ -306,10 +336,10 @@ export const generateTestData = (count: number): any[] => {
           slaveid: Math.floor(Math.random() * 247) + 1, // 1-247
           host: tcpHost,
           port: tcpPort,
-          connectionOption: 'tcp'
+          connectionOption: "tcp",
         };
         break;
-        
+
       case DeviceTypeEnum.KNX:
         const knxGatewayIp = `192.168.40.${50 + i}`;
         address = knxGatewayIp;
@@ -319,11 +349,11 @@ export const generateTestData = (count: number): any[] => {
           address_format: [2, 3][Math.floor(Math.random() * 2)], // 2或3格式
           connection_type: [1, 2][Math.floor(Math.random() * 2)], // 1或2类型
           gateway_ip: knxGatewayIp,
-          gateway_port: 3671 // 固定KNX网关端口
+          gateway_port: 3671, // 固定KNX网关端口
         };
         break;
     }
-    
+
     // 随机enabled状态（80%概率为true）
     const isEnabled = Math.random() > 0.2;
     // 随机点数
@@ -345,4 +375,94 @@ export const generateTestData = (count: number): any[] => {
   }
 
   return dataList;
+};
+
+/**
+ * 转换单个设备项的格式
+ * 职责：统一处理设备字段的映射、默认值、类型保证
+ * @param {any} item - 原始设备数据项
+ * @param {number} index - 数组索引
+ * @returns {object} 格式化后的设备项
+ */
+export const transformDeviceItem = (item: any, index: number) => {
+  return {
+    key: item.id, // 保持 number 类型
+    device_id: item.uid || "",
+    device_name: item.name || "",
+    device_type: item.protocol || "",
+    polling: 3, // 确保数字类型
+    address: item.address || "",
+    status: item.status || "",
+    enabled: item.enabled, // 确保数字类型
+    properties: item.property || {},
+    tags: item.tags || "",
+    description: item.description || "",
+  };
+};
+
+//解析属性数据， [[8, 57], 75, null, [8, 57]]
+
+// 提取常量键名作为联合类型，约束类型安全
+type PropertyKey = keyof typeof PropertyConstants;
+// 提取常量值（数字标识）作为联合类型
+type PropertyValue = (typeof PropertyConstants)[PropertyKey];
+
+interface DeviceRawItem {
+  0: [number, number]; // 设备分组标识 [8,57]
+  1: PropertyValue; // 数字属性标识（75/77/79等）
+  2: null; // 固定为null
+  3: any; // 属性值
+}
+
+interface DeviceTransformed {
+  [key: string]: any;
+}
+
+export const PropertyMap = Object.freeze({
+  /**
+   * 根据数字标识反向查找对应的属性名
+   * @param value 数字属性标识（如75/77）
+   * @returns 驼峰属性名 | undefined
+   */
+  getPropertyName(value: number): PropertyKey | undefined {
+    // 遍历常量键值对，找到值匹配的键名
+    return (
+      Object.entries(PropertyConstants) as [PropertyKey, PropertyValue][]
+    ).find(([_, val]) => val === value)?.[0];
+  },
+});
+
+//驼峰转短横线
+const camelToKebab = (camelCaseString: string) => {
+  if (!camelCaseString) return camelCaseString;
+
+  return camelCaseString
+    .split(/(?=[A-Z])/)
+    .join("-")
+    .toLowerCase();
+};
+
+export const transformDeviceData = (
+  rawData: DeviceRawItem[],
+): DeviceTransformed => {
+  const transformedData: DeviceTransformed = {};
+
+  // 遍历原始数据，逐行处理
+  rawData.forEach((item) => {
+    // 提取数字标识和属性值
+    const propertyId = item[1];
+    const propertyValue = item[3];
+
+    // 步骤1：根据数字标识获取驼峰属性名
+    const camelCaseName = PropertyMap.getPropertyName(propertyId);
+    if (!camelCaseName) return; // 无匹配属性名，跳过
+
+    // 步骤2：驼峰转短横线命名
+    const kebabCaseName = camelToKebab(camelCaseName);
+
+    // 步骤3：存入结果对象
+    transformedData[kebabCaseName] = propertyValue;
+  });
+
+  return transformedData;
 };

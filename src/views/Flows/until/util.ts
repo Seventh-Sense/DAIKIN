@@ -72,5 +72,21 @@ export const validateIPv4 = (ip: string): boolean => {
   return ipv4Regex.test(ip)
 }
 
-
+// 工具函数：格式化日期时间到分钟（格式：YYYYMMDD_HHmm）
+export const formatDateTimeToMinute = (): string => {
+  const now = new Date();
+  // 年（4位）
+  const year = now.getFullYear().toString();
+  // 月（补0到2位）
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  // 日（补0到2位）
+  const day = now.getDate().toString().padStart(2, "0");
+  // 时（补0到2位）
+  const hour = now.getHours().toString().padStart(2, "0");
+  // 分（补0到2位）
+  const minute = now.getMinutes().toString().padStart(2, "0");
+  
+  // 拼接格式：YYYYMMDD_HHmm
+  return `${year}${month}${day}_${hour}${minute}`;
+};
 

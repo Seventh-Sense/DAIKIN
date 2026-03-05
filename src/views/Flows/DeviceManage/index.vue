@@ -88,7 +88,14 @@
       v-model:modelShow="showModal"
       :isEdit="isEdit"
       :initData="deviceData"
-      @onSaveSuccess="refreshTableData"
+      @onSaveSuccess="initData"
+    />
+    <PropertyDisplayModal
+      v-if="showProperty"
+      v-model:modelShow="showProperty"
+      :bacnetData="bacnetProperties"
+      :deviceData="deviceData"
+      :isEdit="isEdit"
     />
     <!-- 隐藏的文件输入 -->
     <input
@@ -102,16 +109,31 @@
 </template>
 
 <script setup lang="ts">
-import { handleEditCompleteJump } from "../until/util";
+import { formatDateTimeToMinute, handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
 import { onMounted, ref, computed, nextTick, onUnmounted, provide } from "vue";
 import Icons from "@/icons/index.vue";
-import { getDeviceTypeLabel, generateTestData } from "./utils/utils";
+import {
+  getDeviceTypeLabel,
+  generateTestData,
+  transformDeviceItem,
+  transformDeviceData,
+} from "./utils/utils";
 import { routerTurnByNameWithParams } from "../../../router/util";
 import { exportToExcel, defaultFormatter, processExcel } from "./utils/xlsx";
 import { message } from "ant-design-vue";
 import DeviceSetModal from "./Modal/DeviceSetModal/index.vue";
+import PropertyDisplayModal from "./Modal/PropertyDisplayModal/index.vue";
 import { DeviceTypeEnum } from "./utils/options";
+import {
+  getDevices,
+  setDeviceEnable,
+  deleteDevice,
+  readBacnetAttr,
+  concurrentRequests,
+  importFileData,
+} from "@/api";
+import jsonList from "./utils/Property.json";
 
 const { t } = useI18n();
 
@@ -187,13 +209,16 @@ const calculateTableHeight = () => {
   });
 };
 
-const data = ref<any[]>(generateTestData(100));
+const data = ref<any[]>([]);
 
 const loading = ref(false);
 
 const showModal = ref(false);
+const showProperty = ref(false);
 const isEdit = ref(false);
 const deviceData = ref({});
+
+const bacnetProperties = ref({});
 
 //文件导入
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -202,11 +227,37 @@ onMounted(() => {
   calculateTableHeight();
   // 监听窗口大小变化，重新计算高度
   window.addEventListener("resize", calculateTableHeight);
+
+  initData();
 });
 
 onUnmounted(() => {
   window.removeEventListener("resize", calculateTableHeight);
 });
+
+const initData = async () => {
+  loading.value = true;
+
+  try {
+    const res = await getDevices();
+
+    if (res.status !== "OK") {
+      console.warn("Non-OK response status:", res.status);
+      return;
+    }
+
+    if (!res.data || res.data.length === 0) {
+      return;
+    }
+
+    //console.log("获取设备列表成功:", res);
+    data.value = res.data.map(transformDeviceItem);
+  } catch (error) {
+    console.error("数据加载失败:", error);
+  } finally {
+    loading.value = false;
+  }
+};
 
 const onAdd = () => {
   deviceData.value = {};
@@ -245,16 +296,18 @@ const handleFileUpload = (event: Event): void => {
         t,
       });
 
-      console.log("Excel解析结果:", sheetsData);
-      //const res: any = await addSubscribePoint(sheetsData.points)
+      //console.log("Excel解析结果:", sheetsData);
+      const res = await importFileData({
+        devices: sheetsData.sheets[0] || [],
+        metrics: sheetsData.sheets[1] || [],
+      });
 
-      //const res: any = await importData(sheetsData);
+      if (res.status !== "OK") {
+        console.warn("Non-OK response status:", res.status);
+        return;
+      }
 
-      // if (res.status !== "OK") {
-      //   console.warn("Non-OK response status:", res.status);
-      //   return;
-      // }
-      // initData();
+      initData();
     } catch (error) {
       console.error("文件处理失败:", error);
       message.warn(t("device_manage.fileProcessError"));
@@ -275,39 +328,153 @@ const handleFileUpload = (event: Event): void => {
 };
 
 //导出
-const onExport = () => {
-  const apiUrls = ["/devices", "/metrics"];
+const onExport = async () => {
+  const API_URLS = ["/devices", "/metrics"];
+  const BASE_FILE_NAME = "设备点位列表";
+  const SHEET_CONFIGS = [
+    { sheetName: "Device", urlIndex: 0 },
+    { sheetName: "Point", urlIndex: 1 },
+  ];
 
-  exportToExcel(
-    [
-      {
-        data: data.value,
-        sheetName: "Device",
-        formatter: (item) => defaultFormatter(item, ["property"]),
-      },
-    ],
-    "设备点位列表",
-  );
+  try {
+    const responses = await concurrentRequests<any[]>(API_URLS);
+
+    if (responses.length !== API_URLS.length) {
+      throw new Error(
+        `请求响应数量异常：预期${API_URLS.length}个，实际${responses.length}个`,
+      );
+    }
+
+    const validResponses = responses.map((res, index) => {
+      // 校验状态
+      if (res.status !== "OK") {
+        throw new Error(`接口${API_URLS[index]}返回状态异常：${res.status}`);
+      }
+      // 校验 data 是数组（类型守卫）
+      if (!Array.isArray(res.data)) {
+        throw new Error(
+          `接口${API_URLS[index]}返回数据非数组类型：${typeof res.data}`,
+        );
+      }
+      return res;
+    });
+
+    const excelSheets = SHEET_CONFIGS.map((config) => ({
+      data: validResponses[config.urlIndex].data,
+      sheetName: config.sheetName,
+      formatter: (item: any) => defaultFormatter(item, ["property"]),
+    }));
+
+    const exportFileName = `${BASE_FILE_NAME}_${formatDateTimeToMinute()}`;
+    exportToExcel(excelSheets, exportFileName);
+  } catch (error) {
+    console.error(`导出${BASE_FILE_NAME}失败：`, error);
+    // 给用户友好的错误提示
+    const errorMsg = (error as Error).message;
+    message.error(
+      t("msg.export_failed", { reason: errorMsg || t("msg.unknownError") }),
+    );
+  }
 };
 
 //table操作
-const onEdit = (record: any) => {
+const onEdit = async (record: any) => {
   deviceData.value = { ...record };
 
   if (record.device_type === DeviceTypeEnum.BACnet) {
+    readBacnetProperties(record);
   } else {
     showModal.value = true;
     isEdit.value = true;
   }
 };
 
-const onDelete = (record: any) => {
-  console.log("删除", record);
-  data.value = data.value.filter((item: any) => item.key !== record.key);
+const readBacnetProperties = async (row: any) => {
+  try {
+    const res = await readBacnetAttr(row.key, {
+      function: "read_property_multiple",
+      parms: {
+        address: row.address,
+        read_list: [row.device_id, jsonList["Device"]],
+      },
+    });
+
+    if (res.status !== "OK") {
+      let errorMsg = "";
+
+      if (res.data?.includes("not enabled")) {
+        // 设备未启用提示
+        errorMsg = t("msg.bacnetDeviceDisabled");
+      } else {
+        errorMsg = t("msg.bacnetReadFailedDetail", {
+          reason: res.data || t("msg.unknownError"),
+        });
+      }
+
+      message.error(errorMsg);
+      return;
+    }
+
+    if (res.data === null || res.data.length === 0) {
+      message.warning(t("msg.bacnetNoProperties"));
+      return;
+    }
+
+    bacnetProperties.value = {
+      properties: transformDeviceData(res.data),
+    };
+
+    //console.log("转换后的BACnet设备属性:", bacnetProperties.value);
+    showProperty.value = true;
+    isEdit.value = true;
+  } catch (error) {
+    console.error("获取BACnet设备属性失败:", error);
+    message.error(
+      t("msg.bacnetReadException", {
+        error: (error as Error).message || t("msg.unknownError"),
+      }),
+    );
+  }
+};
+
+const onDelete = async (record: any) => {
+  //console.log("删除", record);
+  try {
+    const res = await deleteDevice(record.key);
+
+    if (res.status !== "OK") {
+      console.warn("Non-OK response status when delete device:", res.status);
+      message.error(t("msg.deleteFailed"));
+      return;
+    }
+
+    data.value = data.value.filter((item: any) => item.key !== record.key);
+    message.success(t("msg.deleteSuccess"));
+  } catch (error) {
+    console.error("Failed to delete device:", error);
+    message.error(t("msg.deleteFailed"));
+  }
 };
 
 const onEnableClick = async (checked: boolean, event: Event, record: any) => {
-  console.log("开关状态:", checked, record);
+  //console.log("开关状态:", checked, record);
+  try {
+    const res = await setDeviceEnable(record.key, record.enabled);
+
+    if (res.status !== "OK") {
+      console.warn(
+        "Non-OK response status when update device enable status:",
+        res.status,
+      );
+      message.error(t("msg.updateFailed"));
+      return;
+    }
+
+    message.success(t("msg.updateSuccess"));
+  } catch (error) {
+    console.error("Failed to update device enable status:", error);
+    message.error(t("msg.updateFailed"));
+  }
 };
 
 const onEnter = (record: any) => {
@@ -317,19 +484,6 @@ const onEnter = (record: any) => {
 
 const onClick = () => {
   handleEditCompleteJump();
-};
-
-const refreshTableData = async () => {
-  loading.value = true;
-
-  console.log("刷新表格数据...");
-  try {
-    data.value = generateTestData(100);
-  } catch (error) {
-    console.error("刷新数据失败:", error);
-  } finally {
-    loading.value = false;
-  }
 };
 
 provide("deviceList", data);

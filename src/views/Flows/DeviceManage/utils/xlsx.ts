@@ -128,21 +128,12 @@ export interface ExcelProcessOptions {
  * Excel处理结果类型定义
  */
 export interface ExcelProcessResult {
-  /** 按工作表顺序排列的原始数据 */
-  sheets: SheetData[][];
-  /** 按工作表名称索引的数据 */
-  namedSheets: Record<string, SheetData[]>;
-  /** 第一个工作表数据（设备） */
-  firstSheet: SheetData[];
-  /** 第二个工作表数据（指标） */
-  secondSheet: SheetData[];
+  /** 按工作表顺序排列的数据 */
+  sheets: any[][];
 }
 
 const emptyResult: ExcelProcessResult = {
   sheets: [],
-  namedSheets: {},
-  firstSheet: [],
-  secondSheet: [],
 };
 
 /**
@@ -158,7 +149,6 @@ export const processExcel = (
   const {
     minSheetCount = 2,
     jsonFields = ["property"],
-    preserveTypes = true,
     t = (key) => key,
   } = options;
 
@@ -179,76 +169,66 @@ export const processExcel = (
       return emptyResult;
     }
 
-    const namedSheets: Record<string, SheetData[]> = {};
-    const sheets: SheetData[][] = [];
+    const sheets: any[][] = [];
 
     workbook.SheetNames.forEach((sheetName) => {
       const sheet = workbook.Sheets[sheetName];
 
       // 空工作表直接返回空数组
       if (!sheet) {
-        namedSheets[sheetName] = [];
         sheets.push([]);
         return;
       }
 
-      // 转换工作表数据，统一空值为null
-      const sheetData = XLSX.utils.sheet_to_json<SheetData>(sheet, {
+      // 转换为JSON数组（空值填充为null）
+      const sheetData = XLSX.utils.sheet_to_json(sheet, {
         defval: null,
-        header: "A", // 确保空行也能被解析（可选，根据实际需求）
       });
 
       // 格式化JSON字段（纯函数，无副作用）
       const formattedData = formatJsonFields(sheetData, jsonFields);
 
-      namedSheets[sheetName] = formattedData;
       sheets.push(formattedData);
     });
 
     // 5. 返回结构化数据（兼容原有调用方式）
     return {
       sheets,
-      namedSheets,
-      firstSheet: sheets[0] || [],
-      secondSheet: sheets[1] || [],
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-
     message.error(t("device_manage.processError") + `${errorMessage}`);
 
-    // 统一返回空数据结构，保证类型安全
     return emptyResult;
   }
 };
 
 /**
- * 通用的JSON字段格式化函数
- * @param data 原始数据
- * @param jsonFields 需要解析为JSON的字段名列表
- * @returns 格式化后的数据
+ * 通用JSON字段格式化函数（确保JSON字符串解析为对象）
+ * @param data 原始工作表数据
+ * @param jsonFields 需要解析的字段名列表
+ * @returns 格式化后的数据（指定字段为JSON对象）
  */
-function formatJsonFields<T extends SheetData>(
-  data: T[],
-  jsonFields: string[],
-): T[] {
+function formatJsonFields(data: any[], jsonFields: string[]): any[] {
   if (!Array.isArray(data) || data.length === 0) return [];
 
   return data.map((item) => {
-    const formattedItem = { ...item } as Record<string, any>;
+    const formattedItem = { ...item };
 
     jsonFields.forEach((field) => {
+      // 仅当字段存在且为字符串时解析（避免空值/非字符串解析报错）
       if (formattedItem[field] && typeof formattedItem[field] === "string") {
         try {
-          formattedItem[field] = JSON.parse(formattedItem[field] as string);
+          // 核心：将JSON字符串解析为对象，存入item对应字段
+          formattedItem[field] = JSON.parse(formattedItem[field]);
         } catch (parseError) {
           console.error(`解析字段${field}的JSON失败:`, parseError);
-          // 解析失败时保留原始值，避免数据丢失
-          formattedItem[field] = (formattedItem[field] as string) || null;
+          // 解析失败保留原始值，避免数据丢失
+          formattedItem[field] = formattedItem[field] || null;
         }
       }
     });
 
-    return formattedItem as T;
+    return formattedItem;
   });
 }

@@ -3,6 +3,6 @@ import type { LoginParams } from "@/types/user";
 
 
 
-export const loginApi = (params: LoginParams) => {
+export const loginApi = (params: any) => {
   return get('/iot/projects', params)
 }

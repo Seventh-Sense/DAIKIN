@@ -199,5 +199,22 @@ export default {
     connection_type: "接続タイプ",
     gateway_ip: "ゲートウェイIP",
     gateway_port: "ゲートウェイポート",
+    detail: "詳細",
+  },
+  msg: {
+    updateSuccess: "デバイスステータスの更新に成功しました",
+    updateFailed:
+      "デバイスステータスの更新に失敗しました。後でもう一度お試しください",
+    deleteSuccess: "デバイスの削除に成功しました",
+    deleteFailed: "デバイスの削除に失敗しました。後でもう一度お試しください",
+    bacnetDeviceDisabled:
+      "BACnetデバイスが有効になっていないため、プロパティを読み取ることができません",
+    bacnetReadFailedDetail:
+      "BACnetデバイスプロパティの読み取りに失敗しました：{reason}",
+    bacnetNoProperties: "このBACnetデバイスのプロパティデータが見つかりません",
+    bacnetReadException:
+      "BACnetデバイスプロパティの読み取り中に例外が発生しました：{error}",
+    unknownError: "不明なエラー",
+    export_failed: "エクスポート失敗：{reason}",
   },
 };

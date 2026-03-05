@@ -9,7 +9,7 @@ interface PersistOptions {
 }
 
 const getInitialState = () => ({
-  currentStep: "" as string | number,
+  currentStep: "" as string,
   menuSelectedKeys: [] as string[],
   menuOpenKeys: [] as string[],
   rawMenus: [
@@ -42,7 +42,7 @@ export const useStepStore = defineStore(
 
     const initialState = getInitialState();
 
-    const currentStep = ref<string | number>(initialState.currentStep);
+    const currentStep = ref<string>(initialState.currentStep);
     const menuSelectedKeys = ref<string[]>(initialState.menuSelectedKeys);
     const menuOpenKeys = ref<string[]>(initialState.menuOpenKeys);
     const rawMenus = ref(initialState.rawMenus);
@@ -72,7 +72,7 @@ export const useStepStore = defineStore(
     };
 
     // 原有方法
-    const updateCurrentStep = (step: string | number) => {
+    const updateCurrentStep = (step: string) => {
       currentStep.value = step;
     };
 
