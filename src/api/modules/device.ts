@@ -43,3 +43,11 @@ export const concurrentRequests = <T>(
 export const importFileData = (data: any) => {
   return post(`/import/data`, data);
 };
+
+export const discoveryDevices = () => {
+  return get(`/bacnet/discovery`);
+};
+
+export const addDevice = (data: any) => {
+  return post('/device', data);
+}

@@ -130,6 +130,10 @@ onMounted(() => {
 const handleModalOpenChange = (newOpenState: boolean) => {
   emit("update:modelShow", newOpenState);
 
+  if (!newOpenState && data.value.type === DeviceTypeEnum.BACnet) {
+    emit("onSaveSuccess");
+  }
+  
   if (!newOpenState) {
     resetForm();
   }

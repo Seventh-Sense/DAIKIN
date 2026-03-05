@@ -200,6 +200,7 @@ export default {
     gateway_ip: "ゲートウェイIP",
     gateway_port: "ゲートウェイポート",
     detail: "詳細",
+    search: " 検索",
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",
@@ -216,5 +217,14 @@ export default {
       "BACnetデバイスプロパティの読み取り中に例外が発生しました：{error}",
     unknownError: "不明なエラー",
     export_failed: "エクスポート失敗：{reason}",
+    search_success:
+      "検索に成功しました、合計 {count} 台のデバイスが見つかりました",
+    search_no_result: "デバイスが見つかりません",
+    search_failed_status:
+      "デバイス検索に失敗しました：APIがステータス {status} を返しました",
+    search_failed_exception: "デバイス検索例外：{reason}",
+    download_success: "デバイスのダウンロードに成功しました",
+    download_failed_status: "デバイスのダウンロードに失敗しました",
+    download_failed_exception: "デバイスのダウンロード例外",
   },
 };

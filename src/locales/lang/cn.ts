@@ -194,6 +194,7 @@ export default {
     gateway_ip: "网关IP",
     gateway_port: "网关端口",
     detail: "详情",
+    search: "查询",
   },
   msg: {
     updateSuccess: "设备状态更新成功",
@@ -206,5 +207,12 @@ export default {
     bacnetReadException: "读取BACnet设备属性时发生异常：{error}",
     unknownError: "未知错误",
     export_failed: "导出失败：{reason}",
+    search_success: "搜索成功，共找到 {count} 台设备",
+    search_no_result: "未搜索到任何设备",
+    search_failed_status: "设备搜索失败：接口返回状态 {status}",
+    search_failed_exception: "设备搜索异常：{reason}",
+    download_success: "设备下载成功",
+    download_failed_status: "设备下载失败",
+    download_failed_exception: "设备下载异常",
   },
 };

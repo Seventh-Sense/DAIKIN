@@ -200,6 +200,7 @@ export default {
     gateway_ip: "Gateway IP",
     gateway_port: "Gateway Port",
     detail: "Detail",
+    search: "Search",
   },
   msg: {
     updateSuccess: "Device status updated successfully",
@@ -214,5 +215,12 @@ export default {
       "An exception occurred while reading BACnet device properties: {error}",
     unknownError: "Unknown error",
     export_failed: "Export failed: {reason}",
+    search_success: "Search succeeded, {count} devices found",
+    search_no_result: "No devices found",
+    search_failed_status: "Device search failed: API returned status {status}",
+    search_failed_exception: "Device search exception: {reason}",
+    download_success: "Device downloaded successfully",
+    download_failed_status: "Device download failed",
+    download_failed_exception: "Device download exception",
   },
 };
