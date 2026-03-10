@@ -220,6 +220,11 @@ export default {
     modbus_tip_enter: "Enter a number or number range (e.g. 10-20)",
     little_endian: "Little Endian",
     big_endian: "Big Endian",
+    read_address: "Read Address",
+    write_address: "Write Address",
+    value_type: "Value Type",
+    bool: "Boolean",
+    percent: "Percentage",
   },
   msg: {
     updateSuccess: "Device status updated successfully",

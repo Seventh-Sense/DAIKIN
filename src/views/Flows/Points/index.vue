@@ -92,7 +92,8 @@
       v-if="isKNX"
       v-model:modelShow="isKNX"
       :isEdit="isEdit"
-      :initData="displayData"
+      :editData="displayData"
+      @onSaveSuccess="initData"
     />
   </div>
 </template>

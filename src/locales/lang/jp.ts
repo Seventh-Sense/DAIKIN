@@ -220,6 +220,11 @@ export default {
     modbus_tip_enter: "数値または数値範囲を入力してください（例：10-20）",
     little_endian: "リトルエンディアン",
     big_endian: "ビッグエンディアン",
+    read_address: "読み取りアドレス",
+    write_address: "書き込みアドレス",
+    value_type: "値タイプ",
+    bool: "ブール値",
+    percent: "パーセント",
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",

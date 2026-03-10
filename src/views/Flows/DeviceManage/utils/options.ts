@@ -231,3 +231,15 @@ export const DatatypeOptions = [
   label: v,
   value: v,
 }));
+
+
+export const KNXValueTypeOptions = [
+  {
+    label: () => formatMessage('device_manage.bool'),
+    value: 'bool'
+  },
+  {
+    label: () => formatMessage('device_manage.percent'),
+    value: 'percent'
+  }
+]

@@ -214,6 +214,11 @@ export default {
     modbus_tip_enter: "输入数字或数字范围(示例：10-20)",
     little_endian: "小端",
     big_endian: "大端",
+    read_address: "读地址",
+    write_address: "写地址",
+    value_type: "值类型",
+    bool: "布尔值",
+    percent: "百分比",
   },
   msg: {
     updateSuccess: "设备状态更新成功",
