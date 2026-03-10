@@ -82,11 +82,14 @@
       @onSaveSuccess="initData"
     />
     <ModbusPointModal
+      v-if="isModbus"
       v-model:modelShow="isModbus"
       :isEdit="isEdit"
-      :initData="displayData"
+      :editData="displayData"
+      @onSaveSuccess="initData"
     />
     <KNXPointModal
+      v-if="isKNX"
       v-model:modelShow="isKNX"
       :isEdit="isEdit"
       :initData="displayData"
@@ -335,12 +338,28 @@ const onAdd = () => {
     deviceInfo.value.type === DeviceTypeEnum.ModbusTCP
   ) {
     isModbus.value = true;
+    isEdit.value = false;
   } else if (deviceInfo.value.type === DeviceTypeEnum.KNX) {
     isKNX.value = true;
+    isEdit.value = false;
   }
 };
 
-const onEdit = (record: any) => {};
+const onEdit = (record: any) => {
+  displayData.value = record;
+
+  if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
+  } else if (
+    deviceInfo.value.type === DeviceTypeEnum.ModbusRTU ||
+    deviceInfo.value.type === DeviceTypeEnum.ModbusTCP
+  ) {
+    isModbus.value = true;
+    isEdit.value = true;
+  } else if (deviceInfo.value.type === DeviceTypeEnum.KNX) {
+    isKNX.value = true;
+    isEdit.value = true;
+  }
+};
 
 const onDelete = async (record: any) => {
   loading.value = true;

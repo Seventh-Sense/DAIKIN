@@ -86,7 +86,6 @@ const columns = [
 const data = ref<any[]>([]);
 
 const selectedRowKeys = ref<Key[]>([]);
-const selectedRows = ref<any[]>([]);
 
 //已经添加过的点位
 const selectedObjKeys = ref<string[]>([]);
@@ -95,7 +94,6 @@ const rowSelection = computed(() => ({
   selectedRowKeys: selectedRowKeys.value,
   onChange: (keys: any[], rows: any[]) => {
     selectedRowKeys.value = keys;
-    selectedRows.value = rows;
   },
   getCheckboxProps: (record: any) => ({
     disabled: record.disabled,
@@ -290,6 +288,7 @@ const handleOk = async () => {
     console.error("Error handleOk data:", error);
     message.error(t("msg.add_points_error"));
   } finally {
+    clearAll();
     emit("update:modelShow", false);
   }
 };
@@ -298,7 +297,14 @@ const handleModalOpenChange = (newOpenState: boolean) => {
   emit("update:modelShow", newOpenState);
 
   if (!newOpenState) {
+    clearAll();
   }
+};
+
+const clearAll = () => {
+  selectedRowKeys.value = [];
+  selectedObjKeys.value = [];
+  data.value = [];
 };
 </script>
 

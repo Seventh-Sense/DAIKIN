@@ -1,4 +1,9 @@
-import { DeviceTypeEnum } from "../DeviceManage/utils/options";
+import {
+  DatatypeOptions,
+  DeviceTypeEnum,
+  functionOptions,
+  OrderOptions,
+} from "../DeviceManage/utils/options";
 import { getDeviceTypeName, TypeEnum } from "../DeviceManage/utils/utils";
 
 export const transformSubscribePointsData = (
@@ -86,3 +91,59 @@ export const getProcessedValue = (
 export const mergeProperties = (newProps: any, fallback: any) => {
   return newProps && Object.keys(newProps).length > 0 ? newProps : fallback;
 };
+
+const MODBUS_TEXT_MAPPER: Record<string, any[]> = {
+  function: functionOptions,
+  byteorder: OrderOptions,
+  wordorder: OrderOptions,
+  data_type: DatatypeOptions,
+};
+
+const getLabelByValue = (value: any, options: any[]) => {
+  const option = options.find((opt) => opt.value === value);
+  return option?.label || value; // 严格遵循找不到返回空字符串
+};
+
+export const modbusSelectOptions = (key: any) => {
+  return MODBUS_TEXT_MAPPER[key] ? MODBUS_TEXT_MAPPER[key] : [];
+};
+
+export const modbusSelectTextMap = (key: any, value: any) => {
+  if (MODBUS_TEXT_MAPPER[key]) {
+    return getLabelByValue(value, MODBUS_TEXT_MAPPER[key]);
+  }
+  return String(value);
+};
+
+/**
+ * 校验输入字符串是否为有效的非负整数（0-255）或整数范围（0-255）
+ * @param value 输入字符串
+ * @returns 校验结果 (true: 有效, false: 无效)
+ */
+export const validateIntegerOrRange = (value: string): boolean => {
+  // 移除字符串两端空格
+  const trimmedValue = value.trim()
+
+  // 情况1：单个整数校验（必须 ≥0 且 ≤65535 的整数）
+  if (!trimmedValue.includes('-')) {
+    // 使用正则验证整数格式
+    if (!/^\d+$/.test(trimmedValue)) return false
+    const num = parseInt(trimmedValue, 10)
+    return num >= 0 && num <= 65535
+  }
+
+  // 情况2：范围格式校验（必须满足 X-Y 格式）
+  const parts = trimmedValue.split('-')
+  if (parts.length !== 2) return false
+
+  const [startStr, endStr] = parts.map(s => s.trim())
+
+  // 验证两个部分都是整数
+  if (!/^\d+$/.test(startStr) || !/^\d+$/.test(endStr)) return false
+
+  const start = parseInt(startStr, 10)
+  const end = parseInt(endStr, 10)
+
+  // 范围值校验（必须满足 0≤start≤end≤65535）
+  return start >= 0 && end >= 0 && start <= end && end <= 65535
+}

@@ -1,4 +1,3 @@
-
 export const formatMessage = (key: string, params?: Record<string, any>) => {
   // 安全校验：确保i18n实例存在
   if (!window.$i18n) {
@@ -121,65 +120,114 @@ export const databitOptions = [7, 8].map((v) => ({
 
 export const connectionOptions = [
   {
-    label: () => formatMessage('device_manage.serialport'),
-    value: 'SerialPort'
-  }
-]
+    label: () => formatMessage("device_manage.serialport"),
+    value: "SerialPort",
+  },
+];
 
 export const parityOptions = [
   {
-    label: () => formatMessage('device_manage.none'),
-    value: 'N'
+    label: () => formatMessage("device_manage.none"),
+    value: "N",
   },
   {
-    label: () => formatMessage('device_manage.odd'),
-    value: 'O'
+    label: () => formatMessage("device_manage.odd"),
+    value: "O",
   },
   {
-    label: () => formatMessage('device_manage.even'),
-    value: 'E'
-  }
-]
+    label: () => formatMessage("device_manage.even"),
+    value: "E",
+  },
+];
 
-export const stopbitOptions = [1, 2].map(v => ({
+export const stopbitOptions = [1, 2].map((v) => ({
   label: v,
-  value: v
-}))
+  value: v,
+}));
 
 export const addrFormatOptions = [
   {
-    label: () => formatMessage('device_manage.free'),
-    value: 0
+    label: () => formatMessage("device_manage.free"),
+    value: 0,
   },
   {
-    label: () => formatMessage('device_manage.short'),
-    value: 2
+    label: () => formatMessage("device_manage.short"),
+    value: 2,
   },
   {
-    label: () => formatMessage('device_manage.long'),
-    value: 3
-  }
-]
+    label: () => formatMessage("device_manage.long"),
+    value: 3,
+  },
+];
 
 export const connectTypeOptions = [
   {
-    label: () => formatMessage('device_manage.automatic'),
-    value: 1
+    label: () => formatMessage("device_manage.automatic"),
+    value: 1,
   },
   {
-    label: () => formatMessage('device_manage.routing'),
-    value: 2
+    label: () => formatMessage("device_manage.routing"),
+    value: 2,
   },
   {
-    label: () => formatMessage('device_manage.routing_secure'),
-    value: 3
+    label: () => formatMessage("device_manage.routing_secure"),
+    value: 3,
   },
   {
-    label: () => formatMessage('device_manage.tunneling'),
-    value: 4
+    label: () => formatMessage("device_manage.tunneling"),
+    value: 4,
   },
   {
-    label: () => formatMessage('device_manage.tunneling_tcp'),
-    value: 5
-  }
-]
+    label: () => formatMessage("device_manage.tunneling_tcp"),
+    value: 5,
+  },
+];
+
+export const functionOptions = [
+  {
+    label: "01 Coils",
+    value: "01",
+  },
+  {
+    label: "02 Discrete Input",
+    value: "02",
+  },
+  {
+    label: "03 Holding Register",
+    value: "03",
+  },
+  {
+    label: "04 Input Register",
+    value: "04",
+  },
+];
+
+export const OrderOptions = [
+  {
+    label: () => formatMessage("device_manage.little_endian"),
+    value: 0,
+  },
+  {
+    label: () => formatMessage("device_manage.big_endian"),
+    value: 1,
+  },
+];
+
+export const DatatypeOptions = [
+  "int8",
+  "int16",
+  "int32",
+  "int64",
+  "uint8",
+  "uint16",
+  "uint32",
+  "uint64",
+  "float16",
+  "float32",
+  "float64",
+  "str",
+  "string",
+].map((v) => ({
+  label: v,
+  value: v,
+}));

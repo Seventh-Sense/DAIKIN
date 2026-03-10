@@ -1,4 +1,4 @@
-import { get, post, del } from "../request";
+import { get, post, del, patch } from "../request";
 
 interface ApiResponse<T = any> {
   data: T;
@@ -74,4 +74,12 @@ export const readIotPoints = (deviceId: any, data: any) => {
 
 export const addSubscribePoint = (data: any) => {
   return post(`/metrics`, data);
+};
+
+export const updateIotPoints = (id: any, data: any) => {
+  return patch(`/metric/` + id, data);
+};
+
+export const createModbusPoint = (data: any) => {
+  return post(`/metric`, data);
 };
