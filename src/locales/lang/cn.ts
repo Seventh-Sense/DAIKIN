@@ -201,6 +201,7 @@ export default {
     time: '时间',
     offline: '离线',
     online: '在线',
+    add_point: "添加点位",
   },
   msg: {
     updateSuccess: "设备状态更新成功",
@@ -220,5 +221,15 @@ export default {
     download_success: "设备添加成功",
     download_failed_status: "设备添加失败",
     download_failed_exception: "设备添加异常",
+    delete_success: "点位删除成功",
+    delete_failed: "点位删除失败，请稍后重试",
+    delete_error: "删除点位时发生异常，请检查网络或联系管理员",
+    clear_all_success: '所有点位已清空',
+    clear_all_failed: '清空所有点位失败，请稍后重试',
+    clear_all_error: '清空点位时发生异常，请检查网络或联系管理员',
+    no_points_found: '该设备暂无点位数据',
+    read_points_error: '读取点位数据失败，请稍后重试!',
+    device_not_enabled: '设备未启用，无法读取点位数据',
+    add_points_error: '添加点位数据失败，请稍后重试!',
   },
 };

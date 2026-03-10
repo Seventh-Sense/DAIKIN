@@ -59,3 +59,19 @@ export const readSubscribePoints = (deviceId: any) => {
 export const readPointValue = (deviceId: any) => {
   return get(`/points/latest?device_id=${deviceId}`);
 };
+
+export const deleteSubscribePoint = (pointId: any) => {
+  return del(`/metric/` + pointId);
+};
+
+export const deleteAllSubscribePoint = (deviceId: any) => {
+  return del(`/metrics/` + deviceId);
+};
+
+export const readIotPoints = (deviceId: any, data: any) => {
+  return post(`/request?device_id=${deviceId}`, data);
+};
+
+export const addSubscribePoint = (data: any) => {
+  return post(`/metrics`, data);
+};

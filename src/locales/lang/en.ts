@@ -228,5 +228,17 @@ export default {
     download_success: "Device added successfully",
     download_failed_status: "Device add failed",
     download_failed_exception: "Device add exception",
+    delete_success: "Point deleted successfully",
+    delete_failed: "Failed to delete point, please try again later",
+    delete_error:
+      "An error occurred while deleting the point, please check the network or contact the administrator",
+    clear_all_success: "All points have been cleared",
+    clear_all_failed: "Failed to clear all points, please try again later",
+    clear_all_error:
+      "An error occurred while clearing points, please check the network or contact the administrator",
+    no_points_found: "No point data found for this device.",
+    read_points_error: "Failed to read point data, please try again later!",
+    device_not_enabled: "Device is not enabled, cannot read point data.",
+    add_points_error: 'Failed to add point data, please try again later!',
   },
 };

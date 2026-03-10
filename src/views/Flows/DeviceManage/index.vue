@@ -482,6 +482,7 @@ const onEnter = (record: any) => {
     id: record.device_id,
     type: record.device_type,
     key: record.key,
+    address: record.address,
   });
 };
 

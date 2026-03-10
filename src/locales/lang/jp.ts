@@ -232,5 +232,21 @@ export default {
     download_success: "デバイスの追加に成功しました",
     download_failed_status: "デバイスの追加に失敗しました",
     download_failed_exception: "デバイスの追加例外",
+    delete_success: "ポイントの削除に成功しました",
+    delete_failed: "ポイントの削除に失敗しました。後で再試行してください",
+    delete_error:
+      "ポイントの削除中に例外が発生しました。ネットワークを確認するか、管理者にお問い合わせください",
+    clear_all_success: "すべてのポイントがクリアされました",
+    clear_all_failed:
+      "すべてのポイントのクリアに失敗しました。後で再試行してください",
+    clear_all_error:
+      "ポイントのクリア中に例外が発生しました。ネットワークを確認するか、管理者にお問い合わせください",
+    no_points_found: "このデバイスにはポイントデータがありません。",
+    read_points_error:
+      "ポイントデータの読み取りに失敗しました。後で再試行してください！",
+    device_not_enabled:
+      "デバイスが有効になっていないため、ポイントデータを読み取ることができません。",
+    add_points_error:
+      "ポイントデータの追加に失敗しました、後で再試行してください！",
   },
 };

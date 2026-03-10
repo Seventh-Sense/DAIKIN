@@ -75,6 +75,22 @@
         {{ t("common.edit_complete") }}
       </a-button>
     </div>
+    <BACnetPointModal
+      v-if="isBacnet"
+      v-model:modelShow="isBacnet"
+      :pointList="data"
+      @onSaveSuccess="initData"
+    />
+    <ModbusPointModal
+      v-model:modelShow="isModbus"
+      :isEdit="isEdit"
+      :initData="displayData"
+    />
+    <KNXPointModal
+      v-model:modelShow="isKNX"
+      :isEdit="isEdit"
+      :initData="displayData"
+    />
   </div>
 </template>
 
@@ -82,9 +98,14 @@
 import { useI18n } from "vue-i18n";
 import { handleEditCompleteJump } from "../until/util";
 import Icons from "@/icons/index.vue";
-import { ref, computed, nextTick, onMounted, onUnmounted } from "vue";
+import { ref, computed, nextTick, onMounted, onUnmounted, provide } from "vue";
 import { useRoute } from "vue-router";
-import { readPointValue, readSubscribePoints } from "@/api";
+import {
+  readPointValue,
+  readSubscribePoints,
+  deleteSubscribePoint,
+  deleteAllSubscribePoint,
+} from "@/api";
 import {
   transformSubscribePointsData,
   formatTimestamp,
@@ -92,9 +113,12 @@ import {
   mergeProperties,
 } from "./tool";
 import { DeviceTypeEnum } from "../DeviceManage/utils/options";
+import { message } from "ant-design-vue";
+import ModbusPointModal from "./ModbusPointModal/index.vue";
+import BACnetPointModal from "./BACnetPointModal/index.vue";
+import KNXPointModal from "./KNXPointModal/index.vue";
 
 const route = useRoute();
-
 const { t } = useI18n();
 
 const pointRef = ref<HTMLDivElement | null>(null);
@@ -122,31 +146,25 @@ const columns = computed(() => [
 ]);
 
 const calculateTableHeight = () => {
-  // 修复：增加空值判断，避免TypeScript报错
   if (!pointRef.value) {
-    // 如果cardRef为空，设置默认高度
     tableScrollHeight.value = 800;
     return;
   }
 
   nextTick(() => {
-    // 再次确认不为空（nextTick后可能的变化）
     if (!pointRef.value) return;
 
     // 获取card容器的总高度
     const cardHeight = pointRef.value.clientHeight;
-    // 获取顶部栏高度（增加空值判断）
     const topBar = pointRef.value.querySelector(".card-top");
     const topBarHeight = topBar ? topBar.clientHeight : 52;
-    // 获取按钮栏高度（增加空值判断）
+
     const actionsBar = pointRef.value.querySelector(".card-actions");
     const actionsBarHeight = actionsBar ? actionsBar.clientHeight : 52;
-    // 底部按钮区域的预留高度（包含margin）
+
     const bottomReservedHeight = 80;
-    // 表格头部和内边距的预留高度
     const tableHeaderPadding = 40;
 
-    // 计算表格可滚动区域的高度
     const availableHeight =
       cardHeight -
       topBarHeight -
@@ -154,7 +172,6 @@ const calculateTableHeight = () => {
       tableHeaderPadding -
       actionsBarHeight;
 
-    // 确保高度不会太小
     tableScrollHeight.value = Math.max(availableHeight, 200);
   });
 };
@@ -163,11 +180,19 @@ const deviceInfo = ref({
   id: "",
   type: "",
   key: "",
+  address: "",
 });
 const loading = ref(false);
 const data = ref<any[]>([]);
 
 let interval: number | null = null;
+
+const isBacnet = ref(false);
+const isModbus = ref(false);
+const isKNX = ref(false);
+
+const isEdit = ref(false);
+const displayData = ref({});
 
 onMounted(() => {
   calculateTableHeight();
@@ -180,19 +205,21 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener("resize", calculateTableHeight);
+
+  if (interval) {
+    clearInterval(interval);
+    interval = null;
+  }
 });
 
-const onBack = () => {
-  window.history.back();
-};
-
 const getDeviceInfo = () => {
-  const { id, type, key } = route.params;
+  const { id, type, key, address } = route.params;
 
   deviceInfo.value = {
     id: String(id || ""),
     type: String(type || ""),
     key: String(key || ""),
+    address: String(address || ""),
   };
 };
 
@@ -223,7 +250,7 @@ const initData = async () => {
     data.value = [...transformedData];
 
     // console.log("Transformed data:", data.value);
-    periodicReading();
+    startDataPeriodicRefresh();
   } catch (error) {
     console.error("Error fetching data:", error);
   } finally {
@@ -231,17 +258,17 @@ const initData = async () => {
   }
 };
 
-const periodicReading = () => {
+const startDataPeriodicRefresh = () => {
   if (interval !== null) {
     clearInterval(interval);
   }
 
   if (data.value.length === 0) return;
 
-  periodicFunc();
+  refreshPointValues();
 };
 
-const periodicFunc = async () => {
+const refreshPointValues = async () => {
   try {
     const res = await readPointValue(deviceInfo.value.key);
 
@@ -255,7 +282,7 @@ const periodicFunc = async () => {
       res.data.map((point: any) => [point.metric_id, point]),
     );
     // 生成新的数据源（不可变更新）
-    const updatedData = data.value.map((originalItem) => {
+    data.value = data.value.map((originalItem) => {
       const point: any = metricPoints.get(originalItem.key);
       if (!point) return originalItem;
 
@@ -273,25 +300,80 @@ const periodicFunc = async () => {
         timestamp: formatTimestamp(point.timestamp),
       };
     });
-
-    // 更新状态
-    data.value = updatedData;
   } catch (error) {
     console.error("Error in periodic reading:", error);
   }
 };
 
-const onClearAll = () => {};
+const onClearAll = async () => {
+  loading.value = true;
 
-const onAdd = () => {};
+  try {
+    const res: any = await deleteAllSubscribePoint(deviceInfo.value.key);
+
+    if (res.status !== "OK") {
+      console.warn("Failed to clear all points, response status:", res.status);
+      message.error(t("msg.clear_all_failed"));
+      return;
+    }
+
+    data.value = [];
+    message.success(t("msg.clear_all_success"));
+  } catch (error) {
+    console.error("Error clearing all points:", error);
+    message.error(t("msg.clear_all_error"));
+  } finally {
+    loading.value = false;
+  }
+};
+
+const onAdd = () => {
+  if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
+    isBacnet.value = true;
+  } else if (
+    deviceInfo.value.type === DeviceTypeEnum.ModbusRTU ||
+    deviceInfo.value.type === DeviceTypeEnum.ModbusTCP
+  ) {
+    isModbus.value = true;
+  } else if (deviceInfo.value.type === DeviceTypeEnum.KNX) {
+    isKNX.value = true;
+  }
+};
 
 const onEdit = (record: any) => {};
 
-const onDelete = (record: any) => {};
+const onDelete = async (record: any) => {
+  loading.value = true;
+
+  try {
+    const res = await deleteSubscribePoint(record.key);
+
+    if (res.status !== "OK") {
+      console.warn("Failed to delete record, response status:", res.status);
+      message.error(t("msg.delete_failed"));
+      return;
+    }
+
+    message.success(t("msg.delete_success"));
+
+    data.value = data.value.filter((item) => item.key !== record.key);
+  } catch (error) {
+    console.error("Error deleting record:", error);
+    message.error(t("msg.delete_error"));
+  } finally {
+    loading.value = false;
+  }
+};
 
 const onClick = () => {
   handleEditCompleteJump();
 };
+
+const onBack = () => {
+  window.history.back();
+};
+
+provide("deviceInfo", deviceInfo);
 </script>
 
 <style lang="less" scoped>

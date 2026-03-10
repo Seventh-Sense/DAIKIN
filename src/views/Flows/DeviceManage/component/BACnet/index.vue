@@ -34,7 +34,7 @@
 import { ref, inject, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
-import { generateMockDeviceData, markExistingIds } from "../../utils/utils";
+import { markExistingIds } from "../../utils/utils";
 import { discoveryDevices, addDevice } from "@/api";
 import { message } from "ant-design-vue";
 import { DeviceTypeEnum } from "../../utils/options";

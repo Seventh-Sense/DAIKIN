@@ -339,3 +339,18 @@ export const DEVICE_TYPE_MAP: { [key: number]: string } = {
 export const getDeviceTypeName = (key: number): string => {
   return DEVICE_TYPE_MAP[key] ?? String(key);
 };
+
+export const getDeviceTypeId = (typeStr: string): number | string => {
+  // 创建反向映射表 { 字符串值: 数字ID }
+  const reverseMap: Record<string, number> = {};
+
+  // 构建反向映射
+  (Object.entries(DEVICE_TYPE_MAP) as [string, TypeEnum][]).forEach(
+    ([key, value]) => {
+      reverseMap[value] = parseInt(key, 10);
+    },
+  );
+
+  // 查找并返回结果
+  return reverseMap[typeStr] ?? typeStr;
+};
