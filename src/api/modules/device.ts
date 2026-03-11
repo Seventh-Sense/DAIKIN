@@ -83,3 +83,7 @@ export const updateIotPoints = (id: any, data: any) => {
 export const createModbusPoint = (data: any) => {
   return post(`/metric`, data);
 };
+
+export const readMetricById = (deviceId: any) => {
+  return get(`/point/latest?metric_id=${deviceId}`);
+};

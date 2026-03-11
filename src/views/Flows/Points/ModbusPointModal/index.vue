@@ -605,6 +605,8 @@ const handleOk = () => {
         addNewPoint();
       }
     }
+  } else {
+    emit("update:modelShow", false);
   }
 };
 

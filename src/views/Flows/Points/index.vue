@@ -95,6 +95,14 @@
       :editData="displayData"
       @onSaveSuccess="initData"
     />
+    <PropertyDisplayModal
+      v-if="isBacnetEdit"
+      v-model:modelShow="isBacnetEdit"
+      :isEdit="isEdit"
+      :bacnetData="displayData"
+      :deviceData="deviceInfo"
+      @onSaveSuccess="initData"
+    />
   </div>
 </template>
 
@@ -121,6 +129,7 @@ import { message } from "ant-design-vue";
 import ModbusPointModal from "./ModbusPointModal/index.vue";
 import BACnetPointModal from "./BACnetPointModal/index.vue";
 import KNXPointModal from "./KNXPointModal/index.vue";
+import PropertyDisplayModal from "../DeviceManage/Modal/PropertyDisplayModal/index.vue";
 
 const route = useRoute();
 const { t } = useI18n();
@@ -194,6 +203,7 @@ let interval: number | null = null;
 const isBacnet = ref(false);
 const isModbus = ref(false);
 const isKNX = ref(false);
+const isBacnetEdit = ref(false);
 
 const isEdit = ref(false);
 const displayData = ref({});
@@ -334,6 +344,7 @@ const onClearAll = async () => {
 const onAdd = () => {
   if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
     isBacnet.value = true;
+    isEdit.value = false;
   } else if (
     deviceInfo.value.type === DeviceTypeEnum.ModbusRTU ||
     deviceInfo.value.type === DeviceTypeEnum.ModbusTCP
@@ -350,6 +361,8 @@ const onEdit = (record: any) => {
   displayData.value = record;
 
   if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
+    isBacnetEdit.value = true;
+    isEdit.value = true;
   } else if (
     deviceInfo.value.type === DeviceTypeEnum.ModbusRTU ||
     deviceInfo.value.type === DeviceTypeEnum.ModbusTCP

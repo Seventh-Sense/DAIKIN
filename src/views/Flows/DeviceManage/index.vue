@@ -425,7 +425,7 @@ const readBacnetProperties = async (row: any) => {
 
     //console.log("转换后的BACnet设备属性:", bacnetProperties.value);
     showProperty.value = true;
-    isEdit.value = true;
+    isEdit.value = false;
   } catch (error) {
     console.error("获取BACnet设备属性失败:", error);
     message.error(

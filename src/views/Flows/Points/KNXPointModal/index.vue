@@ -397,6 +397,8 @@ const handleOk = () => {
     if (!dataCheck(data.value)) {
       addNewPoint();
     }
+  } else {
+    emit("update:modelShow", false);
   }
 };
 

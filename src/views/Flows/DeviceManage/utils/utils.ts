@@ -7,6 +7,7 @@ import {
 } from "./options";
 import { validateIPv4 } from "../../until/util";
 import { PropertyConstants } from "./propertyID";
+import unitsJson from "./Units.json";
 
 export const formatMessage = (key: string, params?: Record<string, any>) => {
   // 安全校验：确保i18n实例存在
@@ -354,3 +355,75 @@ export const getDeviceTypeId = (typeStr: string): number | string => {
   // 查找并返回结果
   return reverseMap[typeStr] ?? typeStr;
 };
+
+
+export const objIDTrans = (value: Array<number>) => {
+  let text = ''
+
+  if (value.length === 2) {
+    text = getDeviceTypeName(value[0]) + ',' + value[1]
+  }
+  return text
+}
+
+export const unitsTrans = (value: any) => {
+  let text = ''
+
+  Object.entries(unitsJson).forEach(([key, val]) => {
+    if (parseInt(key) === value) {
+      text = val
+    }
+  })
+
+  //console.log('unitsTrans', value, text)
+
+  return text
+}
+
+export const presentValueTrans = (value: any, type: string, BinaryOption: any, MVOption: any) => {
+  let text = value
+
+  //console.log('presentValueTrans', value, type, BinaryOption, MVOption)
+
+  if (type === TypeEnum.AI || type === TypeEnum.AV || type === TypeEnum.AO) {
+    text = value
+  } else if (type === TypeEnum.BI || type === TypeEnum.BV || type === TypeEnum.BO) {
+    if (BinaryOption.length === 2) {
+      BinaryOption.forEach((item: any) => {
+        if (item.value === value) {
+          text = item.label
+        }
+      })
+    } else {
+      text = value
+    }
+  } else if (type === TypeEnum.MV) {
+    if (MVOption.length > 0) {
+      MVOption.forEach((item: any) => {
+        if (item.value === value) {
+          text = item.label
+        }
+      })
+    } else {
+      text = value
+    }
+  }
+
+  return text
+}
+
+export const isPriority = (type: string) => {
+  let flag = false
+
+  if (
+    type === TypeEnum.MV ||
+    type === TypeEnum.BV ||
+    type === TypeEnum.BO ||
+    type === TypeEnum.AV ||
+    type === TypeEnum.AO
+  ) {
+    flag = true
+  }
+
+  return flag
+}
