@@ -254,6 +254,12 @@ export default {
     system_status: "システムステータス",
     vendor_identifier: "ベンダー識別子",
     vendor_name: "ベンダー名",
+    setCurrentValue: "現在の値を設定",
+    set_value: "値を設定",
+    release: "解放",
+    release_all: "すべての値を解放",
+    compulsion: "強制",
+    advance_option: "詳細設定",
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",
@@ -313,5 +319,6 @@ export default {
     writeAccessDenied: "アクセス権拒否：このプロパティは書き込み不可です",
     modifyFailed:
       "修正に失敗しました：操作エラーが発生しました。後で再試行してください",
+    msg_priority_cannot_empty: "優先度は空にできません",
   },
 };

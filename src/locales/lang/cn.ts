@@ -248,6 +248,12 @@ export default {
     system_status: "系统状态",
     vendor_identifier: "供应商编号",
     vendor_name: "供应商名称",
+    setCurrentValue: "设置当前值",
+    set_value: "设置值",
+    release: "释放",
+    release_all: "释放所有值",
+    compulsion: "强制",
+    advance_option: "高级选项",
   },
   msg: {
     updateSuccess: "设备状态更新成功",
@@ -293,5 +299,6 @@ export default {
     modifySuccess: "修改成功",
     writeAccessDenied: "权限拒绝：该属性不允许写入",
     modifyFailed: "修改失败：操作异常，请稍后重试",
+    msg_priority_cannot_empty: "优先级不能为空",
   },
 };

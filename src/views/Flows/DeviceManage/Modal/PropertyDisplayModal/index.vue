@@ -245,6 +245,14 @@
           </div>
         </div>
       </div>
+
+      <SetPresentValueModal
+        v-if="isShow"
+        v-model:modelShow="isShow"
+        :deviceData="deviceData"
+        :displayData="bacnetData"
+        :options="options"
+      />
     </div>
   </a-modal>
 </template>
@@ -264,6 +272,7 @@ import Icons from "@/icons/index.vue";
 import { message } from "ant-design-vue";
 import { PriorityOption, BooleanOption } from "../../utils/options";
 import { readIotPoints, readMetricById } from "@/api";
+import SetPresentValueModal from "../SetPresentValueModal/index.vue";
 
 interface EditState {
   [key: string]: boolean;

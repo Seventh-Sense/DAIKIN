@@ -280,6 +280,17 @@ const startDataPeriodicRefresh = () => {
   if (data.value.length === 0) return;
 
   refreshPointValues();
+
+  interval = window.setInterval(async () => {
+    if (
+      !isBacnet.value &&
+      !isBacnetEdit.value &&
+      !isModbus.value &&
+      !isKNX.value
+    ) {
+      refreshPointValues();
+    }
+  }, 3000);
 };
 
 const refreshPointValues = async () => {

@@ -254,6 +254,12 @@ export default {
     system_status: "System Status",
     vendor_identifier: "Vendor Identifier",
     vendor_name: "Vendor Name",
+    setCurrentValue: "Set Current Value",
+    set_value: "Set value",
+    release: "Release",
+    release_all: "Release all values",
+    compulsion: "Compel",
+    advance_option: "Advanced options",
   },
   msg: {
     updateSuccess: "Device status updated successfully",
@@ -305,5 +311,6 @@ export default {
     writeAccessDenied: "Permission denied: This property cannot be written",
     modifyFailed:
       "Modification failed: Operation exception, please try again later",
+    msg_priority_cannot_empty: "Priority cannot be empty",
   },
 };
