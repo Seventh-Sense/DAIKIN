@@ -40,6 +40,7 @@
               v-for="(subMenu, subIndex) in menu.children"
               :key="subMenu.key"
               class="second-submenu"
+              @click.prevent="handleSecondMenuClick(subMenu)"
             >
               <template #icon>
                 <Icons
@@ -272,6 +273,10 @@ const confirmDelete = () => {
     deleteModalVisible.value = false;
   }
 };
+
+const handleSecondMenuClick = (subMenu: any) => {
+  console.log("点击了二级菜单", subMenu);
+}
 </script>
 
 <style lang="less" scoped>

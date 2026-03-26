@@ -26,15 +26,15 @@ export const FlowPro = [
   },
   {
     key: "5",
-    icon: "multistate",
-    labelKey: "layout.flow_5",
-    path: "/home/ui",
-  },
-  {
-    key: "6",
     icon: "checkCircle",
     labelKey: "layout.flow_6",
     path: "/home/check",
+  },
+  {
+    key: "6",
+    icon: "multistate",
+    labelKey: "layout.flow_5",
+    path: "/home/ui",
   },
 ];
 

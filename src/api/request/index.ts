@@ -7,7 +7,7 @@ import axios, {
 } from "axios";
 import { useUserStore } from "@/pinia/modules/user";
 
-const userStore = useUserStore();
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const TIMEOUT = 10000;
 
@@ -22,6 +22,8 @@ const service: AxiosInstance = axios.create({
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig<any>) => {
     // 统一设置用户身份 Token
+    const userStore = useUserStore();
+    
     const token = userStore.userInfo?.token;
 
     if (token) {

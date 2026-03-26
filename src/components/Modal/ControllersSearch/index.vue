@@ -176,10 +176,10 @@ const handleOk = (e: MouseEvent) => {
   //console.log("选中的行keys:", selectedRowKeys.value, props.type);
 
   try {
-    const currentRawMenus = [...stepStore.rawMenus];
+    const currentRawMenus: any = [...stepStore.rawMenus];
 
     const targetMenuIndex = currentRawMenus.findIndex(
-      (menu) => menu.key === props.type,
+      (menu: any) => menu.key === props.type,
     );
 
     // 1. 获取已添加地址、当前搜索结果的地址、当前勾选地址
@@ -238,11 +238,12 @@ const handleOk = (e: MouseEvent) => {
           icon: "deviceA",
           label: item.address,
           data: {
-            address: item.address
+            address: item.address,
           },
           children: thirdLevelMenus,
         };
       });
+
       currentRawMenus[targetMenuIndex].children = [
         ...currentRawMenus[targetMenuIndex].children,
         ...newSubMenus,
