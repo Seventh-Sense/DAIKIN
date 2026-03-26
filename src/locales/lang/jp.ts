@@ -10,6 +10,10 @@ export default {
     },
     appname: " 研奇試運転ツール ",
     manufacturer: " ダイキンエアコン ",
+    msg_login_success: "ログインに成功しました",
+    msg_login_fail: "ログインに失敗しました",
+    msg_auth_fail:
+      "認証に失敗しました。ユーザー名またはパスワードが正しくありません",
   },
   layout: {
     home: "ホーム",

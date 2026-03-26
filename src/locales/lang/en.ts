@@ -10,6 +10,9 @@ export default {
     },
     appname: "Yanqi Trial Operation Tool",
     manufacturer: "Daikin Air Conditioning",
+    msg_login_success: "Login successful",
+    msg_login_fail: "Login failed",
+    msg_auth_fail: "Authentication failed, incorrect username or password",
   },
   layout: {
     home: "Home",

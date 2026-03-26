@@ -10,6 +10,9 @@ export default {
     },
     appname: "研奇试运行工具",
     manufacturer: "大金空调",
+    msg_login_success: "登录成功",
+    msg_login_fail: "登录失败",
+    msg_auth_fail: "认证失败，用户名密码错误",
   },
   layout: {
     home: "首页",

@@ -5,7 +5,9 @@ import axios, {
   InternalAxiosRequestConfig,
   AxiosResponse,
 } from "axios";
+import { useUserStore } from "@/pinia/modules/user";
 
+const userStore = useUserStore();
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const TIMEOUT = 10000;
 
@@ -18,8 +20,13 @@ const service: AxiosInstance = axios.create({
 });
 
 service.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig<any>) => {
     // 统一设置用户身份 Token
+    const token = userStore.userInfo?.token;
+
+    if (token) {
+      (config.headers as any)["token"] = token;
+    }
     return config;
   },
   (error: AxiosError) => {
@@ -50,7 +57,7 @@ export const get = <T = any>(
 
 export const post = <T = any>(
   url: string,
-  data?: Record<string, any>,
+  data?: any,
   config?: AxiosRequestConfig,
 ): Promise<T> => {
   return service.post(url, data, config);

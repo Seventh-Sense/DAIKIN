@@ -10,8 +10,8 @@
     <a-col :span="9">
       <div class="login-box">
         <img src="@/assets/logo.png" alt="logo" class="logo-img" />
-        <span class="login-box-title"> {{ t('login.manufacturer')}} </span>
-        <span class="login-box-name"> {{ t('login.appname')}} </span>
+        <span class="login-box-title"> {{ t("login.manufacturer") }} </span>
+        <span class="login-box-name"> {{ t("login.appname") }} </span>
         <a-form
           :model="formState"
           :rules="rules"
@@ -72,6 +72,7 @@ import LangSelect from "@/components/LangSelect/index.vue";
 import { useI18n } from "vue-i18n";
 import { routerTurnByName } from "@/router/util";
 import { useUserStore } from "@/pinia/modules/user";
+import { message } from "ant-design-vue";
 
 const userStore = useUserStore();
 const { t } = useI18n();
@@ -91,10 +92,21 @@ const formState = reactive<FormState>({
 });
 
 const onFinish = async (values: any) => {
-  userStore.login(values);
+  try {
+    let result = await userStore.login(values);
+    console.log(result);
+    message.success(t("login.msg_login_success"));
 
-  //缓存用户信息
-  routerTurnByName("Home", false, false);
+    routerTurnByName("Home", false, false);
+  } catch (errData) {
+    console.log("登录失败", errData);
+    const err = errData as any;
+    if (err.detail && err.detail === "Incorrect username or password") {
+      message.error(t("login.msg_auth_fail"));
+    } else {
+      message.error(t("login.msg_login_fail"));
+    }
+  }
 };
 
 const onFinishFailed = (errorInfo: any) => {
