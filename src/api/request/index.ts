@@ -6,10 +6,16 @@ import axios, {
   AxiosResponse,
 } from "axios";
 import { useUserStore } from "@/pinia/modules/user";
-
+import { message } from "ant-design-vue";
+import { formatMessage } from "@/utils/function";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const TIMEOUT = 10000;
+
+interface ErrorResponse {
+  detail?: string;
+  [key: string]: any;
+}
 
 const service: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -23,11 +29,11 @@ service.interceptors.request.use(
   (config: InternalAxiosRequestConfig<any>) => {
     // 统一设置用户身份 Token
     const userStore = useUserStore();
-    
-    const token = userStore.userInfo?.token;
+
+    const token = userStore.userInfo?.access_token;
 
     if (token) {
-      (config.headers as any)["token"] = token;
+      (config.headers as any)["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -39,9 +45,19 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse) => {
     // 统一处理响应错误，例如 token 无效、服务端异常等
+    console.log("resolve");
     return Promise.resolve(response.data);
   },
   (err: AxiosError) => {
+    const userStore = useUserStore();
+    const errData = err.response?.data as ErrorResponse;
+    console.log('err', errData.detail)
+
+    if (err.status === 401) {
+      message.error(formatMessage("login.msg_login_expired"));
+      //userStore.logout();
+    }
+
     return Promise.reject(err);
   },
 );

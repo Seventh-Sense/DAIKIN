@@ -14,6 +14,8 @@ export default {
     msg_login_fail: "ログインに失敗しました",
     msg_auth_fail:
       "認証に失敗しました。ユーザー名またはパスワードが正しくありません",
+    msg_login_expired:
+      "ログインの有効期限が切れました。再度ログインしてください！",
   },
   layout: {
     home: "ホーム",
@@ -55,6 +57,14 @@ export default {
     email: "メールアドレス",
     role: "役割",
     operation: "操作",
+    center: "個人センター",
+    manage: "ユーザー管理",
+    basic_info: "基本情報",
+    full_name: "フルネーム",
+    update_time: "更新時間",
+    create_time: "作成時間",
+    password: "パスワード",
+    modify: "変更",
   },
   common: {
     success: "操作に成功しました",

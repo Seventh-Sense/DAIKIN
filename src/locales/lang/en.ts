@@ -13,6 +13,7 @@ export default {
     msg_login_success: "Login successful",
     msg_login_fail: "Login failed",
     msg_auth_fail: "Authentication failed, incorrect username or password",
+    msg_login_expired: "Your login has expired, please log in again!",
   },
   layout: {
     home: "Home",
@@ -54,6 +55,14 @@ export default {
     email: "Email",
     role: "Role",
     operation: "Operation",
+    center: "Personal Center",
+    manage: "User Management",
+    basic_info: "Basic Information",
+    full_name: "Full Name",
+    update_time: "Update Time",
+    create_time: "Create Time",
+    password: "Password",
+    modify: "Modify",
   },
   common: {
     success: "Operation Success",

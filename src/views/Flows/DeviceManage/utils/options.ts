@@ -1,4 +1,4 @@
-export const formatMessage = (key: string, params?: Record<string, any>) => {
+const formatMessage = (key: string, params?: Record<string, any>) => {
   // 安全校验：确保i18n实例存在
   if (!window.$i18n) {
     console.warn("i18n instance is not initialized");

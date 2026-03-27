@@ -14,6 +14,15 @@
 import LangSelect from "@/components/LangSelect/index.vue";
 import AvatarShow from "@/components/AvatarShow/index.vue";
 import ProgressDisplay from "@/components/ProgressDisplay/index.vue";
+import { useRoute } from "vue-router";
+import { onMounted } from "vue";
+
+const route = useRoute();
+
+
+onMounted(() => {
+  //console.log('route.params', route)
+})
 </script>
 
 <style lang="less" scoped>

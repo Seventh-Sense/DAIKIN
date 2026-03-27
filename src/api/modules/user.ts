@@ -1,5 +1,4 @@
-import { post, get } from "../request";
-import type { LoginParams } from "@/types/user";
+import { post, get, put } from "../request";
 import qs from "qs";
 
 export const loginApi = (params: any) => {
@@ -18,3 +17,13 @@ export const loginApi = (params: any) => {
     },
   });
 };
+
+//读取用户信息
+export const getUserInfo = () => {
+  return get('/users/me')
+}
+
+//修改用户信息
+export const updateUserInfo = (id: any, data: any) => {
+  return put('/users/' + id, data)
+}

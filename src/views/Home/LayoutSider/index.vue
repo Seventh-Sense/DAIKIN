@@ -130,6 +130,7 @@ import ControllersSearch from "@/components/Modal/ControllersSearch/index.vue";
 import { message } from "ant-design-vue";
 import { useI18n } from "vue-i18n";
 import { routerTurnByName } from "../../../router/util";
+import { getControllerInfo } from "@/api/modules/page";
 
 const { t } = useI18n();
 const stepStore = useStepStore();
@@ -274,8 +275,17 @@ const confirmDelete = () => {
   }
 };
 
-const handleSecondMenuClick = (subMenu: any) => {
-  console.log("点击了二级菜单", subMenu);
+const handleSecondMenuClick = async (subMenu: any) => {
+  //二级菜单展开，拉取设备信息
+  if (openKeys.value.includes(subMenu.key)) {
+    console.log('二级菜单已展开 →', subMenu.label);
+    try {
+      const result = await getControllerInfo(subMenu.label)
+
+    } catch (e) {
+      console.error("获取yaml失败：", e);
+    }
+  }
 }
 </script>
 
