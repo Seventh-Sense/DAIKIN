@@ -27,3 +27,8 @@ export const getUserInfo = () => {
 export const updateUserInfo = (id: any, data: any) => {
   return put('/users/' + id, data)
 }
+
+//读取用户列表
+export const getUserList = () => {
+  return get('/users')
+}
