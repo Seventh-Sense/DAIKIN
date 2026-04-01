@@ -1,5 +1,5 @@
 <template>
-  <div class="user" style="position: relative; height: 100%;">
+  <div class="user" style="position: relative; height: 100%">
     <div class="user-top">
       <a-button type="primary" class="modal-btn" @click="onAdd">
         {{ t("user.add") }}
@@ -20,17 +20,18 @@
         </template>
       </template>
     </a-table>
-    <UserCreate v-model:modelShow="showModal"/>
+    <UserCreate v-model:modelShow="showModal" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { deleteUser, getUserList } from "@/api";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
 import { useUserStore } from "@/pinia/modules/user";
-import UserCreate from '@/components/Modal/User/UserCreate/index.vue'
+import UserCreate from "@/components/Modal/User/UserCreate/index.vue";
+import { message } from "ant-design-vue";
 
 const userStore = useUserStore();
 const { t } = useI18n();
@@ -69,7 +70,7 @@ const columns = computed(() => [
 ]);
 
 const showModal = ref(false);
-const mode = ref(false)
+const mode = ref(false);
 
 const data = ref([]);
 
@@ -90,20 +91,35 @@ const readUserList = async () => {
   }
 };
 
+// 监听弹窗关闭，刷新表格
+watch(showModal, (newVal) => {
+  // 当弹窗从显示变为隐藏时刷新
+  if (!newVal) {
+    readUserList();
+  }
+});
+
 const onAdd = () => {
   showModal.value = true;
 };
 
-const onEdit = (record: any) => {};
+const deleteLoading = ref(false);
 
 const onDelete = async (record: any) => {
+  if (deleteLoading.value) return;
+
+  deleteLoading.value = true;
+
   try {
-    const result = await deleteUser(record.id);
+    await deleteUser(record.id);
 
-    
-
+    message.success(t("user.delete_success"));
   } catch (e) {
     console.log("onDelete", e);
+    message.error(t("user.delete_failed"));
+  } finally {
+    // 重置加载状态
+    deleteLoading.value = false;
   }
 };
 </script>

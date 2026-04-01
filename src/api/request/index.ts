@@ -44,7 +44,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse) => {
     // 统一处理响应错误，例如 token 无效、服务端异常等
-    console.log("resolve");
+    //console.log("resolve");
     return Promise.resolve(response.data);
   },
   (err: AxiosError) => {
@@ -52,7 +52,7 @@ service.interceptors.response.use(
     const errData = err.response?.data as ErrorResponse;
     console.log("err", errData.detail);
 
-    if (err.status === 401) {
+    if (errData.detail === 'Could not validate credentials') {
       message.error(formatMessage("login.msg_login_expired"));
       userStore.logout();
 

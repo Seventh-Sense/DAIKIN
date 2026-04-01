@@ -40,12 +40,12 @@
 
 <script setup lang="ts">
 import { message } from "ant-design-vue";
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { FlowLite, FlowPro, FlowStandard } from "./optons";
 import { useStepStore } from "@/pinia/modules/step";
 import { routerTurnByName } from "../../../router/util";
-import { getControllerList, getVersion } from "@/api/modules/page";
+import { getControllerList } from "@/api/modules/page";
 
 const props = defineProps({
   modelShow: {
