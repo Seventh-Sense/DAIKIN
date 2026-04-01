@@ -19,7 +19,6 @@ interface ErrorResponse {
 
 const service: AxiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: TIMEOUT,
   headers: {
     "Content-Type": "application/json;charset=utf-8", // 默认请求头
   },
@@ -51,11 +50,13 @@ service.interceptors.response.use(
   (err: AxiosError) => {
     const userStore = useUserStore();
     const errData = err.response?.data as ErrorResponse;
-    console.log('err', errData.detail)
+    console.log("err", errData.detail);
 
     if (err.status === 401) {
       message.error(formatMessage("login.msg_login_expired"));
-      //userStore.logout();
+      userStore.logout();
+
+      return new Promise(() => {});
     }
 
     return Promise.reject(err);

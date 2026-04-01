@@ -12,7 +12,7 @@
   >
     <div class="modal">
       <div class="modal-title">
-        <a-button type="primary" class="modal-btn" @click="onSearch">
+        <a-button type="primary" class="modal-btn" @click="onSearch" :loading="loading">
           {{ t("device_search.search") }}
         </a-button>
       </div>
@@ -20,6 +20,7 @@
         <a-table
           class="ant-table-striped"
           size="middle"
+          :loading="loading"
           :scroll="{ y: 360 }"
           :pagination="false"
           :columns="columns"
@@ -39,11 +40,12 @@
 
 <script setup lang="ts">
 import { message } from "ant-design-vue";
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { FlowLite, FlowPro, FlowStandard } from "./optons";
 import { useStepStore } from "@/pinia/modules/step";
 import { routerTurnByName } from "../../../router/util";
+import { getControllerList, getVersion } from "@/api/modules/page";
 
 const props = defineProps({
   modelShow: {
@@ -70,7 +72,8 @@ const autoCheckAddedRows = () => {
   if (data.value.length === 0) return;
 
   // 1. 获取已添加的地址列表
-  const addedAddresses = getAddedAddresses();
+  const addedAddresses = getAddedAddresses().filter(Boolean);
+
   // 2. 匹配已添加的行并勾选
   const matchedKeys = data.value
     .filter((item: any) => addedAddresses.includes(item.address))
@@ -103,51 +106,62 @@ const columns = computed(() => [
   { title: t("device_search.name"), dataIndex: "name" },
   { title: t("device_search.slave_id"), dataIndex: "slaveid" },
   { title: t("device_search.address"), dataIndex: "address" },
-  { title: t("device_search.slave_sn"), dataIndex: "slavesn" },
-  { title: t("device_search.model"), dataIndex: "model" },
+  { title: t("device_search.version"), dataIndex: "version" },
 ]);
-
+const loading = ref(false);
 const data = ref<any>([]);
 
-const onSearch = () => {
-  console.log("onSearch");
-  data.value = [
-    {
-      key: "1",
-      name: "John Brown",
-      slaveid: 32,
-      address: "192.168.1.1",
-      slavesn: "asd",
-      model: "asda",
-    },
-    {
-      key: "2",
-      name: "John Brown",
-      slaveid: 32,
-      address: "192.168.1.2",
-      slavesn: "asd",
-      model: "asda",
-    },
-    {
-      key: "3",
-      name: "John Brown",
-      slaveid: 32,
-      address: "192.168.1.3",
-      slavesn: "asd",
-      model: "asda",
-    },
-    {
-      key: "4",
-      name: "John Brown",
-      slaveid: 32,
-      address: "192.168.1.4",
-      slavesn: "asd",
-      model: "asda",
-    },
-  ];
+const typeMap: Record<string, string> = {
+  "1": "pro",
+  "2": "standard",
+  "3": "lite",
+};
 
-  // 数据加载完成后，执行自动勾选逻辑
-  autoCheckAddedRows();
+const onSearch = async () => {
+  data.value = [];
+
+  try {
+    loading.value = true;
+    const productType = typeMap[props.type] || "pro";
+
+    const result = await getControllerList({
+      product_series: productType,
+      timeout: 10,
+      network_interface: "192.168.10.12",
+    });
+
+    if (!result || !result.success) {
+      message.error(t("device_search.request_failed"));
+      return;
+    }
+
+    console.log("搜索控制器结果:", result);
+    const { devices = [] } = result;
+
+    if (devices.length === 0) {
+      message.error(t("device_search.no_devices_found"));
+      return;
+    }
+
+    data.value = devices.map((device: any, index: number) => ({
+      key: device.device_address,
+      name: device.device_model,
+      slaveid: device.device_id,
+      address: device.device_address,
+      version: device.device_version,
+    }));
+
+    // 自动勾选
+    autoCheckAddedRows();
+
+    message.success(t("device_search.search_success"));
+    
+  } catch (error) {
+    console.error("搜索控制器失败:", error);
+    message.error(t("device_search.search_error"));
+  } finally {
+    loading.value = false;
+  }
 };
 
 const getRowClassName = (_record: any, index: number) => {
@@ -353,7 +367,7 @@ const handlePageRedirectAfterDelete = () => {
 
   &-btn {
     height: 32px;
-    width: 72px;
+    min-width: 72px;
   }
 }
 </style>

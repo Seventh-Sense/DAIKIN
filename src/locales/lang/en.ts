@@ -82,6 +82,11 @@ export default {
     address: "Address",
     slave_sn: "Device SN",
     model: "Model",
+    version: "Version",
+    search_success: "Search successful",
+    no_devices_found: "No devices found",
+    request_failed: "Request failed",
+    search_error: "Search failed, please try again",
     msg_1: "Failed to update menu, please try again!",
     msg_2: "No changes made!",
     msg_8:

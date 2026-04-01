@@ -83,7 +83,12 @@ export default {
     slave_id: " 機器 ID",
     address: " アドレス ",
     slave_sn: " 機器 SN",
+    version: "バージョン",
     model: " 機種 ",
+    search_success: "検索に成功しました",
+    no_devices_found: "デバイスが見つかりませんでした",
+    request_failed: "リクエストに失敗しました",
+    search_error: "検索エラー、再試行してください",
     msg_1: " メニューの更新に失敗しました、再試行してください！",
     msg_2: " 変更はありません！",
     msg_8:

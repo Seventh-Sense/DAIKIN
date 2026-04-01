@@ -1,4 +1,4 @@
-import { post, get, put } from "../request";
+import { post, get, put, del } from "../request";
 import qs from "qs";
 
 export const loginApi = (params: any) => {
@@ -31,4 +31,14 @@ export const updateUserInfo = (id: any, data: any) => {
 //读取用户列表
 export const getUserList = () => {
   return get('/users')
+}
+
+//新增用户
+export const registerUser = (data: any) => {
+  return post('/users/register', data)
+}
+
+//删除用户
+export const deleteUser = (id: any) => {
+  return del('/users/' + id)
 }

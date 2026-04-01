@@ -1,16 +1,14 @@
 <template>
-  <div>
+  <div class="user" style="position: relative; height: 100%;">
+    <div class="user-top">
+      <a-button type="primary" class="modal-btn" @click="onAdd">
+        {{ t("user.add") }}
+      </a-button>
+    </div>
     <a-table :columns="columns" :data-source="data">
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'actions'">
           <div class="table-actions">
-            <Icons
-              name="informationCircle"
-              type="mono-line"
-              :size="24"
-              :color="{ normal: '#222222FF' }"
-              @click="onEdit(record)"
-            />
             <Icons
               name="delete"
               type="mono-line"
@@ -22,15 +20,19 @@
         </template>
       </template>
     </a-table>
+    <UserCreate v-model:modelShow="showModal"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import { getUserList } from "@/api";
+import { deleteUser, getUserList } from "@/api";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
+import { useUserStore } from "@/pinia/modules/user";
+import UserCreate from '@/components/Modal/User/UserCreate/index.vue'
 
+const userStore = useUserStore();
 const { t } = useI18n();
 
 const columns = computed(() => [
@@ -66,6 +68,9 @@ const columns = computed(() => [
   },
 ]);
 
+const showModal = ref(false);
+const mode = ref(false)
+
 const data = ref([]);
 
 onMounted(() => {
@@ -85,13 +90,38 @@ const readUserList = async () => {
   }
 };
 
-const onEdit = (record: any) => {
+const onAdd = () => {
+  showModal.value = true;
+};
 
-}
+const onEdit = (record: any) => {};
 
-const onDelete = (record: any) => {
+const onDelete = async (record: any) => {
+  try {
+    const result = await deleteUser(record.id);
+
     
-}
+
+  } catch (e) {
+    console.log("onDelete", e);
+  }
+};
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.user {
+  &-top {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 48px;
+  }
+}
+
+.table-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+</style>
