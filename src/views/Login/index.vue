@@ -54,7 +54,7 @@
               type="primary"
               html-type="submit"
               class="login-form-button"
-              :loading="userStore.isLoading"
+              :loading="loading"
             >
               {{ $t("login.loginBtn") }}
             </a-button>
@@ -86,16 +86,21 @@ const rules = computed(() => ({
   password: [{ required: true, message: t("login.placeholder.password") }],
 }));
 
+const loading = ref(false);
+
 const formState = reactive<FormState>({
   username: "",
   password: "",
 });
 
 const onFinish = async (values: any) => {
+  loading.value = true;
+
   try {
-    let result = await userStore.login(values);
-    console.log(result);
+    await userStore.login(values);
+    //console.log(result);
     message.success(t("login.msg_login_success"));
+    loading.value = false;
 
     routerTurnByName("Home", false, false);
   } catch (errData) {
@@ -106,6 +111,8 @@ const onFinish = async (values: any) => {
     } else {
       message.error(t("login.msg_login_fail"));
     }
+
+    loading.value = false;
   }
 };
 

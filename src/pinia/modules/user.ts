@@ -5,16 +5,20 @@ import { routerTurnByName } from "@/router/util";
 import { useStepStore } from "./step";
 import type { AxiosError } from "axios";
 
+interface PersistOptions {
+  key: string;
+  storage: Storage;
+  paths: string[];
+}
+
 export const useUserStore = defineStore(
   "user",
   () => {
     const userInfo = ref<any>(null);
-    const isLoading = ref<Boolean>(false);
 
     const login = async (params: any) => {
       //console.log('LoginParams', params)
       try {
-        isLoading.value = true;
         const res = await loginApi(params);
 
         //缓存用户信息
@@ -25,8 +29,6 @@ export const useUserStore = defineStore(
       } catch (error) {
         const err = error as AxiosError;
         return Promise.reject(err.response?.data);
-      } finally {
-        isLoading.value = false;
       }
     };
 
@@ -41,7 +43,6 @@ export const useUserStore = defineStore(
 
     return {
       userInfo,
-      isLoading,
       login,
       logout,
     };
@@ -51,6 +52,6 @@ export const useUserStore = defineStore(
       key: "userToken",
       storage: localStorage,
       paths: ["userInfo"],
-    } as any,
+    } as PersistOptions,
   },
 );
