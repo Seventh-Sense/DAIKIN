@@ -111,7 +111,7 @@
 <script setup lang="ts">
 import { formatDateTimeToMinute, handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
-import { onMounted, ref, computed, nextTick, onUnmounted, provide } from "vue";
+import { onMounted, ref, computed, nextTick, onUnmounted, provide, watch } from "vue";
 import Icons from "@/icons/index.vue";
 import {
   getDeviceTypeLabel,
@@ -133,6 +133,11 @@ import {
   importFileData,
 } from "@/api";
 import jsonList from "./utils/Property.json";
+import { useStepStore } from "@/pinia/modules/step";
+import { useControllerStore } from "@/pinia/modules/controller";
+
+const stepStore = useStepStore();
+const controllerStore = useControllerStore();
 
 const { t } = useI18n();
 
@@ -226,8 +231,6 @@ onMounted(() => {
   calculateTableHeight();
   // 监听窗口大小变化，重新计算高度
   window.addEventListener("resize", calculateTableHeight);
-
-  initData();
 });
 
 onUnmounted(() => {
@@ -235,28 +238,29 @@ onUnmounted(() => {
 });
 
 const initData = async () => {
+  data.value = [];
+
   loading.value = true;
 
-  try {
-    const res = await getDevices();
+  const currentIP = stepStore.getCurrentIP();
+  const controllerData = controllerStore.getControllerByIp(currentIP);
 
-    if (res.status !== "OK") {
-      console.warn("Non-OK response status:", res.status);
-      return;
-    }
-
-    if (!res.data || res.data.length === 0) {
-      return;
-    }
-
-    //console.log("获取设备列表成功:", res);
-    data.value = res.data.map(transformDeviceItem);
-  } catch (error) {
-    console.error("数据加载失败:", error);
-  } finally {
-    loading.value = false;
+  if (controllerData === undefined) {
+    message.error(t("mqtt.controller_not_found"));
+    return;
   }
+
+  const { devices } = controllerData;
+
+
+  loading.value = false;
 };
+
+watch(
+  () => stepStore.getCurrentIP(),
+  () => initData(),
+  { immediate: true },
+);
 
 const onAdd = () => {
   deviceData.value = {};

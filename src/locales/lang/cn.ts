@@ -133,8 +133,7 @@ export default {
     interval: "间隔时间",
     cancel: "取消",
     save: "确定",
-    sub_topic_empty: "订阅主题不能为空！",
-    pub_topic_empty: "发布主题不能为空！",
+    no_empty: "请填写所有字段",
     interval_invalid: "间隔时间必须是大于0的数字！",
     confirm_delete: '确认删除"{name}"这个卡片吗？',
     modal_title: "添加Topic",
@@ -144,6 +143,8 @@ export default {
     save_success: "保存成功",
     max_limit_3: "最多只能添加3个Topic",
     topic_repeat: "该分组已存在，请勿重复添加",
+    sn: '设备编号',
+    pkey: '备注信息',
   },
   connectivity_check: {
     title: "连接性检查",

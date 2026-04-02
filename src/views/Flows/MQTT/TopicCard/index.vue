@@ -68,6 +68,28 @@
         </template>
         <span v-else class="topic-value">{{ interval }}</span>
       </div>
+      <div class="topic-item">
+        <span class="topic-label">{{ t("mqtt.sn") }}</span>
+        <template v-if="isEditing">
+          <a-input
+            v-model:value="editSn"
+            class="topic-input"
+            style="width: 400px"
+          />
+        </template>
+        <span v-else class="topic-value">{{ sn }}</span>
+      </div>
+      <div class="topic-item">
+        <span class="topic-label">{{ t("mqtt.pkey") }}</span>
+        <template v-if="isEditing">
+          <a-input
+            v-model:value="editPkey"
+            class="topic-input"
+            style="width: 400px"
+          />
+        </template>
+        <span v-else class="topic-value">{{ pkey }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -95,19 +117,25 @@ const emit = defineEmits<{
 const isEditing = ref(false);
 const editSubTopic = ref("");
 const editPubTopic = ref("");
-const editInterval = ref("");
+const editInterval = ref(1);
+const editSn = ref("");
+const editPkey = ref("");
 
 const cardName = computed(() => props.data.name);
 const subTopic = computed(() => props.data.sub_topic);
 const pubTopic = computed(() => props.data.pub_topic);
 const interval = computed(() => props.data.interval);
+const sn = computed(() => props.data.sn || "");
+const pkey = computed(() => props.data.pkey || "");
 
 watch(
   () => props.data,
   (newData) => {
     editSubTopic.value = newData.sub_topic;
     editPubTopic.value = newData.pub_topic;
-    editInterval.value = newData.interval.toString();
+    editInterval.value = newData.interval;
+    editSn.value = newData.sn;
+    editPkey.value = newData.pkey;
   },
   { immediate: true },
 );
@@ -117,17 +145,17 @@ const enterEdit = () => {
 };
 
 const handleSave = () => {
-  if (!editSubTopic.value.trim()) {
-    message.warn(t("mqtt.sub_topic_empty"));
+  if (
+    !editSubTopic.value.trim() ||
+    !editPubTopic.value.trim() ||
+    !editSn.value.trim() ||
+    !editPkey.value.trim()
+  ) {
+    message.warn(t("mqtt.no_empty"));
     return;
   }
 
-  if (!editPubTopic.value.trim()) {
-    message.warn(t("mqtt.pub_topic_empty"));
-    return;
-  }
-
-  if (!editInterval.value || Number(editInterval.value) < 1) {
+  if (!editInterval.value) {
     message.warn(t("mqtt.interval_invalid"));
     return;
   }
@@ -137,6 +165,8 @@ const handleSave = () => {
     sub_topic: editSubTopic.value.trim(),
     pub_topic: editPubTopic.value.trim(),
     interval: editInterval.value,
+    sn: editSn.value.trim(),
+    pkey: editPkey.value.trim(),
   };
 
   emit("update", newData);
@@ -147,7 +177,9 @@ const handleSave = () => {
 const handleCancel = () => {
   editSubTopic.value = props.data.sub_topic;
   editPubTopic.value = props.data.pub_topic;
-  editInterval.value = props.data.interval.toString();
+  editInterval.value = props.data.interval;
+  editSn.value = props.data.sn;
+  editPkey.value = props.data.pkey;
 
   isEditing.value = false;
 };
@@ -159,11 +191,11 @@ const handleDelete = () => {
 
 <style lang="less" scoped>
 .topic {
-  height: 160px;
+  height: 250px;
   width: 100%;
   background-color: var(--topic-card-bg-color);
   border-radius: 6px;
-  padding: 0 6px;
+  padding: 0 12px;
 
   &-header {
     height: 40px;

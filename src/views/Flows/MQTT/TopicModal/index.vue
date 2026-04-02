@@ -3,7 +3,7 @@
     :open="modelShow"
     @update:open="handleModalOpenChange"
     :title="t('mqtt.modal_title')"
-    :width="400"
+    :width="600"
     centered
     :maskClosable="false"
     :destroyOnClose="true"
@@ -30,6 +30,14 @@
           :min="1"
           style="width: 376px"
         />
+      </div>
+      <div class="modal-block">
+        <span class="modal-block-property">{{ t("mqtt.sn") }}</span>
+        <a-input v-model:value="data.sn" />
+      </div>
+      <div class="modal-block">
+        <span class="modal-block-property">{{ t("mqtt.pkey") }}</span>
+        <a-input v-model:value="data.pkey" />
       </div>
     </div>
   </a-modal>
@@ -58,6 +66,8 @@ const data = ref({
   sub_topic: "",
   pub_topic: "",
   interval: 10,
+  sn: "",
+  pkey: "",
 });
 
 const baseOptions: any[] = [
@@ -65,7 +75,7 @@ const baseOptions: any[] = [
     value: "BACnet",
   },
   {
-    value: "Modbus TCP",
+    value: "ModbusTCP",
   },
   {
     value: "KNX",
@@ -90,14 +100,16 @@ const handleModalOpenChange = (newOpenState: boolean) => {
 };
 
 const handleOk = () => {
-  if (!data.value.sub_topic.trim()) {
-    message.warn(t("mqtt.sub_topic_empty"));
+  if (
+    !data.value.sub_topic.trim() ||
+    !data.value.pub_topic.trim() ||
+    !data.value.sn.trim() ||
+    !data.value.pkey.trim()
+  ) {
+    message.warn(t("mqtt.no_empty"));
     return;
   }
-  if (!data.value.pub_topic.trim()) {
-    message.warn(t("mqtt.pub_topic_empty"));
-    return;
-  }
+
   if (!data.value.interval || Number(data.value.interval) < 1) {
     message.warn(t("mqtt.interval_invalid"));
     return;
@@ -108,6 +120,8 @@ const handleOk = () => {
     sub_topic: data.value.sub_topic.trim(),
     pub_topic: data.value.pub_topic.trim(),
     interval: data.value.interval,
+    sn: data.value.sn.trim(),
+    pkey: data.value.pkey.trim(),
   };
 
   emit("add", newTopic);
@@ -119,10 +133,12 @@ const handleOk = () => {
 
 const resetForm = () => {
   data.value = {
-    serial_number: "Modbus RTU",
+    serial_number: "ModbusTCP",
     sub_topic: "",
     pub_topic: "",
     interval: 10,
+    sn: "",
+    pkey: "",
   };
 };
 </script>

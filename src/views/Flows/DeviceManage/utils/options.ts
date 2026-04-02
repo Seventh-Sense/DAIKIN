@@ -36,10 +36,10 @@ export const TypeOptions = [
     label: "BACnet/IP",
     value: DeviceTypeEnum.BACnet,
   },
-  {
-    label: "ModbusRTU",
-    value: DeviceTypeEnum.ModbusRTU,
-  },
+  // {
+  //   label: "ModbusRTU",
+  //   value: DeviceTypeEnum.ModbusRTU,
+  // },
   {
     label: "ModbusTCP",
     value: DeviceTypeEnum.ModbusTCP,

@@ -134,8 +134,7 @@ export default {
     interval: "Interval",
     cancel: "Cancel",
     save: "Save",
-    sub_topic_empty: "Subscribe topic cannot be empty!",
-    pub_topic_empty: "Publish topic cannot be empty!",
+    no_empty: "Please fill in all fields.",
     interval_invalid: "Interval must be a number greater than 0!",
     confirm_delete: 'Are you sure you want to delete the card "{name}"?',
     modal_title: "Add Topic",
@@ -145,6 +144,8 @@ export default {
     save_success: "Saved successfully",
     max_limit_3: "A maximum of 3 Topics can be added.",
     topic_repeat: "This group already exists, please do not add it repeatedly.",
+    sn: "Device SN",
+    pkey: "Remark",
   },
   connectivity_check: {
     title: "Connectivity Check",

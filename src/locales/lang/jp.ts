@@ -137,8 +137,7 @@ export default {
     interval: "インターバル",
     cancel: "キャンセル",
     save: "決定",
-    sub_topic_empty: "購読トピックを入力してください。",
-    pub_topic_empty: "配信トピックを入力してください。",
+    no_empty: "全ての項目を入力してください。",
     interval_invalid: "インターバルは0より大きい数値を入力してください。",
     confirm_delete: 'カード "{name}" を削除してもよろしいですか？',
     modal_title: "Topicを追加",
@@ -149,6 +148,8 @@ export default {
     max_limit_3: "トピックは最大3つまで追加できます。",
     topic_repeat:
       "このグループは既に存在します。重複して追加しないでください。",
+    sn: "機器番号",
+    pkey: "備考",
   },
   connectivity_check: {
     title: "接続性チェック",
