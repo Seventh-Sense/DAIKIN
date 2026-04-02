@@ -72,9 +72,12 @@ import LangSelect from "@/components/LangSelect/index.vue";
 import { useI18n } from "vue-i18n";
 import { routerTurnByName } from "@/router/util";
 import { useUserStore } from "@/pinia/modules/user";
+import { useControllerStore } from "@/pinia/modules/controller";
 import { message } from "ant-design-vue";
 
 const userStore = useUserStore();
+const controllerStore = useControllerStore();
+
 const { t } = useI18n();
 interface FormState {
   username: string;
@@ -101,6 +104,8 @@ const onFinish = async (values: any) => {
     //console.log(result);
     message.success(t("login.msg_login_success"));
     loading.value = false;
+
+    controllerStore.clearAll();
 
     routerTurnByName("Home", false, false);
   } catch (errData) {

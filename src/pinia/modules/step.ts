@@ -88,6 +88,10 @@ export const useStepStore = defineStore(
       currentMenuData.value = data;
     };
 
+    const getCurrentIP = () => {
+      return currentMenuData.value.label
+    }
+
     const reset = () => {
       const init = getInitialState();
       currentStep.value = init.currentStep;
@@ -108,6 +112,7 @@ export const useStepStore = defineStore(
       updateMenuOpenKeys,
       updateRawMenus,
       updateCurrentMenuData,
+      getCurrentIP,
       reset,
     };
   },

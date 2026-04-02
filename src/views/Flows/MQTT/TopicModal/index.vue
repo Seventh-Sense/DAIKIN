@@ -25,7 +25,11 @@
       </div>
       <div class="modal-block">
         <span class="modal-block-property">{{ t("mqtt.interval") }}</span>
-        <a-input-number v-model:value="data.interval" :min="1" style="width: 376px" />
+        <a-input-number
+          v-model:value="data.interval"
+          :min="1"
+          style="width: 376px"
+        />
       </div>
     </div>
   </a-modal>
@@ -33,7 +37,7 @@
 
 <script setup lang="ts">
 import { message } from "ant-design-vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -43,23 +47,37 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  List: {
+    type: Array,
+    default: () => [],
+  },
 });
 
 const data = ref({
-  serial_number: "Modbus RTU",
-  sub_topic: "New Object",
-  pub_topic: "New Object",
+  serial_number: "",
+  sub_topic: "",
+  pub_topic: "",
   interval: 10,
 });
 
-const options: any = [
+const baseOptions: any[] = [
   {
-    value: "Modbus RTU",
+    value: "BACnet",
   },
   {
-    value: "Modbus RTU1",
+    value: "Modbus TCP",
+  },
+  {
+    value: "KNX",
   },
 ];
+
+const options = computed(() => {
+  // 取出已选的name
+  const selectedNames = props.List?.map((item: any) => item.name) || [];
+  // 返回未选中的
+  return baseOptions.filter((opt) => !selectedNames.includes(opt.value));
+});
 
 const emit = defineEmits(["update:modelShow", "add"]);
 
@@ -73,7 +91,7 @@ const handleModalOpenChange = (newOpenState: boolean) => {
 
 const handleOk = () => {
   if (!data.value.sub_topic.trim()) {
-    message.warn(t("mqtt.validate.sub_topic_empty"));
+    message.warn(t("mqtt.sub_topic_empty"));
     return;
   }
   if (!data.value.pub_topic.trim()) {

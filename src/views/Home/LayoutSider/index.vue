@@ -81,7 +81,7 @@
                 <a-menu-item
                   v-for="(item, itemIndex) in subMenu.children"
                   :key="item.key"
-                  @click="handleClick(item, subMenu)"
+                  @click.stop="handleClick(item, subMenu)"
                 >
                   <template #icon>
                     <Icons
@@ -131,6 +131,10 @@ import { message } from "ant-design-vue";
 import { useI18n } from "vue-i18n";
 import { routerTurnByName } from "../../../router/util";
 import { getControllerInfo } from "@/api/modules/page";
+import { useControllerStore } from "@/pinia/modules/controller";
+import { DeviceInitData } from "@/views/Flows/until/template";
+
+const controllerStore = useControllerStore();
 
 const { t } = useI18n();
 const stepStore = useStepStore();
@@ -278,15 +282,24 @@ const confirmDelete = () => {
 const handleSecondMenuClick = async (subMenu: any) => {
   //二级菜单展开，拉取设备信息
   if (openKeys.value.includes(subMenu.key)) {
-    console.log('二级菜单已展开 →', subMenu.label);
-    try {
-      const result = await getControllerInfo(subMenu.label)
-
-    } catch (e) {
-      console.error("获取yaml失败：", e);
-    }
+    console.log("二级菜单已展开 →", subMenu.label);
+    pullControllerFile(subMenu.label);
   }
-}
+};
+
+const pullControllerFile = (ip: string) => {
+  try {
+    //const result = await getControllerInfo(subMenu.label)
+    const config = DeviceInitData;
+
+    controllerStore.addController(ip, config);
+
+    console.log(ip, config)
+  } catch (e) {
+    console.error("无法获取控制器信息", e);
+    
+  }
+};
 </script>
 
 <style lang="less" scoped>

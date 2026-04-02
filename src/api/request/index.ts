@@ -52,7 +52,10 @@ service.interceptors.response.use(
     const errData = err.response?.data as ErrorResponse;
     console.log("err", errData.detail);
 
-    if (errData.detail === 'Could not validate credentials') {
+    if (
+      errData.detail === "Could not validate credentials" ||
+      errData.detail === "Not authenticated"
+    ) {
       message.error(formatMessage("login.msg_login_expired"));
       userStore.logout();
 

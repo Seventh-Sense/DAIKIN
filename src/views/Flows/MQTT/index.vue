@@ -5,11 +5,19 @@
       <div class="card-content-top">
         <div class="card-content-block">
           <span class="card-content-text">{{ t("mqtt.host") }}</span>
-          <a-input v-model:value="info.host" style="width: 309px" readonly />
+          <a-input
+            v-model:value="info.host"
+            style="width: 309px"
+            placeholder="47.103.19.245"
+          />
         </div>
         <div class="card-content-block">
           <span class="card-content-text">{{ t("mqtt.port") }}</span>
-          <a-input v-model:value="info.port" style="width: 309px" readonly />
+          <a-input
+            v-model:value="info.port"
+            style="width: 309px"
+            placeholder="1888"
+          />
         </div>
       </div>
       <div class="card-content-row">
@@ -42,70 +50,65 @@
     <TopicModal
       v-if="showModal"
       v-model:modelShow="showModal"
+      :List="list"
       @add="handleAdd"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
 import TopicCard from "./TopicCard/index.vue";
 import TopicModal from "./TopicModal/index.vue";
+import { useControllerStore } from "@/pinia/modules/controller";
+import { useStepStore } from "@/pinia/modules/step";
+import { message } from "ant-design-vue";
 
+const stepStore = useStepStore();
+const controllerStore = useControllerStore();
 const { t } = useI18n();
 
 const showModal = ref(false);
 
 const info = reactive({
-  host: "47.103.19.245",
-  port: "1888",
+  host: "",
+  port: "",
 });
 
-const list = reactive([
-  {
-    name: "ABCD-1234",
-    sub_topic: "/cloud/YANHUA/AC/cmd/set",
-    pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: 10,
-  },
-  {
-    name: "ABCD-12",
-    sub_topic: "/cloud/YANHUA/AC/cmd/set",
-    pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: 10,
-  },
-  {
-    name: "ABCD-34",
-    sub_topic: "/cloud/YANHUA/AC/cmd/set",
-    pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: 10,
-  },
-  {
-    name: "ABCD-1234",
-    sub_topic: "/cloud/YANHUA/AC/cmd/set",
-    pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: 10,
-  },
-  {
-    name: "ABCD-12",
-    sub_topic: "/cloud/YANHUA/AC/cmd/set",
-    pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: 10,
-  },
-  {
-    name: "ABCD-34",
-    sub_topic: "/cloud/YANHUA/AC/cmd/set",
-    pub_topic: "/cloud/YANHUA/AC/cmd/set",
-    interval: 10,
-  },
-]);
+const list = reactive<any[]>([]);
 
-const onClick = () => {
-  handleEditCompleteJump();
+const initData = () => {
+  info.host = "";
+  info.port = "";
+  list.splice(0, list.length);
+
+  const currentIP = stepStore.getCurrentIP();
+  const controllerData = controllerStore.getControllerByIp(currentIP);
+
+  if (controllerData === undefined) {
+    message.error(t("mqtt.controller_not_found"));
+    return;
+  }
+
+  const { mqtt } = controllerData;
+
+  if (mqtt) {
+    info.host = mqtt.host;
+    info.port = mqtt.port;
+    list.push(...(mqtt.topics || []));
+  }
+
+  console.log("当前控制器数据：", controllerData);
 };
+
+watch(
+  () => stepStore.getCurrentIP(),
+  () => initData(),
+  { immediate: true },
+);
 
 const handleUpdate = (index: number, newData: any) => {
   // 替换对应索引的项，触发响应式更新
@@ -118,11 +121,55 @@ const handleDelete = (index: number) => {
 };
 
 const onAdd = () => {
+  if (list.length >= 3) {
+    message.warning(t("mqtt.max_limit_3"));
+    return;
+  }
   showModal.value = true;
 };
 
 const handleAdd = (newTopic: any) => {
+  const isExist = list.some((item) => item.name === newTopic.name);
+  if (isExist) {
+    message.warning(t("mqtt.topic_repeat"));
+    return;
+  }
+
   list.push(newTopic);
+};
+
+const onClick = () => {
+  //写入到json
+  if (!info.host.trim() || !info.port.trim()) {
+    message.warning(t("mqtt.host_port_required"));
+    return;
+  }
+
+  const currentIP = stepStore.getCurrentIP();
+  if (!currentIP) {
+    message.error(t("mqtt.controller_not_found"));
+    return;
+  }
+
+  const controller = controllerStore.getControllerByIp(currentIP);
+  if (!controller) {
+    message.error(t("mqtt.controller_not_found"));
+    return;
+  }
+
+  const mqttConfig = {
+    host: info.host.trim(),
+    port: info.port.trim(),
+    topics: [...list], // 所有topic列表
+  };
+
+  controller.mqtt = mqttConfig;
+
+  controllerStore.addController(currentIP, controller);
+
+  message.success(t("mqtt.save_success"));
+
+  handleEditCompleteJump();
 };
 </script>
 
