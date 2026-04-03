@@ -8,6 +8,7 @@ import {
 import { validateIPv4 } from "../../until/util";
 import { PropertyConstants } from "./propertyID";
 import unitsJson from "./Units.json";
+import { generateTimeUniqueId } from "@/utils/function";
 
 const formatMessage = (key: string, params?: Record<string, any>) => {
   // 安全校验：确保i18n实例存在
@@ -66,8 +67,6 @@ export const deviceDataCheck = (deviceData: DataType): boolean => {
   switch (deviceData.type) {
     case DeviceTypeEnum.ModbusTCP:
       return validateModbusTCP(deviceData);
-    case DeviceTypeEnum.ModbusRTU:
-      return validateModbusRTU(deviceData);
     case DeviceTypeEnum.KNX:
       return validateKNX(deviceData);
     default:
@@ -76,12 +75,7 @@ export const deviceDataCheck = (deviceData: DataType): boolean => {
 };
 
 const validateModbusTCP = (data: DataType): boolean => {
-  if (
-    !data.name ||
-    !data.property.host ||
-    data.property.port === null ||
-    data.address === null
-  ) {
+  if (!data.name || !data.property.host || data.property.port === null) {
     message.warn(formatMessage("device_manage.emptyField"));
     return true;
   }
@@ -91,14 +85,6 @@ const validateModbusTCP = (data: DataType): boolean => {
     return true;
   }
 
-  return false;
-};
-
-const validateModbusRTU = (data: DataType): boolean => {
-  if (!data.name || !data.property.port || data.property.slaveid === null) {
-    message.warn(formatMessage("device_manage.emptyField"));
-    return true;
-  }
   return false;
 };
 
@@ -118,56 +104,39 @@ const validateKNX = (data: DataType): boolean => {
 
 // 参数创建函数
 export const createModbusTCPParams = (data: DataType) => ({
-  uid: `ModbusTCP,${data.property.host}:${data.property.port}`,
-  name: data.name,
-  address: data.address.toString(),
-  protocol: DeviceTypeEnum.ModbusTCP,
-  enabled: true,
-  status: "",
-  description: "",
+  uid: data.id || generateTimeUniqueId(),
+  device_name: data.name,
+  device_type: DeviceTypeEnum.ModbusTCP,
+  device_sn: data.property.sn,
+  device_dev: data.property.dev,
+  polling: 3,
+  address: data.property.host + ":" + data.property.port,
+  description: data.property.desc,
   property: {
+    slaveid: data.property.slaveid,
     host: data.property.host,
     port: data.property.port,
     connectionOption: data.property.connectionOption,
   },
-  tags: "",
-});
-
-export const createModbusRTUParams = (data: DataType) => ({
-  uid: `ModbusRTU,${data.property.slaveid}`,
-  name: data.name,
-  address: data.property.slaveid.toString(),
-  protocol: DeviceTypeEnum.ModbusRTU,
-  enabled: true,
-  status: "",
-  description: "",
-  property: {
-    slaveid: data.property.slaveid,
-    port: data.property.port,
-    baudrate: data.property.baudrate,
-    bytesize: data.property.bytesize,
-    stopbits: data.property.stopbits,
-    parity: data.property.parity,
-    connectionOption: data.property.connectionOption,
-  },
-  tags: "",
+  points: [],
 });
 
 export const createKNXParams = (data: DataType) => ({
-  uid: `KNX,${data.property.gateway_ip}:${data.property.gateway_port}`,
-  name: data.name,
-  address: data.property.gateway_ip,
-  protocol: DeviceTypeEnum.KNX,
-  enabled: true,
-  status: "",
-  description: "",
+  uid: data.id || generateTimeUniqueId(),
+  device_name: data.name,
+  device_type: DeviceTypeEnum.KNX,
+  device_sn: data.property.sn,
+  device_dev: data.property.dev,
+  polling: 3,
+  address: data.property.gateway_ip + ":" + data.property.gateway_port,
+  description: data.property.desc,
   property: {
     address_format: data.property.address_format,
     connection_type: data.property.connection_type,
     gateway_ip: data.property.gateway_ip,
     gateway_port: data.property.gateway_port,
   },
-  tags: "",
+  points: [],
 });
 
 export const markExistingIds = (arrayA: any[], arrayB: any[]) => {
@@ -185,21 +154,14 @@ export const markExistingIds = (arrayA: any[], arrayB: any[]) => {
   }));
 };
 
-export const ModbusRTUData = {
-  slaveid: 1,
-  connectionOption: "SerialPort",
-  port: "",
-  baudrate: 9600,
-  bytesize: 8,
-  stopbits: 1,
-  parity: "N",
-};
-
 export const ModbusTCPData = {
-  slaveid: 1,
+  slaveid: "1",
   host: "127.0.0.1",
   port: 5020,
   connectionOption: "tcp",
+  sn: "",
+  dev: "",
+  desc: "",
 };
 
 export const KNXData = {
@@ -207,6 +169,9 @@ export const KNXData = {
   connection_type: 1,
   gateway_ip: "127.0.0.255",
   gateway_port: 3671,
+  sn: "",
+  dev: "",
+  desc: "",
 };
 
 /**
@@ -356,64 +321,72 @@ export const getDeviceTypeId = (typeStr: string): number | string => {
   return reverseMap[typeStr] ?? typeStr;
 };
 
-
 export const objIDTrans = (value: Array<number>) => {
-  let text = ''
+  let text = "";
 
   if (value.length === 2) {
-    text = getDeviceTypeName(value[0]) + ',' + value[1]
+    text = getDeviceTypeName(value[0]) + "," + value[1];
   }
-  return text
-}
+  return text;
+};
 
 export const unitsTrans = (value: any) => {
-  let text = ''
+  let text = "";
 
   Object.entries(unitsJson).forEach(([key, val]) => {
     if (parseInt(key) === value) {
-      text = val
+      text = val;
     }
-  })
+  });
 
   //console.log('unitsTrans', value, text)
 
-  return text
-}
+  return text;
+};
 
-export const presentValueTrans = (value: any, type: string, BinaryOption: any, MVOption: any) => {
-  let text = value
+export const presentValueTrans = (
+  value: any,
+  type: string,
+  BinaryOption: any,
+  MVOption: any,
+) => {
+  let text = value;
 
   //console.log('presentValueTrans', value, type, BinaryOption, MVOption)
 
   if (type === TypeEnum.AI || type === TypeEnum.AV || type === TypeEnum.AO) {
-    text = value
-  } else if (type === TypeEnum.BI || type === TypeEnum.BV || type === TypeEnum.BO) {
+    text = value;
+  } else if (
+    type === TypeEnum.BI ||
+    type === TypeEnum.BV ||
+    type === TypeEnum.BO
+  ) {
     if (BinaryOption.length === 2) {
       BinaryOption.forEach((item: any) => {
         if (item.value === value) {
-          text = item.label
+          text = item.label;
         }
-      })
+      });
     } else {
-      text = value
+      text = value;
     }
   } else if (type === TypeEnum.MV) {
     if (MVOption.length > 0) {
       MVOption.forEach((item: any) => {
         if (item.value === value) {
-          text = item.label
+          text = item.label;
         }
-      })
+      });
     } else {
-      text = value
+      text = value;
     }
   }
 
-  return text
-}
+  return text;
+};
 
 export const isPriority = (type: string) => {
-  let flag = false
+  let flag = false;
 
   if (
     type === TypeEnum.MV ||
@@ -422,8 +395,8 @@ export const isPriority = (type: string) => {
     type === TypeEnum.AV ||
     type === TypeEnum.AO
   ) {
-    flag = true
+    flag = true;
   }
 
-  return flag
-}
+  return flag;
+};

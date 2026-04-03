@@ -127,7 +127,7 @@ const onSearch = async () => {
     const result = await getControllerList({
       product_series: productType,
       timeout: 10,
-      network_interface: "192.168.10.12",
+      network_interface: "192.168.20.240",
     });
 
     if (!result || !result.success) {

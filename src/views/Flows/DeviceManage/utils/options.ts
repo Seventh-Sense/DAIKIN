@@ -13,8 +13,6 @@ export interface DataType {
   name: string;
   type: string;
   polling: number;
-  enabled: boolean;
-  address: number;
   property: null | any;
 }
 
@@ -26,7 +24,6 @@ export enum ControllerTypeEnum {
 
 export enum DeviceTypeEnum {
   BACnet = "bacnet",
-  ModbusRTU = "ModbusRTU",
   ModbusTCP = "ModbusTCP",
   KNX = "KNX",
 }
@@ -36,10 +33,6 @@ export const TypeOptions = [
     label: "BACnet/IP",
     value: DeviceTypeEnum.BACnet,
   },
-  // {
-  //   label: "ModbusRTU",
-  //   value: DeviceTypeEnum.ModbusRTU,
-  // },
   {
     label: "ModbusTCP",
     value: DeviceTypeEnum.ModbusTCP,

@@ -17,11 +17,7 @@
     <div class="modal">
       <div v-if="data.type !== DeviceTypeEnum.BACnet">
         <div class="modal-porperty">{{ $t("device_manage.name") }}</div>
-        <a-input
-          v-model:value="data.name"
-          style="margin-bottom: 12px"
-          :disabled="isEdit"
-        />
+        <a-input v-model:value="data.name" style="margin-bottom: 12px" />
       </div>
       <a-row :gutter="32">
         <a-col :span="12">
@@ -60,12 +56,11 @@
 
 <script setup lang="ts">
 import { message } from "ant-design-vue";
-import { onMounted, ref, shallowRef, watch, watchEffect } from "vue";
+import { onMounted, ref, shallowRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   DataType,
   DeviceTypeEnum,
-  TypeOptions,
   pollOptions,
 } from "../../utils/options";
 import { useStepStore } from "@/pinia/modules/step";
@@ -74,18 +69,17 @@ import {
   getOptions,
   deviceDataCheck,
   createModbusTCPParams,
-  createModbusRTUParams,
   createKNXParams,
-  ModbusRTUData,
   ModbusTCPData,
   KNXData,
 } from "../../utils/utils";
 import BACnet from "../../component/BACnet/index.vue";
 import ModbusTCP from "../../component/ModbusTCP/index.vue";
-import ModbusRTU from "../../component/ModbusRTU/index.vue";
 import KNX from "../../component/KNX/index.vue";
 import { cloneDeep } from "lodash";
-import { addDevice } from "@/api";
+import { useControllerStore } from "@/pinia/modules/controller";
+
+const controllerStore = useControllerStore();
 
 const { t } = useI18n();
 const stepStore = useStepStore();
@@ -110,10 +104,8 @@ const emit = defineEmits(["update:modelShow", "onSaveSuccess"]);
 const data = ref<DataType>({
   id: "",
   name: "",
-  type: DeviceTypeEnum.BACnet,
+  type: DeviceTypeEnum.ModbusTCP,
   polling: 3,
-  enabled: true,
-  address: 1,
   property: {},
 });
 
@@ -146,10 +138,8 @@ const resetForm = () => {
   data.value = {
     id: "",
     name: "",
-    type: DeviceTypeEnum.BACnet,
+    type: DeviceTypeEnum.ModbusTCP,
     polling: 3,
-    enabled: true,
-    address: 1,
     property: {},
   };
 };
@@ -159,51 +149,40 @@ const handleOk = () => {
     emit("onSaveSuccess");
     emit("update:modelShow", false);
   } else {
-    if (props.isEdit) {
-      onClose();
-    } else {
-      if (!deviceDataCheck(data.value)) {
-        handleSubmitByType(data.value);
-      }
+    if (!deviceDataCheck(data.value)) {
+      handleSubmitByType(data.value);
     }
   }
 };
 
 const handleSubmitByType = async (data: DataType) => {
-  console.log("Submitting data:", data);
-  try {
-    let params;
+  //console.log("Submitting data:", data);
+  let params;
 
-    switch (data.type) {
-      case DeviceTypeEnum.ModbusTCP:
-        params = createModbusTCPParams(data);
-        break;
-      case DeviceTypeEnum.ModbusRTU:
-        params = createModbusRTUParams(data);
-        break;
-      case DeviceTypeEnum.KNX:
-        params = createKNXParams(data);
-        break;
-      default:
-        console.log("Submitting params:", data);
-        return;
-    }
-
-    const res: any = await addDevice(params);
-
-    if (res.status !== "OK") {
-      console.warn("Non-OK response status:", res.data);
-      message.error(t("msg.download_failed_status"));
+  switch (data.type) {
+    case DeviceTypeEnum.ModbusTCP:
+      params = createModbusTCPParams(data);
+      break;
+    case DeviceTypeEnum.KNX:
+      params = createKNXParams(data);
+      break;
+    default:
+      console.log("Submitting params:", data);
       return;
-    }
-
-    message.success(t("msg.download_success"));
-    emit("onSaveSuccess");
-    onClose();
-  } catch (error) {
-    console.error(`Error handling ${data.type}:`, error);
-    message.error(t("msg.download_failed_exception"));
   }
+
+  controllerStore.addDeviceToController(stepStore.getCurrentIP(), params);
+
+  if (props.isEdit) {
+    message.success(t("msg.msg_modify_success"));
+  } else {
+    message.success(t("msg.download_success"));
+  }
+
+  //刷新表格
+  emit("onSaveSuccess");
+
+  onClose();
 };
 
 const onClose = () => {
@@ -219,10 +198,6 @@ const componentConfigMap = {
   [DeviceTypeEnum.ModbusTCP]: {
     component: ModbusTCP,
     defaultProperty: () => cloneDeep(ModbusTCPData),
-  },
-  [DeviceTypeEnum.ModbusRTU]: {
-    component: ModbusRTU,
-    defaultProperty: () => cloneDeep(ModbusRTUData),
   },
   [DeviceTypeEnum.KNX]: {
     component: KNX,
@@ -251,15 +226,18 @@ const insertContent = (type: DeviceTypeEnum, isEdit: boolean) => {
 // 初始化编辑数据
 const initEditData = () => {
   if (props.isEdit && props.initData) {
+    //console.log("initEditData", props.initData);
     data.value = {
-      id: props.initData.id || props.initData.key || "",
-      name: props.initData.device_name || "",
-      type: props.initData.device_type || DeviceTypeEnum.BACnet,
-      polling: props.initData.polling || 3,
-      enabled:
-        props.initData.enabled !== undefined ? props.initData.enabled : true,
-      address: props.initData.address || 1,
-      property: cloneDeep(props.initData.properties) || {},
+      id: props.initData.uid,
+      name: props.initData.device_name,
+      type: props.initData.device_type,
+      polling: props.initData.polling,
+      property: {
+        ...cloneDeep(props.initData.property),
+        sn: props.initData.device_sn || "",
+        dev: props.initData.device_dev || "",
+        desc: props.initData.description || "",
+      },
     };
 
     // 加载对应类型的组件

@@ -4,7 +4,6 @@
     <a-select
       v-model:value="data.property.address_format"
       :options="addrFormatOptions"
-      :disabled="isEdit"
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">
@@ -13,26 +12,32 @@
     <a-select
       v-model:value="data.property.connection_type"
       :options="connectTypeOptions"
-      :disabled="isEdit"
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.gateway_ip") }}</div>
     <a-input
       v-model:value="data.property.gateway_ip"
-      :disabled="isEdit"
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.gateway_port") }}</div>
     <a-input-number
-      v-if="!isEdit"
       v-model:value="data.property.gateway_port"
       :min="0"
       style="width: 100%; margin-bottom: 12px"
     />
+    <div class="content-porperty">{{ $t("device_manage.device_sn") }}</div>
     <a-input
-      v-else
-      v-model:value="data.property.gateway_port"
-      disabled
+      v-model:value="data.property.sn"
+      style="width: 100%; margin-bottom: 12px"
+    />
+    <div class="content-porperty">{{ $t("device_manage.device_dev") }}</div>
+    <a-input
+      v-model:value="data.property.dev"
+      style="width: 100%; margin-bottom: 12px"
+    />
+    <div class="content-porperty">{{ $t("device_manage.desc") }}</div>
+    <a-input
+      v-model:value="data.property.desc"
       style="width: 100%; margin-bottom: 12px"
     />
   </div>

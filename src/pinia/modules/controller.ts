@@ -9,6 +9,8 @@ interface PersistOptions {
 }
 
 interface ControllerInfo {
+  devices?: any[];
+  mqtt?: any;
   [key: string]: any;
 }
 
@@ -40,6 +42,65 @@ export const useControllerStore = defineStore(
       return controllerMap.value[ip];
     };
 
+    // 根据 ip 获取所有设备
+    const getControllerDevices = (ip: string) => {
+      return controllerMap.value[ip]?.devices || [];
+    };
+
+    // 根据 ip 添加设备
+    const addDeviceToController = (ip: string, device: any) => {
+      const controller = controllerMap.value[ip];
+      if (!controller) {
+        console.log("找不到控制器: addDeviceToController", ip);
+        return;
+      }
+
+      if (!Array.isArray(controller.devices)) {
+        controller.devices = [];
+      }
+
+      if (!device?.uid) {
+        console.warn("设备缺少唯一标识 uid", device);
+        return;
+      }
+
+      const existIndex = controller.devices.findIndex(
+        (item) => item.uid === device.uid,
+      );
+
+      if (existIndex > -1) {
+        // 存在 → 替换
+        controller.devices[existIndex] = device;
+      } else {
+        // 不存在 → 新增
+        controller.devices.push(device);
+      }
+    };
+
+    //删除指定设备
+    const deleteDeviceFromController = (ip: string, deviceid: string) => {
+      const controller = controllerMap.value[ip];
+      if (!controller) {
+        console.log("找不到控制器: deleteDeviceFromController", ip);
+        return;
+      }
+
+      if (
+        !Array.isArray(controller.devices) ||
+        controller.devices.length === 0
+      ) {
+        console.log("控制器无设备可删除", ip);
+        return;
+      }
+
+      controller.devices = controller.devices.filter(
+        (device) => device.uid !== deviceid,
+      );
+    };
+
+    //add point
+    const addPointToController = (ip: string, point: any) => {};
+
     // 清空所有
     const clearAll = () => {
       controllerMap.value = {};
@@ -50,6 +111,9 @@ export const useControllerStore = defineStore(
       addController,
       getControllerByIp,
       clearAll,
+      addDeviceToController,
+      getControllerDevices,
+      deleteDeviceFromController,
     };
   },
   {

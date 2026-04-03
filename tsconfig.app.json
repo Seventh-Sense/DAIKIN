@@ -11,7 +11,7 @@
     "esModuleInterop": true,   // 兼容 JSON 模块的默认导入
 
     /* Bundler mode */
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
@@ -22,6 +22,7 @@
 
     /* 修复路径别名 */
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["src/*"]
     },

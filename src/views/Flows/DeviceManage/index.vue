@@ -47,7 +47,7 @@
           <template v-else-if="column.dataIndex === 'actions'">
             <div class="table-actions">
               <Icons
-                name="informationCircle"
+                name="edit"
                 type="mono-line"
                 :size="24"
                 :color="{ normal: '#222222FF' }"
@@ -59,15 +59,6 @@
                 :size="24"
                 :color="{ normal: '#F76F83FF' }"
                 @click="onDelete(record)"
-              />
-            </div>
-          </template>
-          <template v-else-if="column.dataIndex === 'enabled'">
-            <div class="table-enabled">
-              <a-switch
-                v-model:checked="record.enabled"
-                size="small"
-                @click="(e: any) => onEnableClick(record.enabled, e, record)"
               />
             </div>
           </template>
@@ -111,7 +102,15 @@
 <script setup lang="ts">
 import { formatDateTimeToMinute, handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
-import { onMounted, ref, computed, nextTick, onUnmounted, provide, watch } from "vue";
+import {
+  onMounted,
+  ref,
+  computed,
+  nextTick,
+  onUnmounted,
+  provide,
+  watch,
+} from "vue";
 import Icons from "@/icons/index.vue";
 import {
   getDeviceTypeLabel,
@@ -144,24 +143,27 @@ const { t } = useI18n();
 const columns = computed(() => [
   { title: "", dataIndex: "link", width: 50 },
   {
-    title: t("device_manage.name"),
+    title: t("device_manage.device_name"),
     dataIndex: "device_name",
-    //sorter: (a: any, b: any) => sortByString(a.device_name, b.device_name),
   },
   {
-    title: t("device_manage.type"),
+    title: t("device_manage.device_type"),
     dataIndex: "device_type",
-    //sorter: (a: any, b: any) => sortByString(a.device_type, b.device_type),
+  },
+  {
+    title: t("device_manage.device_sn"),
+    dataIndex: "device_sn",
+  },
+  {
+    title: t("device_manage.device_dev"),
+    dataIndex: "device_dev",
   },
   { title: t("device_manage.polling"), dataIndex: "polling" },
   {
     title: t("device_manage.address"),
     dataIndex: "address",
-    //sorter: (a: any, b: any) => sortByString(a.address, b.address),
   },
-  { title: t("device_manage.tags"), dataIndex: "tags" },
   { title: t("device_manage.desc"), dataIndex: "description" },
-  { title: t("device_manage.enabled"), dataIndex: "enabled" },
   {
     title: "",
     dataIndex: "actions",
@@ -224,6 +226,8 @@ const deviceData = ref({});
 
 const bacnetProperties = ref({});
 
+const currentIP = stepStore.getCurrentIP();
+
 //文件导入
 const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -238,20 +242,9 @@ onUnmounted(() => {
 });
 
 const initData = async () => {
-  data.value = [];
-
   loading.value = true;
 
-  const currentIP = stepStore.getCurrentIP();
-  const controllerData = controllerStore.getControllerByIp(currentIP);
-
-  if (controllerData === undefined) {
-    message.error(t("mqtt.controller_not_found"));
-    return;
-  }
-
-  const { devices } = controllerData;
-
+  data.value = controllerStore.getControllerDevices(currentIP);
 
   loading.value = false;
 };
@@ -442,42 +435,11 @@ const readBacnetProperties = async (row: any) => {
 
 const onDelete = async (record: any) => {
   //console.log("删除", record);
-  try {
-    const res = await deleteDevice(record.key);
+  controllerStore.deleteDeviceFromController(currentIP, record.uid);
 
-    if (res.status !== "OK") {
-      console.warn("Non-OK response status when delete device:", res.status);
-      message.error(t("msg.deleteFailed"));
-      return;
-    }
+  data.value = data.value.filter((item: any) => item.uid !== record.uid);
 
-    data.value = data.value.filter((item: any) => item.key !== record.key);
-    message.success(t("msg.deleteSuccess"));
-  } catch (error) {
-    console.error("Failed to delete device:", error);
-    message.error(t("msg.deleteFailed"));
-  }
-};
-
-const onEnableClick = async (checked: boolean, event: Event, record: any) => {
-  //console.log("开关状态:", checked, record);
-  try {
-    const res = await setDeviceEnable(record.key, record.enabled);
-
-    if (res.status !== "OK") {
-      console.warn(
-        "Non-OK response status when update device enable status:",
-        res.status,
-      );
-      message.error(t("msg.updateFailed"));
-      return;
-    }
-
-    message.success(t("msg.updateSuccess"));
-  } catch (error) {
-    console.error("Failed to update device enable status:", error);
-    message.error(t("msg.updateFailed"));
-  }
+  message.success(t("msg.deleteSuccess"));
 };
 
 const onEnter = (record: any) => {
