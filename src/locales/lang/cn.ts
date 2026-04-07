@@ -185,6 +185,7 @@ export default {
     device_sn: "设备SN",
     device_dev: "设备编码",
     point_name: "点位名称",
+    point_m: "点位编码",
     type: "类型",
     polling: "轮询(秒)",
     address: "地址",
@@ -291,6 +292,9 @@ export default {
     release_all: "释放所有值",
     compulsion: "强制",
     advance_option: "高级选项",
+    writable: '可写',
+    min: '最小值',
+    max: '最大值',
   },
   msg: {
     updateSuccess: "设备状态更新成功",

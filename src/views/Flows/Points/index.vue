@@ -57,16 +57,6 @@
               />
             </div>
           </template>
-          <template v-else-if="column.dataIndex === 'metric_uid'">
-            {{ getDeviceIDLabel(record) }}
-          </template>
-          <template v-else-if="column.dataIndex === 'status'">
-            {{
-              record.status === 0
-                ? t("device_manage.offline")
-                : t("device_manage.online")
-            }}
-          </template>
         </template>
       </a-table>
     </div>
@@ -112,24 +102,20 @@ import { handleEditCompleteJump } from "../until/util";
 import Icons from "@/icons/index.vue";
 import { ref, computed, nextTick, onMounted, onUnmounted, provide } from "vue";
 import { useRoute } from "vue-router";
-import {
-  readPointValue,
-  readSubscribePoints,
-  deleteSubscribePoint,
-  deleteAllSubscribePoint,
-} from "@/api";
-import {
-  transformSubscribePointsData,
-  formatTimestamp,
-  getProcessedValue,
-  mergeProperties,
-} from "./tool";
+import { deleteSubscribePoint } from "@/api";
 import { DeviceTypeEnum } from "../DeviceManage/utils/options";
 import { message } from "ant-design-vue";
 import ModbusPointModal from "./ModbusPointModal/index.vue";
 import BACnetPointModal from "./BACnetPointModal/index.vue";
 import KNXPointModal from "./KNXPointModal/index.vue";
 import PropertyDisplayModal from "../DeviceManage/Modal/PropertyDisplayModal/index.vue";
+import { useControllerStore } from "@/pinia/modules/controller";
+import { useStepStore } from "@/pinia/modules/step";
+
+const controllerStore = useControllerStore();
+const stepStore = useStepStore();
+
+const currentIP = stepStore.getCurrentIP();
 
 const route = useRoute();
 const { t } = useI18n();
@@ -139,18 +125,24 @@ const tableScrollHeight = ref<string | number>("auto");
 
 const columns = computed(() => [
   {
-    title: () => t("device_manage.name"),
-    dataIndex: "metric_name",
+    title: () => t("device_manage.point_name"),
+    dataIndex: "point_name",
   },
   {
-    title: () => t("device_manage.id"),
-    dataIndex: "metric_uid",
+    title: () => t("device_manage.point_m"),
+    dataIndex: "point_m",
   },
-  { title: () => t("device_manage.status"), dataIndex: "status" },
-  { title: () => t("device_manage.value"), dataIndex: "value" },
-  { title: () => t("device_manage.tags"), dataIndex: "tags" },
-  { title: () => t("device_manage.desc"), dataIndex: "description" },
-  { title: () => t("device_manage.time"), dataIndex: "timestamp" },
+  {
+    title: () => t("device_manage.desc"),
+    dataIndex: "description",
+  },
+  {
+    title: () => t("device_manage.writable"),
+    dataIndex: "writable",
+    customRender: ({ text } : any) => {
+      return text.toString() 
+    },
+  },
   {
     title: "",
     dataIndex: "actions",
@@ -192,9 +184,8 @@ const calculateTableHeight = () => {
 const deviceInfo = ref({
   id: "",
   type: "",
-  key: "",
-  address: "",
 });
+
 const loading = ref(false);
 const data = ref<any[]>([]);
 
@@ -227,139 +218,42 @@ onUnmounted(() => {
 });
 
 const getDeviceInfo = () => {
-  const { id, type, key, address } = route.params;
+  const { id, type } = route.params;
 
   deviceInfo.value = {
     id: String(id || ""),
     type: String(type || ""),
-    key: String(key || ""),
-    address: String(address || ""),
   };
-};
-
-const getDeviceIDLabel = (record: any) => {
-  if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
-    return record.metric_type + "," + record.metric_id;
-  } else {
-    return record.metric_uid;
-  }
 };
 
 const initData = async () => {
   loading.value = true;
 
-  try {
-    const res = await readSubscribePoints(deviceInfo.value.key);
+  // console.log("Transformed data:", data.value);
+  data.value = controllerStore.getControllerPointsByDeviceId(
+    currentIP,
+    deviceInfo.value.id,
+  );
 
-    if (res.status !== "OK" || res.data === null) {
-      console.warn("Non-OK response status:", res.status);
-      return;
-    }
-
-    const transformedData = transformSubscribePointsData(
-      res.data,
-      deviceInfo.value.id,
-    );
-
-    data.value = [...transformedData];
-
-    // console.log("Transformed data:", data.value);
-    startDataPeriodicRefresh();
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const startDataPeriodicRefresh = () => {
-  if (interval !== null) {
-    clearInterval(interval);
-  }
-
-  if (data.value.length === 0) return;
-
-  refreshPointValues();
-
-  interval = window.setInterval(async () => {
-    if (
-      !isBacnet.value &&
-      !isBacnetEdit.value &&
-      !isModbus.value &&
-      !isKNX.value
-    ) {
-      refreshPointValues();
-    }
-  }, 3000);
-};
-
-const refreshPointValues = async () => {
-  try {
-    const res = await readPointValue(deviceInfo.value.key);
-
-    if (res.status !== "OK" || res.data === null) {
-      console.warn("Non-OK response status:", res.status);
-      return;
-    }
-
-    // 创建快速查询映射
-    const metricPoints = new Map(
-      res.data.map((point: any) => [point.metric_id, point]),
-    );
-    // 生成新的数据源（不可变更新）
-    data.value = data.value.map((originalItem) => {
-      const point: any = metricPoints.get(originalItem.key);
-      if (!point) return originalItem;
-
-      //console.log('point', point, originalItem)
-      return {
-        ...originalItem,
-        value: getProcessedValue(
-          point,
-          originalItem.metric_type,
-          deviceInfo.value.type,
-        ),
-        properties: mergeProperties(point.property, originalItem.properties),
-        //description: getDescription(point, originalItem),
-        status: point.status,
-        timestamp: formatTimestamp(point.timestamp),
-      };
-    });
-  } catch (error) {
-    console.error("Error in periodic reading:", error);
-  }
+  loading.value = false;
 };
 
 const onClearAll = async () => {
   loading.value = true;
 
-  try {
-    const res: any = await deleteAllSubscribePoint(deviceInfo.value.key);
+  controllerStore.clearAllPointsByDeviceID(currentIP, deviceInfo.value.id);
 
-    if (res.status !== "OK") {
-      console.warn("Failed to clear all points, response status:", res.status);
-      message.error(t("msg.clear_all_failed"));
-      return;
-    }
+  data.value = [];
+  message.success(t("msg.clear_all_success"));
 
-    data.value = [];
-    message.success(t("msg.clear_all_success"));
-  } catch (error) {
-    console.error("Error clearing all points:", error);
-    message.error(t("msg.clear_all_error"));
-  } finally {
-    loading.value = false;
-  }
+  loading.value = false;
 };
 
 const onAdd = () => {
   if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
     isBacnet.value = true;
     isEdit.value = false;
-  } else if (
-    deviceInfo.value.type === DeviceTypeEnum.ModbusRTU ||
-    deviceInfo.value.type === DeviceTypeEnum.ModbusTCP
-  ) {
+  } else if (deviceInfo.value.type === DeviceTypeEnum.ModbusTCP) {
     isModbus.value = true;
     isEdit.value = false;
   } else if (deviceInfo.value.type === DeviceTypeEnum.KNX) {
@@ -374,10 +268,7 @@ const onEdit = (record: any) => {
   if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
     isBacnetEdit.value = true;
     isEdit.value = true;
-  } else if (
-    deviceInfo.value.type === DeviceTypeEnum.ModbusRTU ||
-    deviceInfo.value.type === DeviceTypeEnum.ModbusTCP
-  ) {
+  } else if (deviceInfo.value.type === DeviceTypeEnum.ModbusTCP) {
     isModbus.value = true;
     isEdit.value = true;
   } else if (deviceInfo.value.type === DeviceTypeEnum.KNX) {
@@ -389,24 +280,17 @@ const onEdit = (record: any) => {
 const onDelete = async (record: any) => {
   loading.value = true;
 
-  try {
-    const res = await deleteSubscribePoint(record.key);
+  controllerStore.deletePointFromControllerDevice(
+    currentIP,
+    deviceInfo.value.id,
+    record.uid,
+  );
 
-    if (res.status !== "OK") {
-      console.warn("Failed to delete record, response status:", res.status);
-      message.error(t("msg.delete_failed"));
-      return;
-    }
+  message.success(t("msg.delete_success"));
 
-    message.success(t("msg.delete_success"));
+  data.value = data.value.filter((item) => item.uid !== record.uid);
 
-    data.value = data.value.filter((item) => item.key !== record.key);
-  } catch (error) {
-    console.error("Error deleting record:", error);
-    message.error(t("msg.delete_error"));
-  } finally {
-    loading.value = false;
-  }
+  loading.value = false;
 };
 
 const onClick = () => {

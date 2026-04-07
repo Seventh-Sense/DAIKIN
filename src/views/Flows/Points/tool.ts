@@ -3,6 +3,7 @@ import {
   DeviceTypeEnum,
   functionOptions,
   OrderOptions,
+  WritableOption,
 } from "../DeviceManage/utils/options";
 import { getDeviceTypeName, TypeEnum } from "../DeviceManage/utils/utils";
 
@@ -97,6 +98,7 @@ const MODBUS_TEXT_MAPPER: Record<string, any[]> = {
   byteorder: OrderOptions,
   wordorder: OrderOptions,
   data_type: DatatypeOptions,
+  writable: WritableOption,
 };
 
 const getLabelByValue = (value: any, options: any[]) => {

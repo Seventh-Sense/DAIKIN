@@ -260,3 +260,8 @@ export const BooleanOption = [
   { label: "True", value: 1 },
   { label: "False", value: 0 },
 ];
+
+export const WritableOption = [
+  { label: "True", value: true },
+  { label: "False", value: false },
+];

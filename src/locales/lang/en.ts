@@ -189,6 +189,7 @@ export default {
     device_sn: "Device SN",
     device_dev: "Device Code",
     point_name: "Point Name",
+    point_m: "Point Code",
     type: "Type",
     polling: "Polling (s)",
     address: "Address",
@@ -297,6 +298,9 @@ export default {
     release_all: "Release all values",
     compulsion: "Compel",
     advance_option: "Advanced options",
+    writable: "Writable",
+    min: "Min Value",
+    max: "Max Value",
   },
   msg: {
     updateSuccess: "Device status updated successfully",

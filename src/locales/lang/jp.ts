@@ -191,6 +191,7 @@ export default {
     device_sn: "デバイスSN",
     device_dev: "デバイスコード",
     point_name: "ポイント名",
+    point_m: "ポイントコード",
     type: "種別",
     polling: "ポーリング（秒）",
     address: "アドレス",
@@ -300,6 +301,9 @@ export default {
     release_all: "すべての値を解放",
     compulsion: "強制",
     advance_option: "詳細設定",
+    writable: "書込み可能",
+    min: "最小値",
+    max: "最大値",
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",

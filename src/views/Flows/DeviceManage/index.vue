@@ -123,14 +123,7 @@ import { message } from "ant-design-vue";
 import DeviceSetModal from "./Modal/DeviceSetModal/index.vue";
 import PropertyDisplayModal from "./Modal/PropertyDisplayModal/index.vue";
 import { DeviceTypeEnum } from "./utils/options";
-import {
-  getDevices,
-  setDeviceEnable,
-  deleteDevice,
-  readBacnetAttr,
-  concurrentRequests,
-  importFileData,
-} from "@/api";
+import { readBacnetAttr, concurrentRequests, importFileData } from "@/api";
 import jsonList from "./utils/Property.json";
 import { useStepStore } from "@/pinia/modules/step";
 import { useControllerStore } from "@/pinia/modules/controller";
@@ -445,10 +438,8 @@ const onDelete = async (record: any) => {
 const onEnter = (record: any) => {
   //console.log("进入点位:", record);
   routerTurnByNameWithParams("Points", {
-    id: record.device_id,
+    id: record.uid,
     type: record.device_type,
-    key: record.key,
-    address: record.address,
   });
 };
 
