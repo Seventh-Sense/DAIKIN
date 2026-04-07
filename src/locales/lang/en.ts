@@ -302,6 +302,8 @@ export default {
     min: "Min Value",
     max: "Max Value",
     local_ip: "Local IP",
+    offset: 'Offset',
+    align_format: 'Alignment Format',
   },
   msg: {
     updateSuccess: "Device status updated successfully",

@@ -305,6 +305,8 @@ export default {
     min: "最小値",
     max: "最大値",
     local_ip: "ローカルIP",
+    offset: 'オフセット',
+    align_format: '整列フォーマット',
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",

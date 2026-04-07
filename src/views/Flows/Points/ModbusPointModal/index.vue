@@ -26,7 +26,8 @@
             key === 'name' ||
             key === 'description' ||
             key === 'address' ||
-            key === 'm'
+            key === 'm' ||
+            key === 'unit'
           "
         >
           <a-input
@@ -45,9 +46,8 @@
           v-else-if="
             key === 'function' ||
             key === 'data_type' ||
-            key === 'byteorder' ||
-            key === 'wordorder' ||
-            key === 'writable'
+            key === 'writable' ||
+            key === 'align_format'
           "
         >
           <a-select
@@ -56,7 +56,7 @@
             style="width: 100%"
           />
         </div>
-        <div v-else-if="key === 'count' || key === 'divisor'">
+        <div v-else-if="key === 'count' || key === 'scale' || key === 'offset'">
           <a-input-number
             v-model:value="data[key]"
             :min="0"
@@ -111,15 +111,16 @@ const defaultData = {
   name: "",
   m: "",
   description: "",
-  function: "03",
+  function: 4,
   address: "",
   count: 1,
   data_type: "int16",
-  byteorder: 1,
-  wordorder: 1,
-  divisor: 1,
+  align_format: "",
+  scale: 1,
+  offset: 0,
   min: null,
   max: null,
+  unit: "",
   writable: 1,
 };
 
@@ -136,7 +137,10 @@ const MODBUS_ID_MAP = (key: string) => {
     data_type: t("device_manage.data_type"),
     byteorder: t("device_manage.byte_order"),
     wordorder: t("device_manage.word_order"),
-    divisor: t("device_manage.coefficient"),
+    scale: t("device_manage.coefficient"),
+    offset: t("device_manage.offset"),
+    align_format: t("device_manage.align_format"),
+    unit: t("device_manage.unit"),
     min: t("device_manage.min"),
     max: t("device_manage.max"),
     writable: t("device_manage.writable"),
@@ -159,7 +163,7 @@ const dataCheck = (data: any) => {
   }
 
   // 除数为空校验
-  if (data.divisor === null || data.divisor === "") {
+  if (data.scale === null || data.scale === "") {
     message.warn(t("device.msg_divisor_cannot_empty"));
     return true;
   }
@@ -191,9 +195,10 @@ const addNewPoint = async () => {
       address: Number(data.value.address),
       count: data.value.count,
       data_type: data.value.data_type,
-      byteorder: data.value.byteorder,
-      wordorder: data.value.wordorder,
-      divisor: data.value.divisor,
+      align_format: data.value.align_format,
+      scale: data.value.scale,
+      offset: data.value.offset,
+      unit: data.value.unit,
       min: data.value.min === null ? undefined : data.value.min,
       max: data.value.max === null ? undefined : data.value.max,
     },
@@ -240,9 +245,10 @@ const addNewPoints = async () => {
           address: currentAddress,
           count: data.value.count,
           data_type: data.value.data_type,
-          byteorder: data.value.byteorder,
-          wordorder: data.value.wordorder,
-          divisor: data.value.divisor,
+          align_format: data.value.align_format,
+          scale: data.value.scale,
+          offset: data.value.offset,
+          unit: data.value.unit,
           min: data.value.min === null ? undefined : data.value.min,
           max: data.value.max === null ? undefined : data.value.max,
         },
@@ -296,9 +302,10 @@ watch(
         address: props.editData.property.address.toString(),
         count: props.editData.property.count,
         data_type: props.editData.property.data_type,
-        byteorder: props.editData.property.byteorder,
-        wordorder: props.editData.property.wordorder,
-        divisor: props.editData.property.divisor,
+        scale: props.editData.property.scale,
+        offset: props.editData.property.offset,
+        align_format: props.editData.property.align_format,
+        unit: props.editData.property.unit,
         min: props.editData.property.min,
         max: props.editData.property.max,
         writable: props.editData.writable ? 1 : 0,

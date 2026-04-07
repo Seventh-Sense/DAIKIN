@@ -296,6 +296,8 @@ export default {
     min: '最小值',
     max: '最大值',
     local_ip: '本地IP',
+    offset: '偏移量',
+    align_format: '对齐格式',
   },
   msg: {
     updateSuccess: "设备状态更新成功",

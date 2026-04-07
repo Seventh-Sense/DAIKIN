@@ -179,20 +179,20 @@ export const connectTypeOptions = [
 
 export const functionOptions = [
   {
-    label: "01 Coils",
-    value: "01",
+    label: "COIL",
+    value: 0,
   },
   {
-    label: "02 Discrete Input",
-    value: "02",
+    label: "DIGITAL INPUT",
+    value: 1,
   },
   {
-    label: "03 Holding Register",
-    value: "03",
+    label: "INPUT REGISTER",
+    value: 3,
   },
   {
-    label: "04 Input Register",
-    value: "04",
+    label: "HOLDING REGISTER",
+    value: 4,
   },
 ];
 
@@ -265,4 +265,13 @@ export const BooleanOption = [
 export const WritableOption = [
   { label: "True", value: true },
   { label: "False", value: false },
+];
+
+export const AlignmentOption = [
+  { label: "AB", value: 0 },
+  { label: "BA", value: 1 },
+  { label: "ABCD", value: 2 },
+  { label: "BADC", value: 3 },
+  { label: "CDAB", value: 4 },
+  { label: "DCBA", value: 5 },
 ];
