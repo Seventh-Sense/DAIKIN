@@ -27,7 +27,6 @@
             key === 'description' ||
             key === 'read_address' ||
             key === 'write_address' ||
-            key === 'tags' ||
             key === 'm'
           "
         >
@@ -101,7 +100,6 @@ const defaultData = {
   read_address: "0/1/1",
   write_address: "0/0/1",
   value_type: "bool",
-  tags: "",
   min: null,
   max: null,
   writable: 1,
@@ -154,7 +152,6 @@ const addNewPoint = async () => {
       read_address: data.value.read_address,
       write_address: data.value.write_address,
       value_type: data.value.value_type,
-      tags: data.value.tags,
       min: data.value.min === null ? undefined : data.value.min,
       max: data.value.max === null ? undefined : data.value.max,
     },
@@ -203,7 +200,6 @@ watch(
         read_address: props.editData.property.read_address,
         write_address: props.editData.property.write_address,
         value_type: props.editData.property.value_type,
-        tags: props.editData.property.tags,
         min: props.editData.property.min,
         max: props.editData.property.max,
         writable: props.editData.writable ? 1 : 0,

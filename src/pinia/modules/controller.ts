@@ -80,7 +80,12 @@ export const useControllerStore = defineStore(
 
       if (existIndex > -1) {
         // 存在 → 替换
-        controller.devices[existIndex] = device;
+        const oldDevice = controller.devices[existIndex];
+        controller.devices[existIndex] = {
+          ...oldDevice, // 保留原有所有字段（包括 points）
+          ...device, // 用新传入的设备信息覆盖基础字段
+          points: oldDevice.points || [], // 强制保留旧 points，不被覆盖
+        };
       } else {
         // 不存在 → 新增
         controller.devices.push(device);

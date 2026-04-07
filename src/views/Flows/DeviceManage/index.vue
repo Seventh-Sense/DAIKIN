@@ -158,6 +158,13 @@ const columns = computed(() => [
   },
   { title: t("device_manage.desc"), dataIndex: "description" },
   {
+    title: t("device_manage.enabled"),
+    dataIndex: "enabled",
+    customRender: ({ text }: any) => {
+      return (text ?? "").toString();
+    },
+  },
+  {
     title: "",
     dataIndex: "actions",
     width: 120,

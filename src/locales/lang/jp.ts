@@ -304,6 +304,7 @@ export default {
     writable: "書込み可能",
     min: "最小値",
     max: "最大値",
+    local_ip: "ローカルIP",
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",

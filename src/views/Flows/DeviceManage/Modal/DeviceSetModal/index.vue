@@ -31,15 +31,22 @@
         </a-col>
         <a-col :span="6">
           <div class="modal-porperty">{{ $t("device_manage.polling") }}</div>
-          <a-select
+          <a-input-number
             v-model:value="data.polling"
-            placeholder="Select"
-            :options="pollOptions"
+            :min="0"
             style="width: 100%"
-            disabled
           />
         </a-col>
       </a-row>
+      <div v-if="data.type !== DeviceTypeEnum.BACnet">
+        <div class="modal-porperty" style="margin-top: 12px;">{{ $t("device_manage.enabled") }}</div>
+        <a-select
+          v-model:value="data.enabled"
+          :options="BooleanOption"
+          style="width: 100%;"
+        />
+      </div>
+
       <div
         v-if="content"
         class="dynamic-component-container"
@@ -58,11 +65,7 @@
 import { message } from "ant-design-vue";
 import { onMounted, ref, shallowRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import {
-  DataType,
-  DeviceTypeEnum,
-  pollOptions,
-} from "../../utils/options";
+import { BooleanOption, DataType, DeviceTypeEnum, pollOptions } from "../../utils/options";
 import { useStepStore } from "@/pinia/modules/step";
 import {
   getControllerType,
@@ -106,6 +109,7 @@ const data = ref<DataType>({
   name: "",
   type: DeviceTypeEnum.ModbusTCP,
   polling: 3,
+  enabled: 1,
   property: {},
 });
 
@@ -140,6 +144,7 @@ const resetForm = () => {
     name: "",
     type: DeviceTypeEnum.ModbusTCP,
     polling: 3,
+    enabled: 1,
     property: {},
   };
 };
@@ -232,6 +237,7 @@ const initEditData = () => {
       name: props.initData.device_name,
       type: props.initData.device_type,
       polling: props.initData.polling,
+      enabled: props.initData.enabled ? 1: 0,
       property: {
         ...cloneDeep(props.initData.property),
         sn: props.initData.device_sn || "",

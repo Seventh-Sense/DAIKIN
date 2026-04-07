@@ -16,12 +16,12 @@
       :min="0"
       style="width: 100%; margin-bottom: 12px"
     />
-    <div class="content-porperty">{{ $t("device_manage.connection") }}</div>
+    <!-- <div class="content-porperty">{{ $t("device_manage.connection") }}</div>
     <a-input
       v-model:value="data.property.connectionOption"
       disabled
       style="width: 100%; margin-bottom: 12px"
-    />
+    /> -->
     <div class="content-porperty">{{ $t("device_manage.device_sn") }}</div>
     <a-input
       v-model:value="data.property.sn"

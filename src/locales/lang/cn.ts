@@ -295,6 +295,7 @@ export default {
     writable: '可写',
     min: '最小值',
     max: '最大值',
+    local_ip: '本地IP',
   },
   msg: {
     updateSuccess: "设备状态更新成功",

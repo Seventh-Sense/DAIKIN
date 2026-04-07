@@ -13,6 +13,7 @@ export interface DataType {
   name: string;
   type: string;
   polling: number;
+  enabled: number;
   property: null | any;
 }
 

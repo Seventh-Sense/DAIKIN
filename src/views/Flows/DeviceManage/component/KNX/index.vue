@@ -1,17 +1,8 @@
 <template>
   <div class="content">
-    <div class="content-porperty">{{ $t("device_manage.address_format") }}</div>
-    <a-select
-      v-model:value="data.property.address_format"
-      :options="addrFormatOptions"
-      style="width: 100%; margin-bottom: 12px"
-    />
-    <div class="content-porperty">
-      {{ $t("device_manage.connection_type") }}
-    </div>
-    <a-select
-      v-model:value="data.property.connection_type"
-      :options="connectTypeOptions"
+    <div class="content-porperty">{{ $t("device_manage.local_ip") }}</div>
+    <a-input
+      v-model:value="data.property.local_ip"
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.gateway_ip") }}</div>
@@ -40,12 +31,11 @@
       v-model:value="data.property.desc"
       style="width: 100%; margin-bottom: 12px"
     />
+    
   </div>
 </template>
 
 <script setup lang="ts">
-import { connectTypeOptions, addrFormatOptions } from "../../utils/options";
-
 const props = defineProps({
   data: {
     type: Object as () => any,

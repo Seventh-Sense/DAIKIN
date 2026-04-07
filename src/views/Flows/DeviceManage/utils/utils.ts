@@ -109,14 +109,15 @@ export const createModbusTCPParams = (data: DataType) => ({
   device_type: DeviceTypeEnum.ModbusTCP,
   device_sn: data.property.sn,
   device_dev: data.property.dev,
-  polling: 3,
+  polling: data.polling,
   address: data.property.host + ":" + data.property.port,
   description: data.property.desc,
+  enabled: data.enabled === 1,
   property: {
     slaveid: data.property.slaveid,
     host: data.property.host,
     port: data.property.port,
-    connectionOption: data.property.connectionOption,
+    timeout: 3,
   },
   points: [],
 });
@@ -127,12 +128,12 @@ export const createKNXParams = (data: DataType) => ({
   device_type: DeviceTypeEnum.KNX,
   device_sn: data.property.sn,
   device_dev: data.property.dev,
-  polling: 3,
+  polling: data.polling,
   address: data.property.gateway_ip + ":" + data.property.gateway_port,
   description: data.property.desc,
+  enabled: data.enabled === 1,
   property: {
-    address_format: data.property.address_format,
-    connection_type: data.property.connection_type,
+    local_ip: data.property.local_ip,
     gateway_ip: data.property.gateway_ip,
     gateway_port: data.property.gateway_port,
   },
@@ -165,8 +166,7 @@ export const ModbusTCPData = {
 };
 
 export const KNXData = {
-  address_format: 3,
-  connection_type: 1,
+  local_ip: "192.168.20.240",
   gateway_ip: "127.0.0.255",
   gateway_port: 3671,
   sn: "",

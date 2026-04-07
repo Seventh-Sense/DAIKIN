@@ -301,6 +301,7 @@ export default {
     writable: "Writable",
     min: "Min Value",
     max: "Max Value",
+    local_ip: "Local IP",
   },
   msg: {
     updateSuccess: "Device status updated successfully",
