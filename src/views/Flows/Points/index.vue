@@ -139,8 +139,8 @@ const columns = computed(() => [
   {
     title: () => t("device_manage.writable"),
     dataIndex: "writable",
-    customRender: ({ text } : any) => {
-      return text.toString() 
+    customRender: ({ text }: any) => {
+      return (text ?? "").toString();
     },
   },
   {

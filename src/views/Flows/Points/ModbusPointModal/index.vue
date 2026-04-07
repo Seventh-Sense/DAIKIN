@@ -77,7 +77,6 @@ import { inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { modbusSelectOptions, validateIntegerOrRange } from "../tool";
 import { message } from "ant-design-vue";
-import { createModbusPoint } from "@/api";
 import { useStepStore } from "@/pinia/modules/step";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { generateTimeUniqueId } from "@/utils/function";
@@ -121,7 +120,7 @@ const defaultData = {
   divisor: 1,
   min: null,
   max: null,
-  writable: true,
+  writable: 1,
 };
 
 const data = ref({ ...defaultData });
@@ -186,7 +185,7 @@ const addNewPoint = async () => {
     point_name: data.value.name,
     point_m: data.value.m,
     description: data.value.description,
-    writable: data.value.writable,
+    writable: data.value.writable === 1,
     property: {
       function: data.value.function,
       address: Number(data.value.address),
@@ -235,7 +234,7 @@ const addNewPoints = async () => {
         point_name: `${data.value.name} ${currentAddress}`,
         point_m: data.value.m,
         description: data.value.description,
-        writable: data.value.writable,
+        writable: data.value.writable === 1,
         property: {
           function: data.value.function,
           address: currentAddress,
@@ -302,7 +301,7 @@ watch(
         divisor: props.editData.property.divisor,
         min: props.editData.property.min,
         max: props.editData.property.max,
-        writable: props.editData.writable,
+        writable: props.editData.writable ? 1 : 0,
       };
 
       //console.log('asda', props.editData)

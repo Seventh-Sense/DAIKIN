@@ -1,4 +1,5 @@
 import {
+  BooleanOption,
   DatatypeOptions,
   DeviceTypeEnum,
   functionOptions,
@@ -98,7 +99,7 @@ const MODBUS_TEXT_MAPPER: Record<string, any[]> = {
   byteorder: OrderOptions,
   wordorder: OrderOptions,
   data_type: DatatypeOptions,
-  writable: WritableOption,
+  writable: BooleanOption,
 };
 
 const getLabelByValue = (value: any, options: any[]) => {
