@@ -114,16 +114,17 @@ import {
 import Icons from "@/icons/index.vue";
 import {
   getDeviceTypeLabel,
-  transformDeviceItem,
   transformDeviceData,
+  exportDataTrans,
+  importFileTrans,
 } from "./utils/utils";
 import { routerTurnByNameWithParams } from "../../../router/util";
-import { exportToExcel, defaultFormatter, processExcel } from "./utils/xlsx";
+import { processExcel } from "./utils/xlsx";
 import { message } from "ant-design-vue";
 import DeviceSetModal from "./Modal/DeviceSetModal/index.vue";
 import PropertyDisplayModal from "./Modal/PropertyDisplayModal/index.vue";
 import { DeviceTypeEnum } from "./utils/options";
-import { readBacnetAttr, concurrentRequests, importFileData } from "@/api";
+import { readBacnetAttr } from "@/api";
 import jsonList from "./utils/Property.json";
 import { useStepStore } from "@/pinia/modules/step";
 import { useControllerStore } from "@/pinia/modules/controller";
@@ -292,16 +293,9 @@ const handleFileUpload = (event: Event): void => {
         t,
       });
 
-      //console.log("Excel解析结果:", sheetsData);
-      const res = await importFileData({
-        devices: sheetsData.sheets[0] || [],
-        metrics: sheetsData.sheets[1] || [],
-      });
+      let result = importFileTrans(sheetsData.sheets);
 
-      if (res.status !== "OK") {
-        console.warn("Non-OK response status:", res.status);
-        return;
-      }
+      controllerStore.setControllerDevices(currentIP, result);
 
       initData();
     } catch (error) {
@@ -325,47 +319,18 @@ const handleFileUpload = (event: Event): void => {
 
 //导出
 const onExport = async () => {
-  const API_URLS = ["/devices", "/metrics"];
-  const BASE_FILE_NAME = "设备点位列表";
-  const SHEET_CONFIGS = [
-    { sheetName: "Device", urlIndex: 0 },
-    { sheetName: "Point", urlIndex: 1 },
-  ];
-
   try {
-    const responses = await concurrentRequests<any[]>(API_URLS);
+    const deviceList = controllerStore.getControllerDevices(currentIP);
 
-    if (responses.length !== API_URLS.length) {
-      throw new Error(
-        `请求响应数量异常：预期${API_URLS.length}个，实际${responses.length}个`,
-      );
+    if (!deviceList || deviceList.length === 0) {
+      //message.warning(t("device_manage.export_empty_tip"));
+      return;
     }
 
-    const validResponses = responses.map((res, index) => {
-      // 校验状态
-      if (res.status !== "OK") {
-        throw new Error(`接口${API_URLS[index]}返回状态异常：${res.status}`);
-      }
-      // 校验 data 是数组（类型守卫）
-      if (!Array.isArray(res.data)) {
-        throw new Error(
-          `接口${API_URLS[index]}返回数据非数组类型：${typeof res.data}`,
-        );
-      }
-      return res;
-    });
-
-    const excelSheets = SHEET_CONFIGS.map((config) => ({
-      data: validResponses[config.urlIndex].data,
-      sheetName: config.sheetName,
-      formatter: (item: any) => defaultFormatter(item, ["property"]),
-    }));
-
-    const exportFileName = `${BASE_FILE_NAME}_${formatDateTimeToMinute()}`;
-    exportToExcel(excelSheets, exportFileName);
+    exportDataTrans(deviceList);
   } catch (error) {
-    console.error(`导出${BASE_FILE_NAME}失败：`, error);
-    // 给用户友好的错误提示
+    console.error(`导出失败：`, error);
+
     const errorMsg = (error as Error).message;
     message.error(
       t("msg.export_failed", { reason: errorMsg || t("msg.unknownError") }),

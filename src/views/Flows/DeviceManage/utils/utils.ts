@@ -5,10 +5,11 @@ import {
   DeviceTypeEnum,
   DataType,
 } from "./options";
-import { validateIPv4 } from "../../until/util";
+import { formatDateTimeToMinute, validateIPv4 } from "../../until/util";
 import { PropertyConstants } from "./propertyID";
 import unitsJson from "./Units.json";
 import { generateTimeUniqueId } from "@/utils/function";
+import { exportToExcel } from "./xlsx";
 
 const formatMessage = (key: string, params?: Record<string, any>) => {
   // 安全校验：确保i18n实例存在
@@ -399,4 +400,306 @@ export const isPriority = (type: string) => {
   }
 
   return flag;
+};
+
+// ====================== 【外部配置区】
+const BASE_FILE_NAME = "设备点位列表";
+
+const DEVICE_PRO_MAP = {
+  BACnet: "bacnet",
+  KNX: "knx",
+  ModbusTCP: "modbus_tcp",
+};
+
+const SHEET_CONFIGS = Object.values(DEVICE_PRO_MAP).flatMap((key) => [
+  { sheetName: `${key}_devices` },
+  { sheetName: `${key}_points` },
+]);
+
+// ===================== 你的原有配置（完全不动） =====================
+const DEVICE_FIELD_CONFIG = {
+  BACnet: (device: any) => ({
+    device_name: device.device_name,
+    device_protocol: device.device_type,
+    device_sn: device.device_sn,
+    device_dev: device.device_dev,
+    polling: device.polling,
+    description: device.description,
+    enabled: device.enabled,
+    ...device.property,
+  }),
+  KNX: (device: any) => ({
+    device_name: device.device_name,
+    device_protocol: device.device_type,
+    device_sn: device.device_sn,
+    device_dev: device.device_dev,
+    polling: device.polling,
+    description: device.description,
+    enabled: device.enabled,
+    loacl_ip: device.property?.local_ip,
+    gateway_ip: device.property?.gateway_ip,
+    gateway_port: device.property?.gateway_port,
+  }),
+  ModbusTCP: (device: any) => ({
+    device_name: device.device_name,
+    device_protocol: device.device_type,
+    device_sn: device.device_sn,
+    device_dev: device.device_dev,
+    polling: device.polling,
+    description: device.description,
+    enabled: device.enabled,
+    host: device.property?.host,
+    port: device.property?.port,
+    slaveid: device.property?.slaveid,
+  }),
+};
+
+const POINT_FIELD_CONFIG = {
+  BACnet: (device: any, point: any) => ({
+    device_uid: device.uid,
+    device_name: device.device_name,
+    point_uid: point.uid,
+    point_name: point.point_name,
+    point_m: point.point_m,
+    description: point.description,
+    writable: point.writable,
+    ...point.property,
+  }),
+  KNX: (device: any, point: any) => ({
+    device_name: device.device_name,
+    device_dev: device.device_dev,
+    point_name: point.point_name,
+    point_m: point.point_m,
+    pkey: point.description,
+    writable: point.writable,
+    status_address: point.property?.read_address,
+    control_address: point.property?.write_address,
+    value_type: point.property?.value_type,
+  }),
+  ModbusTCP: (device: any, point: any) => ({
+    device_name: device.device_name,
+    device_dev: device.device_dev,
+    point_name: point.point_name,
+    point_m: point.point_m,
+    pkey: point.description,
+    writable: point.writable,
+    register_address: point.property?.address,
+    align_format: point.property?.align_format,
+    register_count: point.property?.count,
+    data_type: point.property?.data_type,
+    register_type: point.property?.function,
+    offset: point.property?.offset,
+    scale: point.property?.scale,
+    unit: point.property?.unit,
+  }),
+};
+
+/**
+ * 自动根据 FIELD_CONFIG 生成空行：所有字段值为空字符串
+ */
+const createEmptyRow = (fn: (...args: any[]) => Record<string, any>) => {
+  // 调用函数，传入空对象占位，拿到所有返回的字段名
+  const fields = fn({}, {});
+  // 把所有值变成空字符串
+  return Object.keys(fields).reduce(
+    (acc, key) => {
+      acc[key] = "";
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+};
+
+/**
+ * 自动生成所有空表结构：完全替代 EMPTY_TABLE_HEADERS
+ */
+const AUTO_EMPTY_TABLES = Object.entries(DEVICE_PRO_MAP).reduce(
+  (acc, [type, prefix]) => {
+    // 设备空表
+    acc[`${prefix}_devices`] = [
+      createEmptyRow(
+        DEVICE_FIELD_CONFIG[type as keyof typeof DEVICE_FIELD_CONFIG],
+      ),
+    ];
+    // 点位空表
+    acc[`${prefix}_points`] = [
+      createEmptyRow(
+        POINT_FIELD_CONFIG[type as keyof typeof POINT_FIELD_CONFIG],
+      ),
+    ];
+    return acc;
+  },
+  {} as Record<string, Record<string, string>[]>,
+);
+
+export const exportDataTrans = (deviceList: any[]) => {
+  const data = SHEET_CONFIGS.reduce((acc: any, cur) => {
+    acc[cur.sheetName] = [];
+    return acc;
+  }, {});
+
+  deviceList.forEach((device: any) => {
+    const type = device.device_type;
+    const key = DEVICE_PRO_MAP[type as keyof typeof DEVICE_PRO_MAP];
+    if (!key) return;
+
+    // 处理设备
+    const deviceFields =
+      DEVICE_FIELD_CONFIG[type as keyof typeof DEVICE_FIELD_CONFIG]?.(device);
+    if (deviceFields) data[`${key}_devices`].push(deviceFields);
+
+    // 处理点位
+    device.points?.forEach((point: any) => {
+      const pointFields = POINT_FIELD_CONFIG[
+        type as keyof typeof POINT_FIELD_CONFIG
+      ]?.(device, point);
+      if (pointFields) data[`${key}_points`].push(pointFields);
+    });
+  });
+
+  // 填充空表：直接用自动生成的，无需手写
+  Object.keys(data).forEach((key) => {
+    if (data[key].length === 0) {
+      data[key] = AUTO_EMPTY_TABLES[key];
+    }
+  });
+
+  const excelSheets = SHEET_CONFIGS.map((cfg) => ({
+    data: data[cfg.sheetName],
+    sheetName: cfg.sheetName,
+  }));
+
+  const exportFileName = `${BASE_FILE_NAME}_${formatDateTimeToMinute()}`;
+  exportToExcel(excelSheets, exportFileName);
+};
+
+export const importFileTrans = (sheets: any[]) => {
+  const sheetMap: Record<string, any[]> = {};
+
+  sheets.forEach((sheet) => {
+    if (sheet.name && Array.isArray(sheet.data)) {
+      sheetMap[sheet.name] = sheet.data;
+    }
+  });
+
+  console.log("sheets:", sheetMap);
+  const deviceMap = new Map<string, any>();
+
+  Object.entries(DEVICE_PRO_MAP).forEach(([protocol, prefix]) => {
+    const deviceSheetName = `${prefix}_devices`;
+    const deviceRows = sheetMap[deviceSheetName] || [];
+
+    deviceRows.forEach((row) => {
+      // 过滤无效空行
+      if (!row.device_name?.trim() && !row.device_sn?.trim()) return;
+
+      const device = transformDeviceRow(row, protocol);
+      const uniqueKey = `${device.device_name}_${device.device_dev}`;
+      deviceMap.set(uniqueKey, device);
+    });
+  });
+
+  Object.entries(DEVICE_PRO_MAP).forEach(([protocol, prefix]) => {
+    const pointSheetName = `${prefix}_points`;
+    const pointRows = sheetMap[pointSheetName] || [];
+
+    pointRows.forEach((row) => {
+      // 过滤无效空行
+      if (!row.device_name?.trim() && !row.point_name?.trim()) return;
+
+      const point = transformPointRow(row, protocol);
+      const deviceUniqueKey = `${row.device_name}_${row.device_dev}`;
+      const parentDevice = deviceMap.get(deviceUniqueKey);
+
+      if (parentDevice) {
+        parentDevice.points.push(point);
+      }
+    });
+  });
+
+  const result = Array.from(deviceMap.values());
+
+  console.log("导入完整数据：", result);
+
+  return result;
+};
+
+const transformDeviceRow = (row: any, protocol: string) => {
+  const {
+    device_name,
+    device_protocol,
+    device_sn,
+    device_dev,
+    polling,
+    description,
+    enabled,
+    ...property
+  } = row;
+
+  let address = "";
+
+  if (device_protocol === "KNX") {
+    address = `${property.gateway_ip}:${property.gateway_port}`;
+  } else if (device_protocol === "ModbusTCP") {
+    address = `${property.host}:${property.port}`;
+  }
+
+  return {
+    uid: `${device_name}_${device_dev}_${device_sn}` || "",
+    device_name,
+    device_type: device_protocol || protocol,
+    device_sn,
+    device_dev,
+    polling: polling === "" ? 0 : Number(polling),
+    description,
+    enabled: enabled === "" ? false : Boolean(enabled),
+    address: address,
+    property: Object.keys(property).length ? property : undefined,
+    points: [],
+  };
+};
+
+const transformPointRow = (row: any, protocol: string) => {
+  const {
+    device_name,
+    device_dev,
+    point_name,
+    point_m,
+    pkey,
+    writable,
+    status_address,
+    control_address,
+    register_address,
+    register_count,
+    register_type,
+    ...property
+  } = row;
+
+  let mappedProperty = { ...property };
+
+  if (protocol === "KNX") {
+    mappedProperty = {
+      ...mappedProperty,
+      read_address: status_address,
+      write_address: control_address,
+    };
+  }
+
+  if (protocol === "ModbusTCP") {
+    mappedProperty = {
+      ...mappedProperty,
+      address: register_address,
+      count: register_count,
+      function: register_type,
+    };
+  }
+
+  return {
+    uid: `${device_name}_${device_dev}_${point_name}_${point_m}` || "",
+    point_name,
+    point_m,
+    description: pkey || row.description || "",
+    writable: writable === "" ? false : Boolean(writable),
+    property: Object.keys(mappedProperty).length ? mappedProperty : undefined,
+  };
 };

@@ -169,14 +169,14 @@ export const processExcel = (
       return emptyResult;
     }
 
-    const sheets: any[][] = [];
+    const sheets: any[] = [];
 
     workbook.SheetNames.forEach((sheetName) => {
       const sheet = workbook.Sheets[sheetName];
 
       // 空工作表直接返回空数组
       if (!sheet) {
-        sheets.push([]);
+        sheets.push({ name: sheetName, data: [] });
         return;
       }
 
@@ -188,7 +188,10 @@ export const processExcel = (
       // 格式化JSON字段（纯函数，无副作用）
       const formattedData = formatJsonFields(sheetData, jsonFields);
 
-      sheets.push(formattedData);
+      sheets.push({
+        name: sheetName,
+        data: formattedData,
+      });
     });
 
     // 5. 返回结构化数据（兼容原有调用方式）

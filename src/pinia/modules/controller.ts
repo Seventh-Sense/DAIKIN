@@ -37,6 +37,16 @@ export const useControllerStore = defineStore(
       controllerMap.value[ip] = controller;
     };
 
+    const setControllerDevices = (ip: string, devices: any[]) => {
+      const controller = controllerMap.value[ip];
+      if (!controller) {
+        console.log("找不到控制器: setControllerDevices", ip);
+        return;
+      }
+      // 直接覆盖整个 devices 数组
+      controller.devices = Array.isArray(devices) ? devices : [];
+    };
+
     // 根据 ip 获取控制器
     const getControllerByIp = (ip: string): ControllerInfo | undefined => {
       return controllerMap.value[ip];
@@ -210,6 +220,7 @@ export const useControllerStore = defineStore(
       addPointToControllerDevice,
       deletePointFromControllerDevice,
       clearAllPointsByDeviceID,
+      setControllerDevices,
     };
   },
   {
