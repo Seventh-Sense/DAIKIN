@@ -447,6 +447,7 @@ const onEnter = (record: any) => {
   routerTurnByNameWithParams("Points", {
     id: record.uid,
     type: record.device_type,
+    name: record.device_name,
   });
 };
 

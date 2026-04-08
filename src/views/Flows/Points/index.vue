@@ -129,6 +129,10 @@ const columns = computed(() => [
     dataIndex: "point_name",
   },
   {
+    title: () => t("device_manage.device_name"),
+    dataIndex: "device_name",
+  },
+  {
     title: () => t("device_manage.point_m"),
     dataIndex: "point_m",
   },
@@ -184,6 +188,7 @@ const calculateTableHeight = () => {
 const deviceInfo = ref({
   id: "",
   type: "",
+  name: "",
 });
 
 const loading = ref(false);
@@ -218,11 +223,12 @@ onUnmounted(() => {
 });
 
 const getDeviceInfo = () => {
-  const { id, type } = route.params;
+  const { id, type, name } = route.params;
 
   deviceInfo.value = {
     id: String(id || ""),
     type: String(type || ""),
+    name: String(name || ""),
   };
 };
 
@@ -230,10 +236,17 @@ const initData = async () => {
   loading.value = true;
 
   // console.log("Transformed data:", data.value);
-  data.value = controllerStore.getControllerPointsByDeviceId(
+  let pointList = controllerStore.getControllerPointsByDeviceId(
     currentIP,
     deviceInfo.value.id,
   );
+
+  data.value = pointList.map((item: any) => {
+    return {
+      ...item, // 保留原有所有字段
+      device_name: deviceInfo.value.name || "", // 追加设备名称
+    };
+  });
 
   loading.value = false;
 };

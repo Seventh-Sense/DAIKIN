@@ -27,7 +27,7 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/Flows/DeviceManage/index.vue"),
       },
       {
-        path: "points/:id/:type",
+        path: "points/:id/:type/:name",
         name: "Points",
         component: () => import("@/views/Flows/Points/index.vue"),
       },
