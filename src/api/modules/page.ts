@@ -20,3 +20,10 @@ export const getControllerInfo = (ip: any) => {
 export const getNetWorkInterfaces = () => {
   return get("/iot/network-interfaces");
 };
+
+export const discoveryBacnetDevices = (ip: string) => {
+  return post(`/iot/bacnet/discover`, {
+    network_interface: ip,
+    timeout: 10,
+  });
+};

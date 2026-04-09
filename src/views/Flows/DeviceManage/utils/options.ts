@@ -24,7 +24,7 @@ export enum ControllerTypeEnum {
 }
 
 export enum DeviceTypeEnum {
-  BACnet = "bacnet",
+  BACnet = "BACnet",
   ModbusTCP = "ModbusTCP",
   KNX = "KNX",
 }

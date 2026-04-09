@@ -45,7 +45,7 @@ export const importFileData = (data: any) => {
 };
 
 export const discoveryDevices = () => {
-  return get(`/bacnet/discovery`);
+  return get(`/iot/bacnet/discover`);
 };
 
 export const addDevice = (data: any) => {

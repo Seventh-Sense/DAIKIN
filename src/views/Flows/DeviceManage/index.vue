@@ -81,12 +81,11 @@
       :initData="deviceData"
       @onSaveSuccess="initData"
     />
-    <PropertyDisplayModal
-      v-if="showProperty"
-      v-model:modelShow="showProperty"
-      :bacnetData="bacnetProperties"
-      :deviceData="deviceData"
-      :isEdit="isEdit"
+    <BACnetModal
+      v-if="showBacnet"
+      v-model:modelShow="showBacnet"
+      :initData="deviceData"
+      @onSaveSuccess="initData"
     />
     <!-- 隐藏的文件输入 -->
     <input
@@ -100,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatDateTimeToMinute, handleEditCompleteJump } from "../until/util";
+import { handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
 import {
   onMounted,
@@ -114,7 +113,6 @@ import {
 import Icons from "@/icons/index.vue";
 import {
   getDeviceTypeLabel,
-  transformDeviceData,
   exportDataTrans,
   importFileTrans,
 } from "./utils/utils";
@@ -122,10 +120,8 @@ import { routerTurnByNameWithParams } from "../../../router/util";
 import { processExcel } from "./utils/xlsx";
 import { message } from "ant-design-vue";
 import DeviceSetModal from "./Modal/DeviceSetModal/index.vue";
-import PropertyDisplayModal from "./Modal/PropertyDisplayModal/index.vue";
+import BACnetModal from "./Modal/BACnetModal/index.vue";
 import { DeviceTypeEnum } from "./utils/options";
-import { readBacnetAttr } from "@/api";
-import jsonList from "./utils/Property.json";
 import { useStepStore } from "@/pinia/modules/step";
 import { useControllerStore } from "@/pinia/modules/controller";
 
@@ -221,7 +217,8 @@ const data = ref<any[]>([]);
 const loading = ref(false);
 
 const showModal = ref(false);
-const showProperty = ref(false);
+const showBacnet = ref(false);
+
 const isEdit = ref(false);
 const deviceData = ref({});
 
@@ -343,58 +340,10 @@ const onEdit = async (record: any) => {
   deviceData.value = { ...record };
 
   if (record.device_type === DeviceTypeEnum.BACnet) {
-    readBacnetProperties(record);
+    showBacnet.value = true;
   } else {
     showModal.value = true;
     isEdit.value = true;
-  }
-};
-
-const readBacnetProperties = async (row: any) => {
-  try {
-    const res = await readBacnetAttr(row.key, {
-      function: "read_property_multiple",
-      parms: {
-        address: row.address,
-        read_list: [row.device_id, jsonList["Device"]],
-      },
-    });
-
-    if (res.status !== "OK") {
-      let errorMsg = "";
-
-      if (res.data?.includes("not enabled")) {
-        // 设备未启用提示
-        errorMsg = t("msg.bacnetDeviceDisabled");
-      } else {
-        errorMsg = t("msg.bacnetReadFailedDetail", {
-          reason: res.data || t("msg.unknownError"),
-        });
-      }
-
-      message.error(errorMsg);
-      return;
-    }
-
-    if (res.data === null || res.data.length === 0) {
-      message.warning(t("msg.bacnetNoProperties"));
-      return;
-    }
-
-    bacnetProperties.value = {
-      properties: transformDeviceData(res.data),
-    };
-
-    //console.log("转换后的BACnet设备属性:", bacnetProperties.value);
-    showProperty.value = true;
-    isEdit.value = false;
-  } catch (error) {
-    console.error("获取BACnet设备属性失败:", error);
-    message.error(
-      t("msg.bacnetReadException", {
-        error: (error as Error).message || t("msg.unknownError"),
-      }),
-    );
   }
 };
 

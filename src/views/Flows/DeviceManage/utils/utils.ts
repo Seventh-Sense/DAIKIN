@@ -141,20 +141,7 @@ export const createKNXParams = (data: DataType) => ({
   points: [],
 });
 
-export const markExistingIds = (arrayA: any[], arrayB: any[]) => {
-  // 提前判空，避免arrayB为undefined/null时报错
-  if (!Array.isArray(arrayB))
-    return arrayA.map((item) => ({ ...item, disabled: false }));
 
-  // 简化Set创建逻辑
-  const existingIds = new Set(arrayB.map((item) => item.device_id));
-
-  // 简化map逻辑，直接返回增强后的对象
-  return arrayA.map((item) => ({
-    ...item,
-    disabled: existingIds.has(item.id),
-  }));
-};
 
 export const ModbusTCPData = {
   slaveid: "1",
