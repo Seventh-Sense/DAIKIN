@@ -102,6 +102,10 @@ export default {
       'Successfully deleted "{delnum}" devices and added "{addnum}" devices!',
     msg_9: 'Successfully deleted "{delnum}" devices!',
     msg_10: 'Successfully added "{addnum}" devices!',
+    please_select_network_interface: "Please select a network interface",
+    network_interface_fetch_failed: "Failed to get network interfaces",
+    no_network_interfaces: "No available network interfaces detected",
+    network_request_error: "Network error, please try again later",
   },
   device_info: {
     del_device: "Delete",
@@ -302,8 +306,8 @@ export default {
     min: "Min Value",
     max: "Max Value",
     local_ip: "Local IP",
-    offset: 'Offset',
-    align_format: 'Alignment Format',
+    offset: "Offset",
+    align_format: "Alignment Format",
   },
   msg: {
     updateSuccess: "Device status updated successfully",

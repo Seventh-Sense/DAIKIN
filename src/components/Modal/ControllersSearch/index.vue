@@ -12,7 +12,18 @@
   >
     <div class="modal">
       <div class="modal-title">
-        <a-button type="primary" class="modal-btn" @click="onSearch" :loading="loading">
+        <a-select
+          v-model:value="selectInterface"
+          :options="networkOptions"
+          :placeholder="t('device_search.please_select_network_interface')"
+          style="width: 200px"
+        />
+        <a-button
+          type="primary"
+          class="modal-btn"
+          @click="onSearch"
+          :loading="loading"
+        >
           {{ t("device_search.search") }}
         </a-button>
       </div>
@@ -40,12 +51,12 @@
 
 <script setup lang="ts">
 import { message } from "ant-design-vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { FlowLite, FlowPro, FlowStandard } from "./optons";
 import { useStepStore } from "@/pinia/modules/step";
 import { routerTurnByName } from "../../../router/util";
-import { getControllerList } from "@/api/modules/page";
+import { getControllerList, getNetWorkInterfaces } from "@/api/modules/page";
 
 const props = defineProps({
   modelShow: {
@@ -65,6 +76,44 @@ const stepStore = useStepStore();
 
 const selectedRowKeys = ref<string[]>([]);
 const selectedRows = ref<any[]>([]);
+
+const networkOptions = ref<any[]>([]);
+const selectInterface = ref<string | undefined>(undefined);
+
+onMounted(() => {
+  fetchNetworkInterfaces();
+});
+
+const fetchNetworkInterfaces = async () => {
+  try {
+    const result = await getNetWorkInterfaces();
+
+    if (!result || !result.success) {
+      message.error(t("device_search.network_interface_fetch_failed"));
+      return;
+    }
+
+    const ifaceList = result.interfaces || [];
+    if (ifaceList.length === 0) {
+      message.warning(t("device_search.no_network_interfaces"));
+      networkOptions.value = [];
+      selectInterface.value = undefined;
+      return;
+    }
+
+    networkOptions.value = ifaceList.map((item: any) => ({
+      label: item.ip_address,
+      value: item.ip_address,
+    }));
+
+    selectInterface.value = networkOptions.value[0]?.value;
+
+    //console.log("获取网络接口结果:", result);
+  } catch (error) {
+    console.error("获取网络接口失败:", error);
+    message.error(t("device_search.network_request_error"));
+  }
+};
 
 //自动勾选逻辑
 const autoCheckAddedRows = () => {
@@ -127,7 +176,7 @@ const onSearch = async () => {
     const result = await getControllerList({
       product_series: productType,
       timeout: 10,
-      network_interface: "192.168.20.240",
+      network_interface: selectInterface.value,
     });
 
     if (!result || !result.success) {
@@ -155,7 +204,6 @@ const onSearch = async () => {
     autoCheckAddedRows();
 
     message.success(t("device_search.search_success"));
-    
   } catch (error) {
     console.error("搜索控制器失败:", error);
     message.error(t("device_search.search_error"));
@@ -358,6 +406,7 @@ const handlePageRedirectAfterDelete = () => {
     align-items: center;
     height: 48px;
     padding: 0 12px;
+    gap: 12px;
   }
 
   &-content {

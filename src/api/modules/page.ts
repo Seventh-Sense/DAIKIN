@@ -17,4 +17,6 @@ export const getControllerInfo = (ip: any) => {
   return get("");
 };
 
-
+export const getNetWorkInterfaces = () => {
+  return get("/iot/network-interfaces");
+};

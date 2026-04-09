@@ -104,6 +104,13 @@ export default {
       "「{delnum}」台のデバイスを正常に削除し、「{addnum}」台のデバイスを追加しました！",
     msg_9: "「{delnum}」台のデバイスを正常に削除しました！",
     msg_10: "「{addnum}」台のデバイスを正常に追加しました！",
+    please_select_network_interface:
+      "ネットワークインターフェースを選択してください",
+    network_interface_fetch_failed:
+      "ネットワークインターフェースの取得に失敗しました",
+    no_network_interfaces:
+      "利用可能なネットワークインターフェースが検出されませんでした",
+    network_request_error: "ネットワークエラー、後でもう一度お試しください",
   },
   device_info: {
     del_device: "削除",
@@ -305,8 +312,8 @@ export default {
     min: "最小値",
     max: "最大値",
     local_ip: "ローカルIP",
-    offset: 'オフセット',
-    align_format: '整列フォーマット',
+    offset: "オフセット",
+    align_format: "整列フォーマット",
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",

@@ -17,13 +17,12 @@ export const useUserStore = defineStore(
     const userInfo = ref<any>(null);
 
     const login = async (params: any) => {
-      //console.log('LoginParams', params)
       try {
         const res = await loginApi(params);
-
+        //console.log("LoginParams", res);
         //缓存用户信息
-        const { username, password } = params;
-        userInfo.value = { username, password, ...res };
+        const { username } = params;
+        userInfo.value = { username, ...res };
 
         return Promise.resolve("OK");
       } catch (error) {
