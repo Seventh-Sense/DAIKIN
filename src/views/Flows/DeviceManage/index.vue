@@ -222,9 +222,7 @@ const showBacnet = ref(false);
 const isEdit = ref(false);
 const deviceData = ref({});
 
-const bacnetProperties = ref({});
-
-const currentIP = stepStore.getCurrentIP();
+const currentIP = computed(() => stepStore.getCurrentIP());
 
 //文件导入
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -242,14 +240,17 @@ onUnmounted(() => {
 const initData = async () => {
   loading.value = true;
 
-  data.value = controllerStore.getControllerDevices(currentIP);
+  data.value = controllerStore.getControllerDevices(currentIP.value);
 
   loading.value = false;
 };
 
 watch(
-  () => stepStore.getCurrentIP(),
-  () => initData(),
+  () => currentIP.value,
+  (val) => {
+    //console.log("当前IP变化，重新加载设备列表");
+    initData();
+  },
   { immediate: true },
 );
 
@@ -292,7 +293,7 @@ const handleFileUpload = (event: Event): void => {
 
       let result = importFileTrans(sheetsData.sheets);
 
-      controllerStore.setControllerDevices(currentIP, result);
+      controllerStore.setControllerDevices(currentIP.value, result);
 
       initData();
     } catch (error) {
@@ -317,7 +318,7 @@ const handleFileUpload = (event: Event): void => {
 //导出
 const onExport = async () => {
   try {
-    const deviceList = controllerStore.getControllerDevices(currentIP);
+    const deviceList = controllerStore.getControllerDevices(currentIP.value);
 
     if (!deviceList || deviceList.length === 0) {
       //message.warning(t("device_manage.export_empty_tip"));
@@ -349,7 +350,7 @@ const onEdit = async (record: any) => {
 
 const onDelete = async (record: any) => {
   //console.log("删除", record);
-  controllerStore.deleteDeviceFromController(currentIP, record.uid);
+  controllerStore.deleteDeviceFromController(currentIP.value, record.uid);
 
   data.value = data.value.filter((item: any) => item.uid !== record.uid);
 

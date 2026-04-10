@@ -287,17 +287,21 @@ const handleSecondMenuClick = async (subMenu: any) => {
   }
 };
 
-const pullControllerFile = (ip: string) => {
+const pullControllerFile = async (ip: string) => {
   try {
-    //const result = await getControllerInfo(subMenu.label)
-    const config = DeviceInitData;
+    const result = await getControllerInfo(ip, "config/test.json");
+    // 这里精准判断：有数据 且 文件大小 > 0
+    const hasValidData = result?.data && result.file_size > 0;
+
+    const config = hasValidData
+      ? JSON.parse(result.data)
+      : { ...DeviceInitData };
 
     controllerStore.addController(ip, config);
-
-    console.log(ip, config)
+    console.log(ip, config);
   } catch (e) {
+    controllerStore.addController(ip, { ...DeviceInitData });
     console.error("无法获取控制器信息", e);
-    
   }
 };
 </script>

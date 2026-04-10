@@ -13,8 +13,8 @@ export const getControllerList = (data: any) => {
   });
 };
 
-export const getControllerInfo = (ip: any) => {
-  return get("");
+export const getControllerInfo = (ip: any, fileName: string) => {
+  return post(`/iot/file/download?device_address=${ip}&filename=${fileName}`);
 };
 
 export const getNetWorkInterfaces = () => {
