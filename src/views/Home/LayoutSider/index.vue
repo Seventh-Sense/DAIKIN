@@ -130,7 +130,7 @@ import ControllersSearch from "@/components/Modal/ControllersSearch/index.vue";
 import { message } from "ant-design-vue";
 import { useI18n } from "vue-i18n";
 import { routerTurnByName } from "../../../router/util";
-import { getControllerInfo } from "@/api/modules/page";
+import { downloadFile } from "@/api/modules/page";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { DeviceInitData } from "@/views/Flows/until/template";
 
@@ -289,7 +289,7 @@ const handleSecondMenuClick = async (subMenu: any) => {
 
 const pullControllerFile = async (ip: string) => {
   try {
-    const result = await getControllerInfo(ip, "config/test.json");
+    const result = await downloadFile(ip, "config/test.json");
     // 这里精准判断：有数据 且 文件大小 > 0
     const hasValidData = result?.data && result.file_size > 0;
 

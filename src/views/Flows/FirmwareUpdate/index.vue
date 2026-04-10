@@ -48,7 +48,9 @@
     <div class="global-upgrade-mask">
       <div class="upgrade-loading">
         <a-spin size="large" />
-        <span class="loading-text">{{ t("firmware.upgrading") }}</span>
+        <span class="loading-text">
+          {{ t("firmware.upgrading") }} {{ progress }}
+        </span>
       </div>
     </div>
   </Teleport>
@@ -59,18 +61,30 @@ import { ref, onMounted } from "vue";
 import { handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
 import { message } from "ant-design-vue";
+import {
+  uploadUpgradeFile,
+  fetchTaskStatus,
+  rebootDevice,
+} from "@/api/modules/page";
+import { useStepStore } from "@/pinia/modules/step";
 
+const stepStore = useStepStore();
 const { t } = useI18n();
 
 const file_name = ref<string>("");
 const selectedFile = ref<File | null>(null);
-const fileContent = ref<string | null>(null);
+const fileContent = ref<any>(null);
 const isUpgrading = ref<boolean>(false);
 
 const isBodyReady = ref<boolean>(false);
 
 //升级状态
-const updateStatus = ref<"idle" | "success" | "error">("idle");
+const updateStatus = ref<string>("idle");
+
+//查询任务进度id
+const taskID = ref("");
+let checkTaskTimer: any = null;
+const progress = ref<number>(0);
 
 onMounted(() => {
   // 确保DOM完全加载后再允许渲染Teleport
@@ -83,13 +97,13 @@ const onSelect = () => {
   updateStatus.value = "idle";
   file_name.value = "";
 
-  uploadFile((file: File, content: string) => {
+  uploadFile(async (file: File) => {
     // 可选：文件选择完成后的回调逻辑
-    console.log("文件选择完成：", file.name, "内容长度：", content.length);
+    console.log("文件选择完成：", file.name);
   });
 };
 
-const startUpdate = () => {
+const startUpdate = async () => {
   if (!selectedFile.value) {
     message.warning(t("firmware.please_select_file"));
     return;
@@ -97,23 +111,81 @@ const startUpdate = () => {
 
   try {
     isUpgrading.value = true;
+    updateStatus.value = "idle";
+    taskID.value = ""; // 重置任务ID
 
-    setTimeout(() => {
-      message.success(t("firmware.upgrade_success"));
+    console.log("开始上传配置文件...");
 
+    const result: any = await uploadUpgradeFile(
+      stepStore.getCurrentIP(),
+      selectedFile.value,
+      "config/" + file_name.value,
+    );
+
+    if (!result || !result.task_id) {
+      message.error(t("firmware.upload_fail"));
       updateStatus.value = "error";
-
       isUpgrading.value = false;
-      // 重置状态
-      //file_name.value = "";
-      selectedFile.value = null;
-      fileContent.value = null;
+      return;
+    }
+
+    taskID.value = result.task_id;
+
+    clearTime();
+
+    console.log("文件上传成功，任务ID：", taskID.value);
+
+    checkTaskTimer = setInterval(async () => {
+      try {
+        if (!taskID.value) {
+          clearTime();
+          return;
+        }
+
+        const res = await fetchTaskStatus(taskID.value);
+        console.log("升级进度：", res.progress);
+
+        progress.value = Math.floor(res.progress);
+
+        if (res.progress === 100) {
+          clearTime();
+
+          message.success(t("firmware.upgrade_success"));
+          updateStatus.value = "success";
+          isUpgrading.value = false;
+          taskID.value = "";
+
+          //发送reboot
+          rebootDevice(stepStore.getCurrentIP());
+          message.info(t('firmware.rebooting'));
+        }
+      } catch (err) {
+        console.error("查询进度失败：", err);
+        clearTime();
+
+        message.error(t("firmware.query_status_fail"));
+        updateStatus.value = "error";
+        isUpgrading.value = false;
+        taskID.value = "";
+      }
     }, 1500);
   } catch (error) {
     console.error("升级失败：", error);
     message.error(t("firmware.upgrade_fail"));
     updateStatus.value = "error";
     isUpgrading.value = false;
+
+    taskID.value = "";
+
+    // 安全清除定时器
+    clearTime();
+  }
+};
+
+const clearTime = () => {
+  if (checkTaskTimer !== null) {
+    clearInterval(checkTaskTimer);
+    checkTaskTimer = null;
   }
 };
 
@@ -123,72 +195,103 @@ const onClick = () => {
   handleEditCompleteJump();
 };
 
-const uploadFile = (
-  callback: ((file: File, content: string) => void) | null = null,
-) => {
+// const uploadFile = (
+//   callback: ((file: File, content: string) => void) | null = null,
+// ) => {
+//   const input = document.createElement("input");
+
+//   // 设置文件类型（根据实际固件类型调整，比如.bin/.hex等）
+//   input.type = "file";
+//   input.accept = ".*"; // 限定固件文件类型，可根据实际需求修改
+
+//   input.onchange = async () => {
+//     if (!input.files || input.files.length === 0) {
+//       message.warning(t("firmware.no_file_selected"));
+//       return;
+//     }
+
+//     const file = input.files[0];
+//     // 限制文件大小（示例：最大100MB）
+//     const maxSize = 300 * 1024 * 1024;
+//     if (file.size > maxSize) {
+//       message.error(t("firmware.file_too_large"));
+//       return;
+//     }
+
+//     // 更新文件名显示
+//     file_name.value = file.name;
+//     // 保存选中的文件对象
+//     selectedFile.value = file;
+
+//     const reader = new FileReader();
+
+//     // 读取成功回调
+//     reader.onload = () => {
+//       const dataUrl = reader.result as string;
+//       // 提取Base64内容（去掉dataURL前缀）
+//       const base64Content = dataUrl.split(",")[1] || "";
+//       fileContent.value = base64Content;
+
+//       // 执行回调
+//       if (callback) {
+//         callback(file, base64Content);
+//       }
+
+//       message.success(t("firmware.file_selected", { name: file.name }));
+//     };
+
+//     // 读取失败回调
+//     reader.onerror = (error) => {
+//       console.error("文件读取失败：", error);
+//       message.error(t("firmware.file_read_fail"));
+//       // 重置状态
+//       file_name.value = "";
+//       selectedFile.value = null;
+//       fileContent.value = null;
+//     };
+
+//     // 以DataURL格式读取文件（适合小文件，大文件建议用FormData）
+//     reader.readAsDataURL(file);
+//   };
+
+//   // 触发文件选择框点击
+//   input.click();
+
+//   // 移除临时创建的input元素（避免内存泄漏）
+//   setTimeout(() => {
+//     input.remove();
+//   }, 1000);
+// };
+
+// 直接存文件二进制，不转 Base64！
+const uploadFile = (callback: ((file: File) => void) | null = null) => {
   const input = document.createElement("input");
-
-  // 设置文件类型（根据实际固件类型调整，比如.bin/.hex等）
   input.type = "file";
-  input.accept = ".bin,.hex,.fw"; // 限定固件文件类型，可根据实际需求修改
+  input.accept = ".*";
 
-  input.onchange = async () => {
-    if (!input.files || input.files.length === 0) {
+  input.onchange = () => {
+    if (!input.files?.length) {
       message.warning(t("firmware.no_file_selected"));
       return;
     }
 
     const file = input.files[0];
-    // 限制文件大小（示例：最大100MB）
-    const maxSize = 100 * 1024 * 1024;
+    const maxSize = 300 * 1024 * 1024;
     if (file.size > maxSize) {
       message.error(t("firmware.file_too_large"));
       return;
     }
 
-    // 更新文件名显示
+    // ✅ 直接保存文件对象（二进制本体）
     file_name.value = file.name;
-    // 保存选中的文件对象
     selectedFile.value = file;
 
-    const reader = new FileReader();
-
-    // 读取成功回调
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      // 提取Base64内容（去掉dataURL前缀）
-      const base64Content = dataUrl.split(",")[1] || "";
-      fileContent.value = base64Content;
-
-      // 执行回调
-      if (callback) {
-        callback(file, base64Content);
-      }
-
-      message.success(t("firmware.file_selected", { name: file.name }));
-    };
-
-    // 读取失败回调
-    reader.onerror = (error) => {
-      console.error("文件读取失败：", error);
-      message.error(t("firmware.file_read_fail"));
-      // 重置状态
-      file_name.value = "";
-      selectedFile.value = null;
-      fileContent.value = null;
-    };
-
-    // 以DataURL格式读取文件（适合小文件，大文件建议用FormData）
-    reader.readAsDataURL(file);
+    if (callback) callback(file);
+    message.success(t("firmware.file_selected", { name: file.name }));
   };
 
-  // 触发文件选择框点击
   input.click();
-
-  // 移除临时创建的input元素（避免内存泄漏）
-  setTimeout(() => {
-    input.remove();
-  }, 1000);
+  setTimeout(() => input.remove(), 1000);
 };
 </script>
 

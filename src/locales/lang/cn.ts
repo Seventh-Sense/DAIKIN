@@ -125,6 +125,8 @@ export default {
     file_read_fail: "文件读取失败，请重新选择！",
     upgrading: "更新中，请稍后...",
     upgrade_success: "固件升级成功！",
+    rebooting: '设备正在重启...',
+    query_status_fail: '查询进度失败，请稍后重试！',
   },
   mqtt: {
     title: "MQTT",
@@ -153,6 +155,7 @@ export default {
   connectivity_check: {
     title: "连接性检查",
     all_check: "全部检查",
+    download_file: "下载文件",
     communication: "通讯",
     data_accuracy: "数据准确性",
     basic_function: "基本功能",

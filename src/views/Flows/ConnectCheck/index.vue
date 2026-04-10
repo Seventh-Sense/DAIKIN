@@ -2,9 +2,14 @@
   <div class="card">
     <div class="card-top">
       <span class="card-title">{{ t("connectivity_check.title") }}</span>
-      <a-button type="primary" class="btn-all-check" @click="onAllCheck">
-        {{ t("connectivity_check.all_check") }}
-      </a-button>
+      <div style="display: flex; gap: 12px">
+        <a-button type="primary" class="btn-all-check" @click="onDownload">
+          {{ t("connectivity_check.download_file") }}
+        </a-button>
+        <a-button type="primary" class="btn-all-check" @click="onAllCheck">
+          {{ t("connectivity_check.all_check") }}
+        </a-button>
+      </div>
     </div>
     <div class="card-flows">
       <div
@@ -173,6 +178,10 @@ const strig = [
   "检查结果：通讯检查：共检查43项（不通过0项）。",
   "检查结果：通讯检查：共检查43项（不通过0项）。",
 ];
+
+const onDownload = () => {
+
+}
 
 const onAllCheck = () => {
   console.log("onAllCheck");

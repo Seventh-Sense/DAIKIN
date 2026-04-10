@@ -126,6 +126,8 @@ export default {
     file_read_fail: "File reading failed, please select again!",
     upgrading: "Updating, please wait...",
     upgrade_success: "Firmware upgrade succeeded!",
+    rebooting: "Device is rebooting...",
+    query_status_fail: "Failed to query progress, please try again later!",
   },
   mqtt: {
     title: "MQTT",
@@ -154,6 +156,7 @@ export default {
   connectivity_check: {
     title: "Connectivity Check",
     all_check: "Check All",
+    download_file: "Download File",
     communication: "Communication",
     data_accuracy: "Data Accuracy",
     basic_function: "Basic Function",

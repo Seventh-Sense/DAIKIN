@@ -132,6 +132,8 @@ export default {
     file_read_fail: "ファイルの読み取りに失敗しました、再度選択してください！",
     upgrading: "更新中です、しばらくお待ちください...",
     upgrade_success: "ファームウェアのアップグレードに成功しました！",
+    rebooting: "デバイスを再起動中です…",
+    query_status_fail: "進捗照会に失敗しました。後ほど再試行してください。",
   },
   mqtt: {
     title: "MQTT",
@@ -161,6 +163,7 @@ export default {
   connectivity_check: {
     title: "接続性チェック",
     all_check: "すべてチェック",
+    download_file: "ファイルをダウンロード",
     communication: "通信",
     data_accuracy: "データ正確性",
     basic_function: "基本機能",

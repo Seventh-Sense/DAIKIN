@@ -13,10 +13,6 @@ export const getControllerList = (data: any) => {
   });
 };
 
-export const getControllerInfo = (ip: any, fileName: string) => {
-  return post(`/iot/file/download?device_address=${ip}&filename=${fileName}`);
-};
-
 export const getNetWorkInterfaces = () => {
   return get("/iot/network-interfaces");
 };
@@ -30,4 +26,31 @@ export const discoveryBacnetDevices = (ip: string) => {
 
 export const discoveryBacnetPoints = (data: any) => {
   return post(`/iot/bacnet/points`, data);
+};
+
+//上传文件
+export const uploadUpgradeFile = (ip: any, file: any, filename: string) => {
+  const formData = new FormData();
+
+  formData.append("device_address", ip);
+  formData.append("file", file); // 文件
+  formData.append("filename", filename);
+
+  return post("/iot/file/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const fetchTaskStatus = (task_id: string) => {
+  return get("/iot/file/status/" + task_id);
+};
+
+export const downloadFile = (ip: any, filename: string) => {
+  return post(`/iot/file/download?device_address=${ip}&filename=${filename}`);
+};
+
+export const rebootDevice = (ip: string) => {
+  return post("/iot/reboot", { device_address: ip });
 };
