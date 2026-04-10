@@ -141,8 +141,6 @@ export const createKNXParams = (data: DataType) => ({
   points: [],
 });
 
-
-
 export const ModbusTCPData = {
   slaveid: "1",
   host: "127.0.0.1",
@@ -413,7 +411,13 @@ const DEVICE_FIELD_CONFIG = {
     polling: device.polling,
     description: device.description,
     enabled: device.enabled,
-    ...device.property,
+    address: device.address,
+    device_id: device.property?.device_id,
+    vendor_name: device.property?.vendor_name,
+    vendor_id: device.property?.vendor_id,
+    model_name: device.property?.model_name,
+    max_apdu_length: device.property?.max_apdu_length,
+    segmentation_supported: device.property?.segmentation_supported,
   }),
   KNX: (device: any) => ({
     device_name: device.device_name,
@@ -443,14 +447,14 @@ const DEVICE_FIELD_CONFIG = {
 
 const POINT_FIELD_CONFIG = {
   BACnet: (device: any, point: any) => ({
-    device_uid: device.uid,
     device_name: device.device_name,
-    point_uid: point.uid,
+    device_dev: device.device_dev,
     point_name: point.point_name,
     point_m: point.point_m,
-    description: point.description,
+    pkey: point.description,
     writable: point.writable,
-    ...point.property,
+    object_type: point.property?.object_type,
+    object_instance: point.property?.object_instance,
   }),
   KNX: (device: any, point: any) => ({
     device_name: device.device_name,
@@ -461,7 +465,7 @@ const POINT_FIELD_CONFIG = {
     writable: point.writable,
     status_address: point.property?.read_address,
     control_address: point.property?.write_address,
-    value_type: point.property?.value_type,
+    data_type: point.property?.data_type,
   }),
   ModbusTCP: (device: any, point: any) => ({
     device_name: device.device_name,
@@ -625,12 +629,14 @@ const transformDeviceRow = (row: any, protocol: string) => {
 
   let address = "";
 
-  if (device_protocol === "KNX") {
+  if (device_protocol === DeviceTypeEnum.KNX) {
     address = `${property.gateway_ip}:${property.gateway_port}`;
-  } else if (device_protocol === "ModbusTCP") {
+  } else if (device_protocol === DeviceTypeEnum.ModbusTCP) {
     address = `${property.host}:${property.port}`;
+  } else if (device_protocol === DeviceTypeEnum.BACnet) {
+    address = property.address
   }
-
+  
   return {
     uid: `${device_name}_${device_dev}_${device_sn}` || "",
     device_name,

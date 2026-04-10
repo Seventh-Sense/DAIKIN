@@ -11,26 +11,21 @@
     @ok="handleOk"
   >
     <div class="modal">
-      <a-row :gutter="32">
-        <a-col :span="12">
-          <div>
-            <div class="modal-porperty">{{ $t("device_manage.id") }}</div>
-            <a-input
-              v-model:value="device_id"
-              style="margin-bottom: 12px"
-              disabled
-            />
-          </div>
-        </a-col>
-        <a-col :span="12">
-          <div class="modal-porperty">{{ $t("device_manage.type") }}</div>
-          <a-input
-            v-model:value="deviceInfo.type"
-            style="margin-bottom: 12px"
-            disabled
-          />
-        </a-col>
-      </a-row>
+      <div class="modal-top">
+        <a-select
+          v-model:value="selectInterface"
+          :options="networkOptions"
+          :placeholder="t('device_search.please_select_network_interface')"
+          style="width: 200px"
+        />
+        <div class="modal-right">
+          <span>{{ t('msg.total_points', { count: data.length }) }}</span>
+          <a-button type="primary" class="btn-add" @click="onSearch">
+            {{ t("device_manage.search") }}
+          </a-button>
+        </div>
+      </div>
+
       <a-table
         size="middle"
         :loading="loading"
@@ -49,7 +44,10 @@
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { message } from "ant-design-vue";
-import { discoveryBacnetPoints } from "@/api/modules/page";
+import {
+  discoveryBacnetPoints,
+  getNetWorkInterfaces,
+} from "@/api/modules/page";
 import { useStepStore } from "@/pinia/modules/step";
 import { generateTimeUniqueId } from "@/utils/function";
 import { useControllerStore } from "@/pinia/modules/controller";
@@ -72,6 +70,9 @@ const props = defineProps({
   },
 });
 
+const networkOptions = ref<any[]>([]);
+const selectInterface = ref<string | undefined>(undefined);
+
 const currentIP = stepStore.getCurrentIP();
 
 const deviceInfo: any = inject("deviceInfo");
@@ -86,7 +87,6 @@ const columns = [
 ];
 
 const data = ref<any[]>([]);
-const device_id = ref("");
 
 const selectedRowKeys = ref<Key[]>([]);
 
@@ -105,17 +105,51 @@ const rowSelection = computed(() => ({
 }));
 
 onMounted(() => {
-  initData();
+  fetchNetworkInterfaces();
 });
+
+const fetchNetworkInterfaces = async () => {
+  try {
+    const result = await getNetWorkInterfaces();
+
+    if (!result || !result.success) {
+      message.error(t("device_search.network_interface_fetch_failed"));
+      return;
+    }
+
+    const ifaceList = result.interfaces || [];
+    if (ifaceList.length === 0) {
+      message.warning(t("device_search.no_network_interfaces"));
+      networkOptions.value = [];
+      selectInterface.value = undefined;
+      return;
+    }
+
+    networkOptions.value = ifaceList.map((item: any) => ({
+      label: item.ip_address,
+      value: item.ip_address,
+    }));
+
+    selectInterface.value = networkOptions.value[0]?.value;
+
+    //console.log("获取网络接口结果:", result);
+  } catch (error) {
+    console.error("获取网络接口失败:", error);
+    message.error(t("device_search.network_request_error"));
+  }
+};
+
+const onSearch = () => {
+  initData();
+};
 
 const initData = async () => {
   loading.value = true;
 
   try {
-    const networkInterface = stepStore.getCurrentNetworkInterface();
     const deviceInfo = stepStore.getCurrentDeviceInfo();
 
-    if (!networkInterface || !deviceInfo) {
+    if (!deviceInfo || !selectInterface.value) {
       message.error(t("msg.content_missing"));
       return;
     }
@@ -127,10 +161,9 @@ const initData = async () => {
       message.error(t("msg.device_info_invalid"));
       return;
     }
-    device_id.value = deviceId;
 
     const result = await discoveryBacnetPoints({
-      network_interface: networkInterface,
+      network_interface: selectInterface.value,
       device_address: deviceInfo.address,
       device_id: deviceInfo.property.device_id,
       timeout: 30,
@@ -248,6 +281,20 @@ const clearAll = () => {
 
   &-porperty {
     margin-bottom: 4px;
+  }
+
+  &-top {
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  &-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 }
 </style>

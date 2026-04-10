@@ -378,5 +378,6 @@ export default {
     content_missing:
       "ネットワークインターフェースまたはデバイス情報が存在しません",
     device_info_invalid: "デバイスアドレスまたはデバイスIDが無効です",
+    total_points: "全 {count} ポイント",
   },
 };

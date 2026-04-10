@@ -32,7 +32,7 @@
         >
           <a-input v-model:value="data[key]" />
         </div>
-        <div v-else-if="key === 'value_type'">
+        <div v-else-if="key === 'data_type'">
           <a-select
             v-model:value="data[key]"
             :options="KNXValueTypeOptions"
@@ -99,7 +99,7 @@ const defaultData = {
   description: "",
   read_address: "0/1/1",
   write_address: "0/0/1",
-  value_type: "bool",
+  data_type: "bool",
   min: null,
   max: null,
   writable: 1,
@@ -114,7 +114,7 @@ const KNX_ID_MAP = (key: string) => {
     description: t("device_manage.desc"),
     read_address: t("device_manage.read_address"),
     write_address: t("device_manage.write_address"),
-    value_type: t("device_manage.value_type"),
+    data_type: t("device_manage.data_type"),
     tags: t("device_manage.tags"),
     value: t("device_manage.value"),
     min: t("device_manage.min"),
@@ -151,7 +151,7 @@ const addNewPoint = async () => {
     property: {
       read_address: data.value.read_address,
       write_address: data.value.write_address,
-      value_type: data.value.value_type,
+      data_type: data.value.data_type,
       min: data.value.min === null ? undefined : data.value.min,
       max: data.value.max === null ? undefined : data.value.max,
     },
@@ -199,7 +199,7 @@ watch(
         description: props.editData.description,
         read_address: props.editData.property.read_address,
         write_address: props.editData.property.write_address,
-        value_type: props.editData.property.value_type,
+        data_type: props.editData.property.data_type,
         min: props.editData.property.min,
         max: props.editData.property.max,
         writable: props.editData.writable ? 1 : 0,

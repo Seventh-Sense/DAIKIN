@@ -51,9 +51,6 @@ export const useStepStore = defineStore(
     //当前点击项的数据(二级菜单的地址，添加的控制器信息，当前步骤，所有步骤)
     const currentMenuData = ref(initialState.currentMenuData);
 
-    //当前使用网卡
-    const currentNetworkInterface = ref<string>("");
-
     //设备管理，当前设备信息
     const currentDeviceInfo = ref<any>({});
 
@@ -107,7 +104,6 @@ export const useStepStore = defineStore(
       menuOpenKeys.value = init.menuOpenKeys;
       currentMenuData.value = init.currentMenuData;
       currentDeviceInfo.value = init.currentDeviceInfo;
-      currentNetworkInterface.value = init.currentNetworkInterface;
     };
 
     const setCurrentDeviceInfo = (deviceInfo: any) => {
@@ -116,14 +112,6 @@ export const useStepStore = defineStore(
 
     const getCurrentDeviceInfo = () => {
       return currentDeviceInfo.value;
-    };
-
-    const setCurrentNetworkInterface = (networkInterface: string) => {
-      currentNetworkInterface.value = networkInterface;
-    };
-
-    const getCurrentNetworkInterface = () => {
-      return currentNetworkInterface.value;
     };
 
     return {
@@ -141,11 +129,8 @@ export const useStepStore = defineStore(
       getCurrentIP,
       reset,
       currentDeviceInfo,
-      currentNetworkInterface,
       setCurrentDeviceInfo,
       getCurrentDeviceInfo,
-      setCurrentNetworkInterface,
-      getCurrentNetworkInterface,
     };
   },
   {
@@ -160,7 +145,6 @@ export const useStepStore = defineStore(
         "rawMenus",
         "currentMenuData",
         "currentDeviceInfo",
-        "currentNetworkInterface",
       ],
     } as PersistOptions,
   },

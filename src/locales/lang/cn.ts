@@ -351,5 +351,6 @@ export default {
     msg_priority_cannot_empty: "优先级不能为空",
     content_missing: "网络接口或设备信息不存在",
     device_info_invalid: "设备地址或设备ID不合法",
+    total_points: "共 {count} 个点位",
   },
 };

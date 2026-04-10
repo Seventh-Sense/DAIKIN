@@ -125,15 +125,6 @@ const fetchNetworkInterfaces = async () => {
   }
 };
 
-watch(
-  () => selectInterface.value,
-  (val) => {
-    if (val) {
-      stepStore.setCurrentNetworkInterface(val);
-    }
-  },
-);
-
 const onSearch = async () => {
   if (!selectInterface.value) {
     message.warn("");
