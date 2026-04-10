@@ -16,7 +16,7 @@
         <LayoutHeader />
       </a-layout-header>
       <a-layout-content>
-        <router-view></router-view>
+        <router-view :key="$route.fullPath"></router-view>
       </a-layout-content>
     </a-layout>
   </a-layout>
@@ -26,8 +26,10 @@
 import LayoutHeader from "@/views/Home/LayoutHeader/index.vue";
 import LayoutSider from "@/views/Home/LayoutSider/index.vue";
 import { ref } from "vue";
+import { useRoute } from "vue-router";
 
 const collapsed = ref(false);
+const route = useRoute();
 
 const onCollapse = (val: boolean, type: string) => {
   console.log(collapsed, type);

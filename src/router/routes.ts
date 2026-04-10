@@ -12,17 +12,17 @@ export const publicRoutes: RouteRecordRaw[] = [
     component: () => import("@/views/Home/index.vue"),
     children: [
       {
-        path: "controller",
+        path: "controller/:address",
         name: "AddController",
         component: () => import("@/views/Flows/ControllerAdd/index.vue"),
       },
       {
-        path: "firmwareupdate",
+        path: "firmwareupdate/:address",
         name: "FirmwareUpdate",
         component: () => import("@/views/Flows/FirmwareUpdate/index.vue"),
       },
       {
-        path: "devices",
+        path: "devices/:address",
         name: "EquipmentAddition",
         component: () => import("@/views/Flows/DeviceManage/index.vue"),
       },
@@ -32,17 +32,17 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/Flows/Points/index.vue"),
       },
       {
-        path: "mqtt",
+        path: "mqtt/:address",
         name: "MQTTConfiguration",
         component: () => import("@/views/Flows/MQTT/index.vue"),
       },
       {
-        path: "ui",
+        path: "ui/:address",
         name: "UIConfiguration",
         component: () => import("@/views/Flows/UI/index.vue"),
       },
       {
-        path: "check",
+        path: "check/:address",
         name: "ConnectivityCheck",
         component: () => import("@/views/Flows/ConnectCheck/index.vue"),
       },

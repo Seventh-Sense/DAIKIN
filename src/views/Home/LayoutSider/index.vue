@@ -183,7 +183,7 @@ const handleClick = (menu: any, secondMenu: any) => {
   if (menu.path) {
     //存储当前点击项的二级菜单数据
     stepStore.updateCurrentMenuData(secondMenu);
-    routerTurnByPath(menu.path);
+    routerTurnByPath(menu.path + "/" + secondMenu.label);
   }
 };
 

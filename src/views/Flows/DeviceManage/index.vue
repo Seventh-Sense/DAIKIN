@@ -222,7 +222,7 @@ const showBacnet = ref(false);
 const isEdit = ref(false);
 const deviceData = ref({});
 
-const currentIP = computed(() => stepStore.getCurrentIP());
+const currentIP = stepStore.getCurrentIP();
 
 //文件导入
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -231,6 +231,8 @@ onMounted(() => {
   calculateTableHeight();
   // 监听窗口大小变化，重新计算高度
   window.addEventListener("resize", calculateTableHeight);
+
+  initData();
 });
 
 onUnmounted(() => {
@@ -240,19 +242,10 @@ onUnmounted(() => {
 const initData = async () => {
   loading.value = true;
 
-  data.value = controllerStore.getControllerDevices(currentIP.value);
+  data.value = controllerStore.getControllerDevices(currentIP);
 
   loading.value = false;
 };
-
-watch(
-  () => currentIP.value,
-  (val) => {
-    //console.log("当前IP变化，重新加载设备列表");
-    initData();
-  },
-  { immediate: true },
-);
 
 const onAdd = () => {
   deviceData.value = {};
@@ -293,7 +286,7 @@ const handleFileUpload = (event: Event): void => {
 
       let result = importFileTrans(sheetsData.sheets);
 
-      controllerStore.setControllerDevices(currentIP.value, result);
+      controllerStore.setControllerDevices(currentIP, result);
 
       initData();
     } catch (error) {
@@ -318,7 +311,7 @@ const handleFileUpload = (event: Event): void => {
 //导出
 const onExport = async () => {
   try {
-    const deviceList = controllerStore.getControllerDevices(currentIP.value);
+    const deviceList = controllerStore.getControllerDevices(currentIP);
 
     if (!deviceList || deviceList.length === 0) {
       //message.warning(t("device_manage.export_empty_tip"));
@@ -350,7 +343,7 @@ const onEdit = async (record: any) => {
 
 const onDelete = async (record: any) => {
   //console.log("删除", record);
-  controllerStore.deleteDeviceFromController(currentIP.value, record.uid);
+  controllerStore.deleteDeviceFromController(currentIP, record.uid);
 
   data.value = data.value.filter((item: any) => item.uid !== record.uid);
 

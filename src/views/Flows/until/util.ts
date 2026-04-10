@@ -52,7 +52,7 @@ export async function handleEditCompleteJump() {
     stepStore.updateCurrentStep(nextMenu.key);
 
     // 3. 路由跳转
-    routerTurnByPath(nextMenu.path);
+    routerTurnByPath(nextMenu.path + '/' + stepStore.currentMenuData.label);
   } catch (error) {
     console.error("编辑完成跳转失败:", error);
   }
