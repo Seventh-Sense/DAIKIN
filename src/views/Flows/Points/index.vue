@@ -85,12 +85,10 @@
       :editData="displayData"
       @onSaveSuccess="initData"
     />
-    <PropertyDisplayModal
+    <BACnetDisplayModal
       v-if="isBacnetEdit"
       v-model:modelShow="isBacnetEdit"
-      :isEdit="isEdit"
-      :bacnetData="displayData"
-      :deviceData="deviceInfo"
+      :editData="displayData"
       @onSaveSuccess="initData"
     />
   </div>
@@ -102,12 +100,12 @@ import { handleEditCompleteJump } from "../until/util";
 import Icons from "@/icons/index.vue";
 import { ref, computed, nextTick, onMounted, onUnmounted, provide } from "vue";
 import { useRoute } from "vue-router";
-import { deleteSubscribePoint } from "@/api";
 import { DeviceTypeEnum } from "../DeviceManage/utils/options";
 import { message } from "ant-design-vue";
 import ModbusPointModal from "./ModbusPointModal/index.vue";
 import BACnetPointModal from "./BACnetPointModal/index.vue";
 import KNXPointModal from "./KNXPointModal/index.vue";
+import BACnetDisplayModal from "./BACnetDisplayModal/index.vue";
 import PropertyDisplayModal from "../DeviceManage/Modal/PropertyDisplayModal/index.vue";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { useStepStore } from "@/pinia/modules/step";
@@ -280,7 +278,6 @@ const onEdit = (record: any) => {
 
   if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
     isBacnetEdit.value = true;
-    isEdit.value = true;
   } else if (deviceInfo.value.type === DeviceTypeEnum.ModbusTCP) {
     isModbus.value = true;
     isEdit.value = true;

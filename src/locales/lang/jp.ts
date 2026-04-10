@@ -314,6 +314,7 @@ export default {
     local_ip: "ローカルIP",
     offset: "オフセット",
     align_format: "整列フォーマット",
+    point_id: "ポイントID",
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",

@@ -302,6 +302,7 @@ export default {
     local_ip: "本地IP",
     offset: "偏移量",
     align_format: "对齐格式",
+    point_id: "点位ID",
   },
   msg: {
     updateSuccess: "设备状态更新成功",

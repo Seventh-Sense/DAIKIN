@@ -308,6 +308,7 @@ export default {
     local_ip: "Local IP",
     offset: "Offset",
     align_format: "Alignment Format",
+    point_id: "Point ID",
   },
   msg: {
     updateSuccess: "Device status updated successfully",
