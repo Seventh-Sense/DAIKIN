@@ -363,6 +363,10 @@ const onEnter = (record: any) => {
     type: record.device_type,
     name: record.device_name,
   });
+
+  //存储当前设备信息，供点位页面使用
+  const { points, ...currentDeviceInfo } = record;
+  stepStore.setCurrentDeviceInfo(currentDeviceInfo);
 };
 
 const onClick = () => {

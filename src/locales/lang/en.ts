@@ -360,5 +360,7 @@ export default {
     modifyFailed:
       "Modification failed: Operation exception, please try again later",
     msg_priority_cannot_empty: "Priority cannot be empty",
+    content_missing: "Network interface or device information is missing",
+    device_info_invalid: "Device address or device ID is invalid",
   },
 };

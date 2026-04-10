@@ -33,6 +33,8 @@ const getInitialState = () => ({
     },
   ],
   currentMenuData: {} as any,
+  currentDeviceInfo: {} as any,
+  currentNetworkInterface: "",
 });
 
 export const useStepStore = defineStore(
@@ -48,6 +50,12 @@ export const useStepStore = defineStore(
     const rawMenus = ref(initialState.rawMenus);
     //当前点击项的数据(二级菜单的地址，添加的控制器信息，当前步骤，所有步骤)
     const currentMenuData = ref(initialState.currentMenuData);
+
+    //当前使用网卡
+    const currentNetworkInterface = ref<string>("");
+
+    //设备管理，当前设备信息
+    const currentDeviceInfo = ref<any>({});
 
     const menus = computed(() => {
       const processMenu = (menu: any) => {
@@ -89,8 +97,8 @@ export const useStepStore = defineStore(
     };
 
     const getCurrentIP = () => {
-      return currentMenuData.value.label
-    }
+      return currentMenuData.value.label;
+    };
 
     const reset = () => {
       const init = getInitialState();
@@ -98,6 +106,24 @@ export const useStepStore = defineStore(
       menuSelectedKeys.value = init.menuSelectedKeys;
       menuOpenKeys.value = init.menuOpenKeys;
       currentMenuData.value = init.currentMenuData;
+      currentDeviceInfo.value = init.currentDeviceInfo;
+      currentNetworkInterface.value = init.currentNetworkInterface;
+    };
+
+    const setCurrentDeviceInfo = (deviceInfo: any) => {
+      currentDeviceInfo.value = deviceInfo;
+    };
+
+    const getCurrentDeviceInfo = () => {
+      return currentDeviceInfo.value;
+    };
+
+    const setCurrentNetworkInterface = (networkInterface: string) => {
+      currentNetworkInterface.value = networkInterface;
+    };
+
+    const getCurrentNetworkInterface = () => {
+      return currentNetworkInterface.value;
     };
 
     return {
@@ -114,6 +140,12 @@ export const useStepStore = defineStore(
       updateCurrentMenuData,
       getCurrentIP,
       reset,
+      currentDeviceInfo,
+      currentNetworkInterface,
+      setCurrentDeviceInfo,
+      getCurrentDeviceInfo,
+      setCurrentNetworkInterface,
+      getCurrentNetworkInterface,
     };
   },
   {
@@ -127,6 +159,8 @@ export const useStepStore = defineStore(
         "menuOpenKeys",
         "rawMenus",
         "currentMenuData",
+        "currentDeviceInfo",
+        "currentNetworkInterface",
       ],
     } as PersistOptions,
   },

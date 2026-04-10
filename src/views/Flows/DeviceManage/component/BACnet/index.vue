@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, inject, onUnmounted, onMounted } from "vue";
+import { ref, inject, onUnmounted, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import Icons from "@/icons/index.vue";
 import { message } from "ant-design-vue";
@@ -124,6 +124,15 @@ const fetchNetworkInterfaces = async () => {
     message.error(t("device_search.network_request_error"));
   }
 };
+
+watch(
+  () => selectInterface.value,
+  (val) => {
+    if (val) {
+      stepStore.setCurrentNetworkInterface(val);
+    }
+  },
+);
 
 const onSearch = async () => {
   if (!selectInterface.value) {

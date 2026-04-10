@@ -374,5 +374,8 @@ export default {
     modifyFailed:
       "修正に失敗しました：操作エラーが発生しました。後で再試行してください",
     msg_priority_cannot_empty: "優先度は空にできません",
+    content_missing:
+      "ネットワークインターフェースまたはデバイス情報が存在しません",
+    device_info_invalid: "デバイスアドレスまたはデバイスIDが無効です",
   },
 };

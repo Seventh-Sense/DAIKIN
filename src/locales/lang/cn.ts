@@ -348,5 +348,7 @@ export default {
     writeAccessDenied: "权限拒绝：该属性不允许写入",
     modifyFailed: "修改失败：操作异常，请稍后重试",
     msg_priority_cannot_empty: "优先级不能为空",
+    content_missing: "网络接口或设备信息不存在",
+    device_info_invalid: "设备地址或设备ID不合法",
   },
 };

@@ -27,3 +27,7 @@ export const discoveryBacnetDevices = (ip: string) => {
     timeout: 10,
   });
 };
+
+export const discoveryBacnetPoints = (data: any) => {
+  return post(`/iot/bacnet/points`, data);
+};
