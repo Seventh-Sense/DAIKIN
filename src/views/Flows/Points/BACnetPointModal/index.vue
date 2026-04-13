@@ -226,6 +226,8 @@ const handleOk = async () => {
         property: {
           object_type: record.object_type,
           object_instance: record.object_instance,
+          min: undefined,
+          max: undefined,
         },
       });
 

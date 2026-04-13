@@ -197,7 +197,7 @@ const onDownload = async (record: any) => {
     device_sn: "",
     device_dev: "",
     polling: props.data.polling,
-    address: record.address,
+    address: record.address + ':47808',
     description: "",
     enabled: true,
     property: {

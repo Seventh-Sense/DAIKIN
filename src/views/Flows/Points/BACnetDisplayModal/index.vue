@@ -33,6 +33,10 @@
       <a-input v-model:value="data.point_m" style="margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.desc") }}</div>
       <a-input v-model:value="data.description" style="margin-bottom: 12px" />
+      <div class="modal-porperty">{{ $t("device_manage.min") }}</div>
+      <a-input-number v-model:value="data.min" style="width: 100%" />
+      <div class="modal-porperty">{{ $t("device_manage.max") }}</div>
+      <a-input-number v-model:value="data.max" style="width: 100%" />
       <div class="modal-porperty">{{ $t("device_manage.writable") }}</div>
       <a-select
         v-model:value="data.writable"
@@ -72,6 +76,8 @@ const data = ref<any>({
   description: "",
   point_m: "",
   writable: 1,
+  min: undefined,
+  max: undefined,
 });
 
 onMounted(() => {
@@ -88,8 +94,14 @@ const handleModalOpenChange = (newOpenState: boolean) => {
 const handleOk = () => {
   const submitData = {
     ...props.editData,
-    ...data.value,
+    description: data.value.description,
+    point_m: data.value.point_m,
     writable: !!data.value.writable,
+    property: {
+      ...props.editData.property,
+      min: data.value.min,
+      max: data.value.max,
+    },
   };
 
   controllerStore.addPointToControllerDevice(
@@ -109,6 +121,14 @@ const initFormData = () => {
     description: props.editData.description || "",
     point_m: props.editData.point_m || "",
     writable: props.editData.writable ? 1 : 0,
+    min:
+      props.editData.property.min === null
+        ? undefined
+        : props.editData.property.min,
+    max:
+      props.editData.property.max === null
+        ? undefined
+        : props.editData.property.max,
   };
 };
 

@@ -3,10 +3,10 @@
     <div class="card-top">
       <span class="card-title">{{ t("connectivity_check.title") }}</span>
       <div style="display: flex; gap: 12px">
-        <a-button type="primary" class="btn-all-check" @click="onDownload">
+        <a-button type="primary" class="btn-check" @click="onDownload">
           {{ t("connectivity_check.download_file") }}
         </a-button>
-        <a-button type="primary" class="btn-all-check" @click="onAllCheck">
+        <a-button type="primary" class="btn-check" @click="onAllCheck" :disabled="downloadLoading">
           {{ t("connectivity_check.all_check") }}
         </a-button>
       </div>
@@ -63,10 +63,10 @@
         </div>
       </div>
       <div class="result-btns">
-        <a-button type="primary" class="btn-all-check" @click="onClear()">
+        <a-button type="primary" class="btn-check" @click="onClear()">
           {{ t("connectivity_check.clear") }}
         </a-button>
-        <a-button type="primary" class="btn-all-check" @click="onExport()">
+        <a-button type="primary" class="btn-check" @click="onExport()">
           {{ t("connectivity_check.export_result") }}
         </a-button>
       </div>
@@ -90,9 +90,11 @@
 <script setup lang="ts">
 import Icons from "@/icons/index.vue";
 import { useI18n } from "vue-i18n";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 const { t } = useI18n();
+
+const downloadLoading = ref(false);
 
 const checkItems = reactive([
   { key: "communication", percent: 30 },
@@ -350,7 +352,7 @@ const onResult = () => {
   }
 }
 
-.btn-all-check {
+.btn-check {
   border-radius: 0;
 }
 </style>

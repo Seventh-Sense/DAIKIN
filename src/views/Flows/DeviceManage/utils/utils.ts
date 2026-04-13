@@ -455,6 +455,8 @@ const POINT_FIELD_CONFIG = {
     writable: point.writable,
     object_type: point.property?.object_type,
     object_instance: point.property?.object_instance,
+    min: point.property?.min,
+    max: point.property?.max,
   }),
   KNX: (device: any, point: any) => ({
     device_name: device.device_name,
@@ -466,6 +468,8 @@ const POINT_FIELD_CONFIG = {
     status_address: point.property?.read_address,
     control_address: point.property?.write_address,
     data_type: point.property?.data_type,
+    min: point.property?.min,
+    max: point.property?.max,
   }),
   ModbusTCP: (device: any, point: any) => ({
     device_name: device.device_name,
@@ -482,6 +486,8 @@ const POINT_FIELD_CONFIG = {
     offset: point.property?.offset,
     scale: point.property?.scale,
     unit: point.property?.unit,
+    min: point.property?.min,
+    max: point.property?.max,
   }),
 };
 
@@ -634,7 +640,7 @@ const transformDeviceRow = (row: any, protocol: string) => {
   } else if (device_protocol === DeviceTypeEnum.ModbusTCP) {
     address = `${property.host}:${property.port}`;
   } else if (device_protocol === DeviceTypeEnum.BACnet) {
-    address = property.address
+    address = `${property.address}:47808`
   }
   
   return {
