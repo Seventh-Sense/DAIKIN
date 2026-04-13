@@ -208,34 +208,48 @@ export const OrderOptions = [
 ];
 
 export const DatatypeOptions = [
-  "int8",
+  "bool",
+  "boolean",
   "int16",
-  "int32",
-  "int64",
-  "uint8",
   "uint16",
+  "int32",
   "uint32",
-  "uint64",
   "float16",
   "float32",
-  "float64",
-  "str",
-  "string",
+  "float",
 ].map((v) => ({
   label: v,
   value: v,
 }));
 
 export const KNXValueTypeOptions = [
-  {
-    label: () => formatMessage("device_manage.bool"),
-    value: "bool",
-  },
-  {
-    label: () => formatMessage("device_manage.percent"),
-    value: "percent",
-  },
-];
+  "switch",
+  "binary",
+  "bool",
+  "boolean",
+  "temperature",
+  "humidity",
+  "float",
+  "analog",
+  "percent",
+  "brightness",
+  "int",
+  "integer",
+  "multiState",
+].map((v) => ({
+  label: v,
+  value: v,
+}));
+// export const KNXValueTypeOptions = [
+//   {
+//     label: () => formatMessage("device_manage.bool"),
+//     value: "bool",
+//   },
+//   {
+//     label: () => formatMessage("device_manage.percent"),
+//     value: "percent",
+//   },
+// ];
 
 export const PriorityOption = [
   { label: "None", value: null },

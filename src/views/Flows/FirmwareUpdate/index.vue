@@ -67,6 +67,8 @@ import {
   rebootDevice,
 } from "@/api/modules/page";
 import { useStepStore } from "@/pinia/modules/step";
+import { getControllerType } from "../DeviceManage/utils/utils";
+import { ControllerTypeEnum } from "../DeviceManage/utils/options";
 
 const stepStore = useStepStore();
 const { t } = useI18n();
@@ -116,10 +118,19 @@ const startUpdate = async () => {
 
     console.log("开始上传配置文件...");
 
+    let type = getControllerType(stepStore.currentStep);
+    let filename = "";
+
+    if (type === ControllerTypeEnum.Pro) {
+      filename = "update/update.gz";
+    } else {
+      filename = "update.gz";
+    }
+
     const result: any = await uploadUpgradeFile(
       stepStore.getCurrentIP(),
       selectedFile.value,
-      "config/" + file_name.value,
+      filename,
     );
 
     if (!result || !result.task_id) {
@@ -157,7 +168,7 @@ const startUpdate = async () => {
 
           //发送reboot
           rebootDevice(stepStore.getCurrentIP());
-          message.info(t('firmware.rebooting'));
+          message.info(t("firmware.rebooting"));
         }
       } catch (err) {
         console.error("查询进度失败：", err);

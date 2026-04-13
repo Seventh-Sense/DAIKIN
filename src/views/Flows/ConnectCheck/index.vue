@@ -6,7 +6,12 @@
         <a-button type="primary" class="btn-check" @click="onDownload">
           {{ t("connectivity_check.download_file") }}
         </a-button>
-        <a-button type="primary" class="btn-check" @click="onAllCheck" :disabled="downloadLoading">
+        <a-button
+          type="primary"
+          class="btn-check"
+          @click="onAllCheck"
+          :disabled="downloadLoading"
+        >
           {{ t("connectivity_check.all_check") }}
         </a-button>
       </div>
@@ -91,6 +96,14 @@
 import Icons from "@/icons/index.vue";
 import { useI18n } from "vue-i18n";
 import { reactive, ref } from "vue";
+import JSZip from "jszip";
+import { useControllerStore } from "@/pinia/modules/controller";
+import { useStepStore } from "@/pinia/modules/step";
+import { uploadUpgradeFile } from "@/api/modules/page";
+import { generateConfigZipFile } from "./until";
+
+const controllerStore = useControllerStore();
+const stepStore = useStepStore();
 
 const { t } = useI18n();
 
@@ -181,9 +194,30 @@ const strig = [
   "检查结果：通讯检查：共检查43项（不通过0项）。",
 ];
 
-const onDownload = () => {
+const onDownload = async () => {
+  try {
+    //data
+    let data = controllerStore.getControllerByIp(stepStore.getCurrentIP());
+    if (!data) {
+      console.error("未获取到控制器配置数据");
+      return;
+    }
 
-}
+    console.log("下载数据", data);
+
+    const zipFile = await generateConfigZipFile(data);
+
+    const result: any = await uploadUpgradeFile(
+      stepStore.getCurrentIP(),
+      zipFile,
+      "config/objConfig.zip",
+    );
+
+    console.log("上传成功", result);
+  } catch (error) {
+    console.error("上传失败", error);
+  }
+};
 
 const onAllCheck = () => {
   console.log("onAllCheck");
