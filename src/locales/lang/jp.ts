@@ -382,5 +382,13 @@ export default {
       "ネットワークインターフェースまたはデバイス情報が存在しません",
     device_info_invalid: "デバイスアドレスまたはデバイスIDが無効です",
     total_points: "全 {count} ポイント",
+    config_no_local_data: "コントローラー設定データを取得できませんでした",
+    config_start_download: "リモート設定ファイルをダウンロード中...",
+    config_remote_invalid: "リモート設定ファイルが無効または存在しません",
+    config_unzip_failed: "リモートファイルの解凍に失敗しました",
+    config_no_update: "更新はありません、既に最新バージョンです",
+    config_has_update: "設定が更新されました。アップロードを開始します...",
+    config_upload_success: "アップロード成功",
+    config_upload_failed: "アップロード失敗",
   },
 };

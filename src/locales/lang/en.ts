@@ -367,5 +367,13 @@ export default {
     content_missing: "Network interface or device information is missing",
     device_info_invalid: "Device address or device ID is invalid",
     total_points: "Total {count} points",
+    config_no_local_data: "Failed to get controller configuration data",
+    config_start_download: "Start downloading remote configuration file...",
+    config_remote_invalid: "Remote configuration file is invalid or missing",
+    config_unzip_failed: "Failed to decompress remote file",
+    config_no_update: "No updates, already the latest version",
+    config_has_update: "Configuration updated, starting upload...",
+    config_upload_success: "Upload successful",
+    config_upload_failed: "Upload failed",
   },
 };

@@ -290,7 +290,7 @@ const handleOk = (e: MouseEvent) => {
               ? FlowStandard
               : FlowLite;
 
-        //console.log('SelectedRows', item)
+        console.log("SelectedRows", item);
         const thirdLevelMenus = thirdLevelTemplate.map((third) => ({
           ...third,
           key: `${secondLevelKey}-${third.key}`,
@@ -300,7 +300,10 @@ const handleOk = (e: MouseEvent) => {
           icon: "deviceA",
           label: item.address,
           data: {
+            name: item.name,
+            slaveid: item.slaveid,
             address: item.address,
+            version: item.version,
           },
           children: thirdLevelMenus,
         };

@@ -16,16 +16,28 @@
         </a-button>
       </div>
       <div class="card-raw">
-        <span class="card-property">主机</span>
-        <span class="card-value">{{
-          stepStore.currentMenuData.data.address
-        }}</span>
+        <span class="card-property">{{ t("device_search.name") }}</span>
+        <span class="card-value">
+          {{ stepStore.currentMenuData.data.name }}
+        </span>
       </div>
       <div class="card-raw">
-        <span class="card-property">主机</span>
-        <span class="card-value">{{
-          stepStore.currentMenuData.data.address
-        }}</span>
+        <span class="card-property">{{ t("device_search.slave_id") }}</span>
+        <span class="card-value">
+          {{ stepStore.currentMenuData.data.slaveid }}
+        </span>
+      </div>
+      <div class="card-raw">
+        <span class="card-property">{{ t("device_search.address") }}</span>
+        <span class="card-value">
+          {{ stepStore.currentMenuData.data.address }}
+        </span>
+      </div>
+      <div class="card-raw">
+        <span class="card-property">{{ t("device_search.version") }}</span>
+        <span class="card-value">
+          {{ stepStore.currentMenuData.data.version }}
+        </span>
       </div>
     </div>
     <div class="card-finish">
@@ -202,7 +214,7 @@ const confirmDelete = () => {
     font-size: 14px;
     color: var(--header-text-color);
     line-height: 20px;
-    text-align: left;
+    text-align: right;
     font-style: normal;
   }
 }

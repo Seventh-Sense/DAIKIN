@@ -133,6 +133,7 @@ import { routerTurnByName } from "../../../router/util";
 import { downloadFile } from "@/api/modules/page";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { DeviceInitData } from "@/views/Flows/until/template";
+import { controllerFileName } from "@/views/Flows/ConnectCheck/until";
 
 const controllerStore = useControllerStore();
 
@@ -289,7 +290,7 @@ const handleSecondMenuClick = async (subMenu: any) => {
 
 const pullControllerFile = async (ip: string) => {
   try {
-    const result = await downloadFile(ip, "config/test.json");
+    const result = await downloadFile(ip, controllerFileName);
     // 这里精准判断：有数据 且 文件大小 > 0
     const hasValidData = result?.data && result.file_size > 0;
 

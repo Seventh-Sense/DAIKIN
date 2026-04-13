@@ -96,11 +96,16 @@
 import Icons from "@/icons/index.vue";
 import { useI18n } from "vue-i18n";
 import { reactive, ref } from "vue";
-import JSZip from "jszip";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { useStepStore } from "@/pinia/modules/step";
-import { uploadUpgradeFile } from "@/api/modules/page";
-import { generateConfigZipFile } from "./until";
+import { downloadFile, uploadUpgradeFile } from "@/api/modules/page";
+import {
+  controllerFileName,
+  generateConfigZipFile,
+  unzipAndReadConfig,
+  isDataEqual,
+} from "./until";
+import { message } from "ant-design-vue";
 
 const controllerStore = useControllerStore();
 const stepStore = useStepStore();
@@ -196,26 +201,65 @@ const strig = [
 
 const onDownload = async () => {
   try {
-    //data
-    let data = controllerStore.getControllerByIp(stepStore.getCurrentIP());
-    if (!data) {
+    const currentIP = stepStore.getCurrentIP();
+    const localData = controllerStore.getControllerByIp(currentIP);
+
+    if (!localData) {
       console.error("未获取到控制器配置数据");
+      message.error(t("msg.config_no_local_data"));
       return;
     }
 
-    console.log("下载数据", data);
+    console.log("开始下载远程配置文件...", localData);
+    const remoteZipBlob = await downloadFile(currentIP, controllerFileName);
 
-    const zipFile = await generateConfigZipFile(data);
+    const hasValidData = remoteZipBlob?.data && remoteZipBlob.file_size > 0;
+    if (!hasValidData) {
+      console.error("远程配置文件无效或不存在");
+      message.warning(t("msg.config_remote_invalid"));
+      await uploadFile(localData);
+      return;
+    }
+
+    console.log("远程配置文件", remoteZipBlob);
+
+    const remoteData = await unzipAndReadConfig(remoteZipBlob);
+    if (!remoteData) {
+      console.error("解压远程文件失败");
+      message.error(t("msg.config_unzip_failed"));
+      return;
+    }
+
+    const isSame = isDataEqual(localData, remoteData);
+    if (isSame) {
+      console.log("配置文件无更新，已是最新版本");
+      message.success(t("msg.config_no_update"));
+      return;
+    }
+    console.log("配置文件有更新，开始上传...");
+    message.info(t("msg.config_has_update"));
+    await uploadFile(localData);
+  } catch (error) {
+    console.error("上传失败", error);
+    message.error(t("msg.config_upload_failed"));
+  }
+};
+
+const uploadFile = async (localData: any) => {
+  try {
+    const zipFile = await generateConfigZipFile(localData);
 
     const result: any = await uploadUpgradeFile(
       stepStore.getCurrentIP(),
       zipFile,
-      "config/objConfig.zip",
+      controllerFileName,
     );
 
     console.log("上传成功", result);
+    message.success(t("msg.config_upload_success"));
   } catch (error) {
-    console.error("上传失败", error);
+    console.error("上传失败");
+    message.error(t("msg.config_upload_failed"));
   }
 };
 

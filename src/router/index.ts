@@ -1,10 +1,10 @@
 // src/router/index.ts
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import routes from './routes'
 import { setupRouterGuard } from './guard'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 });
 
