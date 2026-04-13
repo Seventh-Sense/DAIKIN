@@ -133,7 +133,10 @@ import { routerTurnByName } from "../../../router/util";
 import { downloadFile } from "@/api/modules/page";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { DeviceInitData } from "@/views/Flows/until/template";
-import { controllerFileName } from "@/views/Flows/ConnectCheck/until";
+import {
+  controllerFileName,
+  unzipAndReadConfig,
+} from "@/views/Flows/ConnectCheck/until";
 
 const controllerStore = useControllerStore();
 
@@ -289,17 +292,30 @@ const handleSecondMenuClick = async (subMenu: any) => {
 };
 
 const pullControllerFile = async (ip: string) => {
+  if (!ip || !ip.trim()) {
+    console.error("控制器 IP 不能为空");
+    return;
+  }
+
   try {
     const result = await downloadFile(ip, controllerFileName);
-    // 这里精准判断：有数据 且 文件大小 > 0
-    const hasValidData = result?.data && result.file_size > 0;
 
-    const config = hasValidData
-      ? JSON.parse(result.data)
-      : { ...DeviceInitData };
+    const hasValidData =
+      result &&
+      result.data &&
+      typeof result.data === "string" &&
+      Number(result.file_size) > 0;
+
+    if (!hasValidData) {
+      console.log(`[${ip}] 文件为空，使用默认配置`);
+      controllerStore.addController(ip, { ...DeviceInitData });
+      return;
+    }
+
+    const config = await unzipAndReadConfig(result);
 
     controllerStore.addController(ip, config);
-    console.log(ip, config);
+    //console.log(ip, config);
   } catch (e) {
     controllerStore.addController(ip, { ...DeviceInitData });
     console.error("无法获取控制器信息", e);

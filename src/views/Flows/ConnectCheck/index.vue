@@ -213,7 +213,11 @@ const onDownload = async () => {
     console.log("开始下载远程配置文件...", localData);
     const remoteZipBlob = await downloadFile(currentIP, controllerFileName);
 
-    const hasValidData = remoteZipBlob?.data && remoteZipBlob.file_size > 0;
+    const hasValidData =
+      remoteZipBlob &&
+      remoteZipBlob.data &&
+      typeof remoteZipBlob.data === "string" &&
+      Number(remoteZipBlob.file_size) > 0;
     if (!hasValidData) {
       console.error("远程配置文件无效或不存在");
       message.warning(t("msg.config_remote_invalid"));
@@ -236,6 +240,7 @@ const onDownload = async () => {
       message.success(t("msg.config_no_update"));
       return;
     }
+    
     console.log("配置文件有更新，开始上传...");
     message.info(t("msg.config_has_update"));
     await uploadFile(localData);

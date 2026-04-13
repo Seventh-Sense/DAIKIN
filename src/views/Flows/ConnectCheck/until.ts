@@ -16,14 +16,23 @@ export const generateConfigZipFile = async (data: any): Promise<File> => {
   return new File([zipBlob], "objConfig.zip", { type: "application/zip" });
 };
 
-export const unzipAndReadConfig = async (zipBlob: Blob): Promise<any> => {
+export const unzipAndReadConfig = async (zipData: {
+  filename: string;
+  file_size: number;
+  data: string;
+}): Promise<any> => {
   const zip = new JSZip();
-  const content = await zip.loadAsync(zipBlob);
 
-  // 读取 json 文件
-  const jsonFile = content.files["objConfig.json"];
-  if (!jsonFile) throw new Error("压缩包内无 objConfig.json");
+  // 关键：加载 base64 格式的 zip 数据
+  await zip.loadAsync(zipData.data, { base64: true });
 
+  // 读取固定文件名 objConfig.json
+  const jsonFile = zip.files["objConfig.json"];
+  if (!jsonFile) {
+    throw new Error("压缩包内未找到 objConfig.json");
+  }
+
+  // 转字符串并解析 JSON
   const jsonStr = await jsonFile.async("string");
   return JSON.parse(jsonStr);
 };
