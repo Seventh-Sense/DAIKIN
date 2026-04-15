@@ -376,5 +376,8 @@ export default {
       "当前值 {value} 在有效范围 [{min},{max}] 内。检查通过",
     data_invalid_range_format:
       "当前值 {value} 不在有效范围 [{min},{max}] 内。检查未通过",
+    data_set_success: "已被连接，正确设置点位值。检查通过",
+    data_set_failed: "已被连接，无法设置点位值。检查未通过",
+    clear_success: "清空成功",
   },
 };

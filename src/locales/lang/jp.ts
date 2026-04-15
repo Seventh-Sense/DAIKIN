@@ -404,5 +404,8 @@ export default {
       "現在値 {value} は有効範囲 [{min},{max}] 内です。チェック合格",
     data_invalid_range_format:
       "現在値 {value} は有効範囲 [{min},{max}] 外です。チェック不合格",
+    data_set_success: "接続済み、ポイント値を正しく設定しました。チェック合格",
+    data_set_failed: "接続済み、ポイント値を設定できません。チェック不合格",
+    clear_success: "クリア成功",
   },
 };

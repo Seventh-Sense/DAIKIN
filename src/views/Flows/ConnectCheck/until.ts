@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import { DeviceTypeEnum } from "../DeviceManage/utils/options";
 
 export const controllerFileName = "objConfig/objConfig.zip";
 
@@ -83,4 +84,48 @@ export const resetCheckStatus = (item: any) => {
   item.total = 0;
   item.failed = 0;
   item.percent = 0;
+};
+
+export const getPointType = (device_type: string, data_type: string) => {
+  let type = "analog";
+
+  console.log("device_type  data_type", device_type, data_type);
+  if (device_type === DeviceTypeEnum.BACnet) {
+    if (
+      data_type === "binary-input" ||
+      data_type === "binary-output" ||
+      data_type === "binary-value"
+    ) {
+      type = "binary";
+    } else if (
+      data_type === "multi-state-input" ||
+      data_type === "multi-state-output" ||
+      data_type === "multi-state-value"
+    ) {
+      type = "multi-state";
+    } else {
+      type = "analog";
+    }
+  } else if (device_type === DeviceTypeEnum.ModbusTCP) {
+    if (data_type === "bool" || data_type === "boolean") {
+      type = "binary";
+    } else {
+      type = "analog";
+    }
+  } else if (device_type === DeviceTypeEnum.KNX) {
+    if (
+      data_type === "switch" ||
+      data_type === "binary" ||
+      data_type === "bool" ||
+      data_type === "boolean"
+    ) {
+      type = "binary";
+    } else if (data_type === "multiState") {
+      type = "multiState";
+    } else {
+      type = "analog";
+    }
+  }
+
+  return type;
 };

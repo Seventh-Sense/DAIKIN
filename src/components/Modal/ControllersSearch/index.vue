@@ -13,6 +13,7 @@
     <div class="modal">
       <div class="modal-title">
         <a-select
+          v-if="props.type !== '3'"
           v-model:value="selectInterface"
           :options="networkOptions"
           :placeholder="t('device_search.please_select_network_interface')"
@@ -79,8 +80,10 @@ const selectedRows = ref<any[]>([]);
 
 const networkOptions = ref<any[]>([]);
 const selectInterface = ref<string | undefined>(undefined);
+const controlType = ref(1);
 
 onMounted(() => {
+  console.log(props.type);
   fetchNetworkInterfaces();
 });
 

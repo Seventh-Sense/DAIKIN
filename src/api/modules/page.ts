@@ -56,19 +56,12 @@ export const rebootDevice = (ip: string) => {
 };
 
 //读取点位当前值
-export const readPointValue = (device_id: string, point_id: string) => {
-  return post(
-    `/iot/read-property?device_id=${device_id}&oid=${point_id}&pid=85`,
-  );
+export const readPointValue = (data: any) => {
+  return post(`/iot/read-points`, data);
 };
 
-export const writePointValue = (device_id: string, point_id: string) => {
-  return post(
-    `/iot/write-property?device_id=${device_id}&oid=${point_id}&pid=85`,
-    {
-      additionalProp1: {},
-    },
-  );
+export const writePointValue = (data: any) => {
+  return post(`/iot/write-points`, data);
 };
 
 //上传配置

@@ -131,6 +131,7 @@ import {
   readPointValue,
   rebootDevice,
   setConfigFile,
+  writePointValue,
 } from "@/api/modules/page";
 import {
   controllerFileName,
@@ -139,9 +140,11 @@ import {
   isDataEqual,
   getAllPointsInfo,
   resetCheckStatus,
+  getPointType,
 } from "./until";
 import { message } from "ant-design-vue";
 import { getControllerType } from "../DeviceManage/utils/utils";
+import { DeviceTypeEnum } from "../DeviceManage/utils/options";
 
 const controllerStore = useControllerStore();
 const stepStore = useStepStore();
@@ -248,21 +251,19 @@ const onCheck = async (key: any) => {
     switch (key) {
       case 1:
         // 执行通讯检查逻辑
-        runCommunicationCheck();
+        await runCommunicationCheck();
         break;
       case 2:
         // 执行数据准确性检查逻辑
-        runDataAccuracyCheck();
+        await runDataAccuracyCheck();
         break;
       case 3:
         // 执行基本功能检查逻辑
-        runBasicFunctionCheck();
+        await runBasicFunctionCheck();
         break;
       default:
         break;
     }
-
-    //await new Promise((resolve) => setTimeout(resolve, 3000));
   } finally {
     downloadLoading.value = false;
   }
@@ -283,31 +284,52 @@ const runCommunicationCheck = async () => {
   let failCount = 0;
 
   //通讯检查开始
-  addTimeLog("msg.communication_start");
+  addLog("time", "msg.communication_start");
 
   for (const item of points.value) {
     try {
-      const result = await readPointValue(item.device_uid, item.point_uid);
+      console.log("item", item);
+      const result = await readPointValue({
+        device_address: currentIP,
+        device_type: item.device_type,
+        device_uid: item.device_uid,
+        points: [
+          {
+            point_uid: item.point_uid,
+            data_type: item.data_type,
+            priority: 16,
+          },
+        ],
+      });
 
-      if (result.status === "OK") {
+      if (
+        result.success &&
+        result.points &&
+        result.points.length > 0 &&
+        result.points[0].reliability !== 12
+      ) {
         item.status = "success";
         successCount++;
 
-        addPointLog(
+        addLog(
+          "point",
+          "msg.point_check_success",
+          {},
+          true,
           item.device_name,
           item.point_name,
-          "msg.point_check_success",
-          true,
         );
       } else {
         item.status = "failed";
         failCount++;
 
-        addPointLog(
+        addLog(
+          "point",
+          "msg.point_check_failed",
+          {},
+          false,
           item.device_name,
           item.point_name,
-          "msg.point_check_failed",
-          false,
         );
       }
     } catch (error) {
@@ -316,11 +338,13 @@ const runCommunicationCheck = async () => {
       item.status = "failed";
       failCount++;
 
-      addPointLog(
+      addLog(
+        "point",
+        "msg.point_check_failed",
+        {},
+        false,
         item.device_name,
         item.point_name,
-        "msg.point_check_failed",
-        false,
       );
     }
 
@@ -333,7 +357,7 @@ const runCommunicationCheck = async () => {
 
   commItem.percent = 100;
 
-  addTimeLog("msg.communication_finish");
+  addLog("time", "msg.communication_finish");
 };
 
 const runDataAccuracyCheck = async () => {
@@ -350,18 +374,33 @@ const runDataAccuracyCheck = async () => {
   let successCount = 0;
   let failCount = 0;
 
-  addTimeLog("msg.data_accuracy_start");
+  addLog("time", "msg.data_accuracy_start");
 
-  console.log(points.value);
   for (const item of points.value) {
     try {
-      const result = await readPointValue(item.device_uid, item.point_uid);
-      if (result.status === "OK") {
+      const result = await readPointValue({
+        device_address: currentIP,
+        device_type: item.device_type,
+        device_uid: item.device_uid,
+        points: [
+          {
+            point_uid: item.point_uid,
+            data_type: item.data_type,
+            priority: 16,
+          },
+        ],
+      });
+
+      if (
+        result.success &&
+        result.points &&
+        result.points.length > 0 &&
+        result.points[0]?.present_value !== undefined
+      ) {
         item.status = "success";
-        const value = Number(result.value);
+        const value = Number(result.points[0].present_value);
 
         let isValueValid = false;
-        let logText = "";
 
         if (item.min !== undefined && item.max === undefined) {
           isValueValid = value >= item.min;
@@ -382,39 +421,45 @@ const runDataAccuracyCheck = async () => {
         if (isValueValid) {
           successCount++;
 
-          resultInfo.value.push(
-            `${item.device_name} ${item.point_name} ${t(
-              "msg.data_valid_range_format",
-              {
-                value: value,
-                min: item.min ?? "-Infinity",
-                max: item.max ?? "Infinity",
-              },
-            )}  ✅`,
+          addLog(
+            "text",
+            "msg.data_valid_range_format",
+            {
+              value: value,
+              min: item.min ?? "-Infinity",
+              max: item.max ?? "Infinity",
+            },
+            true,
+            item.device_name,
+            item.point_name,
           );
         } else {
           failCount++;
           item.status = "failed";
-          resultInfo.value.push(
-            `${item.device_name} ${item.point_name} ${t(
-              "msg.data_invalid_range_format",
-              {
-                value: value,
-                min: item.min ?? "-Infinity",
-                max: item.max ?? "Infinity",
-              },
-            )}  ❌`,
+          addLog(
+            "text",
+            "msg.data_invalid_range_format",
+            {
+              value: value,
+              min: item.min ?? "-Infinity",
+              max: item.max ?? "Infinity",
+            },
+            false,
+            item.device_name,
+            item.point_name,
           );
         }
       } else {
         item.status = "failed";
         failCount++;
 
-        addPointLog(
+        addLog(
+          "point",
+          "msg.point_check_failed",
+          {},
+          false,
           item.device_name,
           item.point_name,
-          "msg.point_check_failed",
-          false,
         );
       }
     } catch (error) {
@@ -423,11 +468,13 @@ const runDataAccuracyCheck = async () => {
       item.status = "failed";
       failCount++;
 
-      addPointLog(
+      addLog(
+        "point",
+        "msg.point_check_failed",
+        {},
+        false,
         item.device_name,
         item.point_name,
-        "msg.point_check_failed",
-        false,
       );
     }
 
@@ -440,7 +487,7 @@ const runDataAccuracyCheck = async () => {
 
   commItem.percent = 100;
 
-  addTimeLog("msg.data_accuracy_finish");
+  addLog("time", "msg.data_accuracy_finish");
 };
 
 const runBasicFunctionCheck = async () => {
@@ -452,10 +499,260 @@ const runBasicFunctionCheck = async () => {
     message.warning(t("msg.no_points"));
     return;
   }
+
+  const totalPoints = points.value.length;
+  let successCount = 0;
+  let failCount = 0;
+
+  addLog("time", "msg.basic_func_start");
+
+  // 统一日志方法，简化代码
+  const logPoint = (
+    msgKey: string,
+    success: boolean,
+    deviceName: any,
+    pointName: any,
+  ) => {
+    addLog("point", msgKey, {}, success, deviceName, pointName);
+  };
+
+  // 统一点位状态失败处理
+  const handlePointFail = (item: any, msgKey: string) => {
+    item.status = "failed";
+    failCount++;
+    logPoint(msgKey, false, item.device_name, item.point_name);
+  };
+
+  const isWriteSuccess = (res: any) => {
+    return res.success && res.points?.length && res.points[0]?.success;
+  };
+
+  const updateProgress = () => {
+    commItem.total = successCount + failCount;
+    commItem.failed = failCount;
+    commItem.percent = Math.round(
+      ((successCount + failCount) / totalPoints) * 100,
+    );
+  };
+
+  for (const item of points.value) {
+    try {
+      //先读值
+      const readResult = await readPointValue({
+        device_address: currentIP,
+        device_type: item.device_type,
+        device_uid: item.device_uid,
+        points: [
+          {
+            point_uid: item.point_uid,
+            data_type: item.data_type,
+            priority: 16,
+          },
+        ],
+      });
+
+      const isValidRead =
+        readResult.success &&
+        readResult.points?.length &&
+        readResult.points[0]?.present_value !== undefined;
+
+      if (!isValidRead) {
+        handlePointFail(item, "msg.point_check_failed");
+        updateProgress();
+        continue;
+      }
+
+      const originalValue = Number(readResult.points[0].present_value);
+      const pointType = getPointType(item.device_type, item.data_type);
+
+      //模拟量处理：+1 写入 → -1 写入
+      if (pointType === "analog") {
+        const addRes = await writePointValue({
+          device_address: currentIP,
+          device_type: item.device_type,
+          device_uid: item.device_uid,
+          points: [
+            {
+              point_uid: item.point_uid,
+              data_type: item.data_type,
+              value: originalValue + 1,
+              priority: 16,
+            },
+          ],
+        });
+
+        if (!isWriteSuccess(addRes)) {
+          handlePointFail(item, "msg.data_set_failed");
+          updateProgress();
+          continue;
+        }
+
+        const subRes = await writePointValue({
+          device_address: currentIP,
+          device_type: item.device_type,
+          device_uid: item.device_uid,
+          points: [
+            {
+              point_uid: item.point_uid,
+              data_type: item.data_type,
+              value: originalValue,
+              priority: 16,
+            },
+          ],
+        });
+
+        if (isWriteSuccess(subRes)) {
+          successCount++;
+          logPoint(
+            "msg.data_set_success",
+            true,
+            item.device_name,
+            item.point_name,
+          );
+        } else {
+          handlePointFail(item, "msg.data_set_failed");
+        }
+      } else if (pointType === "binary") {
+        const reverseValue = originalValue === 0 ? 1 : 0;
+
+        const reverseRes = await writePointValue({
+          device_address: currentIP,
+          device_type: item.device_type,
+          device_uid: item.device_uid,
+          points: [
+            {
+              point_uid: item.point_uid,
+              data_type: item.data_type,
+              value: reverseValue,
+              priority: 16,
+            },
+          ],
+        });
+
+        if (!isWriteSuccess(reverseRes)) {
+          handlePointFail(item, "msg.data_set_failed");
+          updateProgress();
+          continue;
+        }
+
+        const restoreRes = await writePointValue({
+          device_address: currentIP,
+          device_type: item.device_type,
+          device_uid: item.device_uid,
+          points: [
+            {
+              point_uid: item.point_uid,
+              data_type: item.data_type,
+              value: originalValue,
+              priority: 16,
+            },
+          ],
+        });
+
+        if (isWriteSuccess(restoreRes)) {
+          successCount++;
+          logPoint(
+            "msg.data_set_success",
+            true,
+            item.device_name,
+            item.point_name,
+          );
+        } else {
+          handlePointFail(item, "msg.data_set_failed");
+        }
+      } else {
+        const addRes = await writePointValue({
+          device_address: currentIP,
+          device_type: item.device_type,
+          device_uid: item.device_uid,
+          points: [
+            {
+              point_uid: item.point_uid,
+              data_type: item.data_type,
+              value: originalValue + 1,
+              priority: 16,
+            },
+          ],
+        });
+
+        if (!isWriteSuccess(addRes)) {
+          // 先减一
+          const subRes = await writePointValue({
+            device_address: currentIP,
+            device_type: item.device_type,
+            device_uid: item.device_uid,
+            points: [
+              {
+                point_uid: item.point_uid,
+                data_type: item.data_type,
+                value: originalValue - 1,
+                priority: 16,
+              },
+            ],
+          });
+
+          if (!isWriteSuccess(subRes)) {
+            handlePointFail(item, "msg.data_set_failed");
+            updateProgress();
+            continue;
+          }
+        }
+
+        const finalSubRes = await writePointValue({
+          device_address: currentIP,
+          device_type: item.device_type,
+          device_uid: item.device_uid,
+          points: [
+            {
+              point_uid: item.point_uid,
+              data_type: item.data_type,
+              value: originalValue,
+              priority: 16,
+            },
+          ],
+        });
+
+        if (isWriteSuccess(finalSubRes)) {
+          successCount++;
+          logPoint(
+            "msg.data_set_success",
+            true,
+            item.device_name,
+            item.point_name,
+          );
+        } else {
+          handlePointFail(item, "msg.data_set_failed");
+        }
+      }
+    } catch (error) {
+      console.error(`点位 读取失败：`, error);
+      handlePointFail(item, "msg.point_check_failed");
+    }
+
+    updateProgress();
+  }
+
+  commItem.percent = 100;
+  addLog("time", "msg.basic_func_finish");
 };
 
 const onClear = () => {
   console.log("onClear");
+  resultInfo.value = [];
+
+  checkItems.forEach((item) => {
+    item.percent = 0;
+    item.total = 0;
+    item.failed = 0;
+  });
+
+  if (points.value && points.value.length) {
+    points.value.forEach((item) => {
+      item.status = undefined;
+    });
+  }
+
+  message.success(t("msg.clear_success"));
 };
 
 const onExport = () => {
@@ -470,21 +767,25 @@ const onResult = () => {
   console.log("onResult");
 };
 
-const addTimeLog = (msgKey: string) => {
-  resultInfo.value.push(`[${new Date().toLocaleString()}] ${t(msgKey)}`);
-};
-
-const addPointLog = (
-  deviceName: string,
-  pointName: string,
+const addLog = (
+  type: "time" | "point" | "text",
   msgKey: string,
-  status: boolean,
+  params: Record<string, any> = {},
+  status?: boolean,
+  deviceName?: string,
+  pointName?: string,
 ) => {
-  let icon = "✅";
-  if (!status) {
-    icon = "❌";
-  }
-  resultInfo.value.push(`${deviceName} ${pointName} ${t(msgKey)}  ${icon}`);
+  // 时间前缀
+  const timePrefix = type === "time" ? `[${new Date().toLocaleString()}] ` : "";
+  // 图标
+  const icon = status === true ? " ✅" : status === false ? " ❌" : "";
+  // 设备+点位前缀
+  const pointPrefix =
+    deviceName && pointName ? `${deviceName} ${pointName} ` : "";
+  // 国际化文本
+  const text = t(msgKey, params);
+
+  resultInfo.value.push(`${timePrefix}${pointPrefix}${text}${icon}`);
 };
 </script>
 

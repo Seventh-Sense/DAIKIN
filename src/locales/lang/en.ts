@@ -389,5 +389,8 @@ export default {
       "Current value {value} is within valid range [{min},{max}]. Check passed",
     data_invalid_range_format:
       "Current value {value} is out of valid range [{min},{max}]. Check failed",
+    data_set_success: "Connected, point value set successfully. Check passed",
+    data_set_failed: "Connected, failed to set point value. Check failed",
+    clear_success: "Clear success",
   },
 };
