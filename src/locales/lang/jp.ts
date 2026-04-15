@@ -407,5 +407,9 @@ export default {
     data_set_success: "接続済み、ポイント値を正しく設定しました。チェック合格",
     data_set_failed: "接続済み、ポイント値を設定できません。チェック不合格",
     clear_success: "クリア成功",
+    all_check_start: "全接続性チェックを開始します",
+    all_check_finish: "全接続性チェックが完了しました",
+    all_check_success: "全てのチェックが正常に完了しました",
+    all_check_failed: "エラーにより全チェックを中断しました",
   },
 };

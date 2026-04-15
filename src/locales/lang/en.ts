@@ -392,5 +392,9 @@ export default {
     data_set_success: "Connected, point value set successfully. Check passed",
     data_set_failed: "Connected, failed to set point value. Check failed",
     clear_success: "Clear success",
+    all_check_start: "Start full connectivity check",
+    all_check_finish: "Full connectivity check completed",
+    all_check_success: "All checks completed successfully",
+    all_check_failed: "All checks aborted due to error",
   },
 };

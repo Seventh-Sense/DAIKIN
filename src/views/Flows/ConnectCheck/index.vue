@@ -144,7 +144,6 @@ import {
 } from "./until";
 import { message } from "ant-design-vue";
 import { getControllerType } from "../DeviceManage/utils/utils";
-import { DeviceTypeEnum } from "../DeviceManage/utils/options";
 
 const controllerStore = useControllerStore();
 const stepStore = useStepStore();
@@ -168,7 +167,7 @@ const typeMap = { 1: "pro", 2: "standard", 3: "lite" };
 
 onMounted(() => {
   //获取控制器所有点位信息
-  points.value = getAllPointsInfo(localData);
+  points.value = localData ? getAllPointsInfo(localData) || [] : [];
 });
 
 const onDownload = async () => {
@@ -237,15 +236,66 @@ const uploadFile = async (localData: any) => {
   }
 };
 
-const onAllCheck = () => {
+const onAllCheck = async () => {
   if (downloadLoading.value) return;
+
+  // 空点位安全判断
+  if (!points.value || points.value.length === 0) {
+    message.warning(t("msg.no_points"));
+    return;
+  }
+
+  downloadLoading.value = true;
+  resultInfo.value = [];
+
+  checkItems.forEach((item) => {
+    item.percent = 0;
+    item.total = 0;
+    item.failed = 0;
+  });
+
+  try {
+    // 2. 按顺序执行：通讯 → 数据准确性 → 基本功能
+    addLog("time", "msg.all_check_start"); // 开始全部检查
+
+    await runCommunicationCheck();
+    await new Promise((resolve) => setTimeout(resolve, 300)); // 轻微间隔，体验更顺滑
+
+    await runDataAccuracyCheck();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    await runBasicFunctionCheck();
+
+    addLog("time", "msg.all_check_finish"); // 全部检查完成
+    message.success(t("msg.all_check_success"));
+  } catch (err) {
+    console.error("全部检查异常", err);
+    message.error(t("msg.all_check_failed"));
+  } finally {
+    downloadLoading.value = false;
+  }
 };
 
 const onCheck = async (key: any) => {
   if (downloadLoading.value) return;
 
+  // 空点位安全判断
+  if (!points.value || points.value.length === 0) {
+    message.warning(t("msg.no_points"));
+    return;
+  }
+
   downloadLoading.value = true;
   resultInfo.value = [];
+
+  checkItems.forEach((item) => {
+    // 不是当前点击的项，就清空进度、总数、失败数
+    if (item.index !== key) {
+      item.percent = 0;
+      item.total = 0;
+      item.failed = 0;
+    }
+  });
 
   try {
     switch (key) {
@@ -264,6 +314,8 @@ const onCheck = async (key: any) => {
       default:
         break;
     }
+  } catch (err) {
+    console.error("单项检查异常", err);
   } finally {
     downloadLoading.value = false;
   }
@@ -273,11 +325,6 @@ const runCommunicationCheck = async () => {
   const commItem = checkItems[0];
 
   resetCheckStatus(commItem);
-
-  if (!points.value || points.value.length === 0) {
-    message.warning(t("msg.no_points"));
-    return;
-  }
 
   const totalPoints = points.value.length;
   let successCount = 0;
@@ -291,12 +338,12 @@ const runCommunicationCheck = async () => {
       console.log("item", item);
       const result = await readPointValue({
         device_address: currentIP,
-        device_type: item.device_type,
-        device_uid: item.device_uid,
+        device_type: item?.device_type || "",
+        device_uid: item?.device_uid || "",
         points: [
           {
-            point_uid: item.point_uid,
-            data_type: item.data_type,
+            point_uid: item?.point_uid || "",
+            data_type: item?.data_type || "",
             priority: 16,
           },
         ],
@@ -365,11 +412,6 @@ const runDataAccuracyCheck = async () => {
 
   resetCheckStatus(commItem);
 
-  if (!points.value || points.value.length === 0) {
-    message.warning(t("msg.no_points"));
-    return;
-  }
-
   const totalPoints = points.value.length;
   let successCount = 0;
   let failCount = 0;
@@ -380,12 +422,12 @@ const runDataAccuracyCheck = async () => {
     try {
       const result = await readPointValue({
         device_address: currentIP,
-        device_type: item.device_type,
-        device_uid: item.device_uid,
+        device_type: item?.device_type || "",
+        device_uid: item?.device_uid || "",
         points: [
           {
-            point_uid: item.point_uid,
-            data_type: item.data_type,
+            point_uid: item?.point_uid || "",
+            data_type: item?.data_type || "",
             priority: 16,
           },
         ],
@@ -495,11 +537,6 @@ const runBasicFunctionCheck = async () => {
 
   resetCheckStatus(commItem);
 
-  if (!points.value || points.value.length === 0) {
-    message.warning(t("msg.no_points"));
-    return;
-  }
-
   const totalPoints = points.value.length;
   let successCount = 0;
   let failCount = 0;
@@ -540,12 +577,12 @@ const runBasicFunctionCheck = async () => {
       //先读值
       const readResult = await readPointValue({
         device_address: currentIP,
-        device_type: item.device_type,
-        device_uid: item.device_uid,
+        device_type: item?.device_type || "",
+        device_uid: item?.device_uid || "",
         points: [
           {
-            point_uid: item.point_uid,
-            data_type: item.data_type,
+            point_uid: item?.point_uid || "",
+            data_type: item?.data_type || "",
             priority: 16,
           },
         ],
@@ -613,7 +650,8 @@ const runBasicFunctionCheck = async () => {
           handlePointFail(item, "msg.data_set_failed");
         }
       } else if (pointType === "binary") {
-        const reverseValue = originalValue === 0 ? 1 : 0;
+        const originalBool = originalValue === 1;
+        const reverseBool = !originalBool;
 
         const reverseRes = await writePointValue({
           device_address: currentIP,
@@ -623,7 +661,7 @@ const runBasicFunctionCheck = async () => {
             {
               point_uid: item.point_uid,
               data_type: item.data_type,
-              value: reverseValue,
+              value: reverseBool,
               priority: 16,
             },
           ],
@@ -643,7 +681,7 @@ const runBasicFunctionCheck = async () => {
             {
               point_uid: item.point_uid,
               data_type: item.data_type,
-              value: originalValue,
+              value: originalBool,
               priority: 16,
             },
           ],

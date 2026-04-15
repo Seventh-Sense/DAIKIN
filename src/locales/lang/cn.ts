@@ -379,5 +379,9 @@ export default {
     data_set_success: "已被连接，正确设置点位值。检查通过",
     data_set_failed: "已被连接，无法设置点位值。检查未通过",
     clear_success: "清空成功",
+    all_check_start: "开始执行全部连通性检查",
+    all_check_finish: "全部检查执行完成",
+    all_check_success: "全部检查完成",
+    all_check_failed: "全部检查异常",
   },
 };
