@@ -3,7 +3,12 @@
     <div class="card-top">
       <span class="card-title">{{ t("connectivity_check.title") }}</span>
       <div style="display: flex; gap: 12px">
-        <a-button type="primary" class="btn-check" @click="onDownload">
+        <a-button
+          type="primary"
+          class="btn-check"
+          @click="onDownload"
+          :disabled="downloadLoading"
+        >
           {{ t("connectivity_check.download_file") }}
         </a-button>
         <a-button
@@ -23,8 +28,12 @@
         :key="index"
       >
         <span>{{ t(`connectivity_check.${item.key}`) }}</span>
-        <a-progress :percent="30" status="active" />
-        <div class="check-action" @click="onCheck(item)">
+        <a-progress :percent="item.percent" status="active" />
+        <div
+          class="check-action"
+          @click="onCheck(item.index)"
+          :class="{ disabled: downloadLoading }"
+        >
           <Icons
             name="search"
             type="mono-line"
@@ -44,48 +53,67 @@
           <span class="result-item">
             {{
               t("connectivity_check.check_result_comm", {
-                total: checkResult.comm.total,
-                failed: checkResult.comm.failed,
+                total: checkItems[0].total,
+                failed: checkItems[0].failed,
               })
             }}
           </span>
           <span class="result-item">
             {{
               t("connectivity_check.check_result_data", {
-                total: checkResult.data.total,
-                failed: checkResult.data.failed,
+                total: checkItems[1].total,
+                failed: checkItems[1].failed,
               })
             }}
           </span>
           <span class="result-item">
             {{
               t("connectivity_check.check_result_func", {
-                total: checkResult.func.total,
-                failed: checkResult.func.failed,
+                total: checkItems[2].total,
+                failed: checkItems[2].failed,
               })
             }}
           </span>
         </div>
       </div>
       <div class="result-btns">
-        <a-button type="primary" class="btn-check" @click="onClear()">
+        <a-button
+          type="primary"
+          class="btn-check"
+          @click="onClear()"
+          :disabled="downloadLoading"
+        >
           {{ t("connectivity_check.clear") }}
         </a-button>
-        <a-button type="primary" class="btn-check" @click="onExport()">
+        <a-button
+          type="primary"
+          class="btn-check"
+          @click="onExport()"
+          :disabled="downloadLoading"
+        >
           {{ t("connectivity_check.export_result") }}
         </a-button>
       </div>
     </div>
     <div class="card-area">
-      <div v-for="s in strig">
-        {{ s }}
+      <div v-for="info in resultInfo">
+        {{ info }}
       </div>
     </div>
     <div class="card-finish">
-      <a-button class="card-btn" @click="onControl()">
+      <a-button
+        class="card-btn"
+        @click="onControl()"
+        :disabled="downloadLoading"
+      >
         {{ t("connectivity_check.logic_control") }}
       </a-button>
-      <a-button type="primary" class="card-btn" @click="onResult()">
+      <a-button
+        type="primary"
+        class="card-btn"
+        @click="onResult()"
+        :disabled="downloadLoading"
+      >
         {{ t("connectivity_check.trial_run_result") }}
       </a-button>
     </div>
@@ -95,17 +123,25 @@
 <script setup lang="ts">
 import Icons from "@/icons/index.vue";
 import { useI18n } from "vue-i18n";
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { useStepStore } from "@/pinia/modules/step";
-import { downloadFile, uploadUpgradeFile } from "@/api/modules/page";
+import {
+  downloadFile,
+  readPointValue,
+  rebootDevice,
+  setConfigFile,
+} from "@/api/modules/page";
 import {
   controllerFileName,
   generateConfigZipFile,
   unzipAndReadConfig,
   isDataEqual,
+  getAllPointsInfo,
+  resetCheckStatus,
 } from "./until";
 import { message } from "ant-design-vue";
+import { getControllerType } from "../DeviceManage/utils/utils";
 
 const controllerStore = useControllerStore();
 const stepStore = useStepStore();
@@ -113,104 +149,35 @@ const stepStore = useStepStore();
 const { t } = useI18n();
 
 const downloadLoading = ref(false);
+const currentIP = stepStore.getCurrentIP();
+const localData = controllerStore.getControllerByIp(currentIP);
 
 const checkItems = reactive([
-  { key: "communication", percent: 30 },
-  { key: "data_accuracy", percent: 30 },
-  { key: "basic_function", percent: 30 },
+  { key: "communication", percent: 0, index: 1, total: 0, failed: 0 },
+  { key: "data_accuracy", percent: 0, index: 2, total: 0, failed: 0 },
+  { key: "basic_function", percent: 0, index: 3, total: 0, failed: 0 },
 ]);
 
-const checkResult = reactive({
-  comm: { total: 43, failed: 0 }, // 通讯检查
-  data: { total: 0, failed: 0 }, // 数据准确性检查
-  func: { total: 36, failed: 24 }, // 基本功能检查
+const resultInfo = ref<string[]>([]);
+const points = ref<any[]>([]);
+
+const typeMap = { 1: "pro", 2: "standard", 3: "lite" };
+
+onMounted(() => {
+  //获取控制器所有点位信息
+  points.value = getAllPointsInfo(localData);
 });
 
-const strig = [
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-  "检查结果：通讯检查：共检查43项（不通过0项）。",
-];
-
 const onDownload = async () => {
-  try {
-    const currentIP = stepStore.getCurrentIP();
-    const localData = controllerStore.getControllerByIp(currentIP);
+  if (downloadLoading.value) return;
+  downloadLoading.value = true;
 
+  try {
     if (!localData) {
-      console.error("未获取到控制器配置数据");
       message.error(t("msg.config_no_local_data"));
       return;
     }
 
-    console.log("开始下载远程配置文件...", localData);
     const remoteZipBlob = await downloadFile(currentIP, controllerFileName);
 
     const hasValidData =
@@ -218,50 +185,49 @@ const onDownload = async () => {
       remoteZipBlob.data &&
       typeof remoteZipBlob.data === "string" &&
       Number(remoteZipBlob.file_size) > 0;
+
     if (!hasValidData) {
-      console.error("远程配置文件无效或不存在");
       message.warning(t("msg.config_remote_invalid"));
       await uploadFile(localData);
       return;
     }
 
-    console.log("远程配置文件", remoteZipBlob);
-
     const remoteData = await unzipAndReadConfig(remoteZipBlob);
     if (!remoteData) {
-      console.error("解压远程文件失败");
       message.error(t("msg.config_unzip_failed"));
       return;
     }
 
-    const isSame = isDataEqual(localData, remoteData);
-    if (isSame) {
-      console.log("配置文件无更新，已是最新版本");
+    if (isDataEqual(localData, remoteData)) {
       message.success(t("msg.config_no_update"));
       return;
     }
-    
-    console.log("配置文件有更新，开始上传...");
+
     message.info(t("msg.config_has_update"));
     await uploadFile(localData);
   } catch (error) {
     console.error("上传失败", error);
     message.error(t("msg.config_upload_failed"));
+  } finally {
+    downloadLoading.value = false;
   }
 };
 
 const uploadFile = async (localData: any) => {
   try {
     const zipFile = await generateConfigZipFile(localData);
+    const controllerType = getControllerType(stepStore.currentStep);
 
-    const result: any = await uploadUpgradeFile(
-      stepStore.getCurrentIP(),
+    const result = await setConfigFile(
+      currentIP,
       zipFile,
-      controllerFileName,
+      typeMap[controllerType],
     );
 
-    console.log("上传成功", result);
     message.success(t("msg.config_upload_success"));
+
+    //发送reboot
+    rebootDevice(currentIP);
   } catch (error) {
     console.error("上传失败");
     message.error(t("msg.config_upload_failed"));
@@ -269,11 +235,223 @@ const uploadFile = async (localData: any) => {
 };
 
 const onAllCheck = () => {
-  console.log("onAllCheck");
+  if (downloadLoading.value) return;
 };
 
-const onCheck = (data: any) => {
-  console.log("onCheck", data);
+const onCheck = async (key: any) => {
+  if (downloadLoading.value) return;
+
+  downloadLoading.value = true;
+  resultInfo.value = [];
+
+  try {
+    switch (key) {
+      case 1:
+        // 执行通讯检查逻辑
+        runCommunicationCheck();
+        break;
+      case 2:
+        // 执行数据准确性检查逻辑
+        runDataAccuracyCheck();
+        break;
+      case 3:
+        // 执行基本功能检查逻辑
+        runBasicFunctionCheck();
+        break;
+      default:
+        break;
+    }
+
+    //await new Promise((resolve) => setTimeout(resolve, 3000));
+  } finally {
+    downloadLoading.value = false;
+  }
+};
+
+const runCommunicationCheck = async () => {
+  const commItem = checkItems[0];
+
+  resetCheckStatus(commItem);
+
+  if (!points.value || points.value.length === 0) {
+    message.warning(t("msg.no_points"));
+    return;
+  }
+
+  const totalPoints = points.value.length;
+  let successCount = 0;
+  let failCount = 0;
+
+  //通讯检查开始
+  addTimeLog("msg.communication_start");
+
+  for (const item of points.value) {
+    try {
+      const result = await readPointValue(item.device_uid, item.point_uid);
+
+      if (result.status === "OK") {
+        item.status = "success";
+        successCount++;
+
+        addPointLog(
+          item.device_name,
+          item.point_name,
+          "msg.point_check_success",
+          true,
+        );
+      } else {
+        item.status = "failed";
+        failCount++;
+
+        addPointLog(
+          item.device_name,
+          item.point_name,
+          "msg.point_check_failed",
+          false,
+        );
+      }
+    } catch (error) {
+      console.error(`点位 读取失败：`, error);
+
+      item.status = "failed";
+      failCount++;
+
+      addPointLog(
+        item.device_name,
+        item.point_name,
+        "msg.point_check_failed",
+        false,
+      );
+    }
+
+    commItem.total = successCount + failCount;
+    commItem.failed = failCount;
+    commItem.percent = Math.round(
+      ((successCount + failCount) / totalPoints) * 100,
+    );
+  }
+
+  commItem.percent = 100;
+
+  addTimeLog("msg.communication_finish");
+};
+
+const runDataAccuracyCheck = async () => {
+  const commItem = checkItems[1];
+
+  resetCheckStatus(commItem);
+
+  if (!points.value || points.value.length === 0) {
+    message.warning(t("msg.no_points"));
+    return;
+  }
+
+  const totalPoints = points.value.length;
+  let successCount = 0;
+  let failCount = 0;
+
+  addTimeLog("msg.data_accuracy_start");
+
+  console.log(points.value);
+  for (const item of points.value) {
+    try {
+      const result = await readPointValue(item.device_uid, item.point_uid);
+      if (result.status === "OK") {
+        item.status = "success";
+        const value = Number(result.value);
+
+        let isValueValid = false;
+        let logText = "";
+
+        if (item.min !== undefined && item.max === undefined) {
+          isValueValid = value >= item.min;
+        }
+        // 场景2：只有 max
+        else if (item.max !== undefined && item.min === undefined) {
+          isValueValid = value <= item.max;
+        }
+        // 场景3：min + max 都存在
+        else if (item.min !== undefined && item.max !== undefined) {
+          isValueValid = value >= item.min && value <= item.max;
+        }
+        // 场景4：无范围限制 → 默认通过
+        else {
+          isValueValid = true;
+        }
+
+        if (isValueValid) {
+          successCount++;
+
+          resultInfo.value.push(
+            `${item.device_name} ${item.point_name} ${t(
+              "msg.data_valid_range_format",
+              {
+                value: value,
+                min: item.min ?? "-Infinity",
+                max: item.max ?? "Infinity",
+              },
+            )}  ✅`,
+          );
+        } else {
+          failCount++;
+          item.status = "failed";
+          resultInfo.value.push(
+            `${item.device_name} ${item.point_name} ${t(
+              "msg.data_invalid_range_format",
+              {
+                value: value,
+                min: item.min ?? "-Infinity",
+                max: item.max ?? "Infinity",
+              },
+            )}  ❌`,
+          );
+        }
+      } else {
+        item.status = "failed";
+        failCount++;
+
+        addPointLog(
+          item.device_name,
+          item.point_name,
+          "msg.point_check_failed",
+          false,
+        );
+      }
+    } catch (error) {
+      console.error(`点位 读取失败：`, error);
+
+      item.status = "failed";
+      failCount++;
+
+      addPointLog(
+        item.device_name,
+        item.point_name,
+        "msg.point_check_failed",
+        false,
+      );
+    }
+
+    commItem.total = successCount + failCount;
+    commItem.failed = failCount;
+    commItem.percent = Math.round(
+      ((successCount + failCount) / totalPoints) * 100,
+    );
+  }
+
+  commItem.percent = 100;
+
+  addTimeLog("msg.data_accuracy_finish");
+};
+
+const runBasicFunctionCheck = async () => {
+  const commItem = checkItems[2];
+
+  resetCheckStatus(commItem);
+
+  if (!points.value || points.value.length === 0) {
+    message.warning(t("msg.no_points"));
+    return;
+  }
 };
 
 const onClear = () => {
@@ -290,6 +468,23 @@ const onControl = () => {
 
 const onResult = () => {
   console.log("onResult");
+};
+
+const addTimeLog = (msgKey: string) => {
+  resultInfo.value.push(`[${new Date().toLocaleString()}] ${t(msgKey)}`);
+};
+
+const addPointLog = (
+  deviceName: string,
+  pointName: string,
+  msgKey: string,
+  status: boolean,
+) => {
+  let icon = "✅";
+  if (!status) {
+    icon = "❌";
+  }
+  resultInfo.value.push(`${deviceName} ${pointName} ${t(msgKey)}  ${icon}`);
 };
 </script>
 
@@ -423,6 +618,7 @@ const onResult = () => {
     margin-bottom: 60px;
     max-height: calc(100% - 60px);
     overflow-y: auto;
+    padding: 6px;
   }
 
   &-finish {

@@ -363,5 +363,18 @@ export default {
     config_has_update: "配置文件有更新，开始上传...",
     config_upload_success: "上传成功",
     config_upload_failed: "上传失败",
+    no_points: "未获取到点位信息，请先加载控制器配置",
+    communication_finish: "通讯检查完成。",
+    communication_start: "通讯检查开始...",
+    point_check_success: "当前点位通讯正常。检查通过",
+    point_check_failed: "当前点位通讯失败，检查未通过",
+    data_accuracy_start: "数据准确性检查开始...",
+    data_accuracy_finish: "数据准确性检查完成",
+    basic_func_start: "基本功能检查开始...",
+    basic_func_finish: "基本功能检查完成",
+    data_valid_range_format:
+      "当前值 {value} 在有效范围 [{min},{max}] 内。检查通过",
+    data_invalid_range_format:
+      "当前值 {value} 不在有效范围 [{min},{max}] 内。检查未通过",
   },
 };

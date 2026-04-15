@@ -54,3 +54,34 @@ export const downloadFile = (ip: any, filename: string) => {
 export const rebootDevice = (ip: string) => {
   return post("/iot/reboot", { device_address: ip });
 };
+
+//读取点位当前值
+export const readPointValue = (device_id: string, point_id: string) => {
+  return post(
+    `/iot/read-property?device_id=${device_id}&oid=${point_id}&pid=85`,
+  );
+};
+
+export const writePointValue = (device_id: string, point_id: string) => {
+  return post(
+    `/iot/write-property?device_id=${device_id}&oid=${point_id}&pid=85`,
+    {
+      additionalProp1: {},
+    },
+  );
+};
+
+//上传配置
+export const setConfigFile = (ip: string, file: any, series: string) => {
+  const formData = new FormData();
+
+  formData.append("device_address", ip);
+  formData.append("file", file); // 文件
+  formData.append("product_series", series);
+
+  return post("/iot/config", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};

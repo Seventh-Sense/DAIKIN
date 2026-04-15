@@ -375,5 +375,19 @@ export default {
     config_has_update: "Configuration updated, starting upload...",
     config_upload_success: "Upload successful",
     config_upload_failed: "Upload failed",
+    no_points:
+      "No point information found, please load controller config first",
+    communication_finish: "Communication check completed.",
+    communication_start: "Starting communication check...",
+    point_check_success: "Current point communication is normal. Check passed",
+    point_check_failed: "Current point communication failed. Check not passed",
+    data_accuracy_start: "Starting data accuracy check...",
+    data_accuracy_finish: "Data accuracy check completed",
+    basic_func_start: "Starting basic function check...",
+    basic_func_finish: "Basic function check completed",
+    data_valid_range_format:
+      "Current value {value} is within valid range [{min},{max}]. Check passed",
+    data_invalid_range_format:
+      "Current value {value} is out of valid range [{min},{max}]. Check failed",
   },
 };

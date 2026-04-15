@@ -390,5 +390,19 @@ export default {
     config_has_update: "設定が更新されました。アップロードを開始します...",
     config_upload_success: "アップロード成功",
     config_upload_failed: "アップロード失敗",
+    no_points:
+      "ポイント情報が取得されていません。先にコントローラー設定をロードしてください",
+    communication_finish: "通信チェックが完了しました",
+    communication_start: "通信チェックを開始します...",
+    point_check_success: "現在のポイントは通信正常です。チェック合格",
+    point_check_failed: "現在のポイントは通信失敗です。チェック不合格",
+    data_accuracy_start: "データ精度チェックを開始します...",
+    data_accuracy_finish: "データ精度チェックが完了しました",
+    basic_func_start: "基本機能チェックを開始します...",
+    basic_func_finish: "基本機能チェックが完了しました",
+    data_valid_range_format:
+      "現在値 {value} は有効範囲 [{min},{max}] 内です。チェック合格",
+    data_invalid_range_format:
+      "現在値 {value} は有効範囲 [{min},{max}] 外です。チェック不合格",
   },
 };

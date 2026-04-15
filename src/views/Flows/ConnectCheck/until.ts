@@ -46,3 +46,41 @@ export const isDataEqual = (obj1: any, obj2: any): boolean => {
     return false;
   }
 };
+
+export const getAllPointsInfo = (localData: any) => {
+  if (!localData || !Array.isArray(localData.devices)) {
+    return [];
+  }
+
+  const result: any[] = [];
+
+  localData.devices.forEach((device: any) => {
+    if (!Array.isArray(device.points)) {
+      return;
+    }
+
+    device.points.forEach((point: any) => {
+      result.push({
+        device_name: device.device_name,
+        device_uid: device.uid,
+        device_type: device.device_type,
+        point_name: point.point_name,
+        point_uid: point.uid,
+        data_type:
+          device.device_type === "BACnet"
+            ? point.property.object_type
+            : point.property.data_type,
+        min: point.property.min,
+        max: point.property.max,
+      });
+    });
+  });
+
+  return result;
+};
+
+export const resetCheckStatus = (item: any) => {
+  item.total = 0;
+  item.failed = 0;
+  item.percent = 0;
+};

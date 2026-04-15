@@ -152,7 +152,7 @@ export const ModbusTCPData = {
 };
 
 export const KNXData = {
-  local_ip: "192.168.20.240",
+  local_ip: "127.0.0.1",
   gateway_ip: "127.0.0.255",
   gateway_port: 3671,
   sn: "",
@@ -640,11 +640,11 @@ const transformDeviceRow = (row: any, protocol: string) => {
   } else if (device_protocol === DeviceTypeEnum.ModbusTCP) {
     address = `${property.host}:${property.port}`;
   } else if (device_protocol === DeviceTypeEnum.BACnet) {
-    address = `${property.address}:47808`
+    address = `${property.address}:47808`;
   }
-  
+
   return {
-    uid: `${device_name}_${device_dev}_${device_sn}` || "",
+    uid: generateTimeUniqueId() || "",
     device_name,
     device_type: device_protocol || protocol,
     device_sn,
@@ -694,7 +694,7 @@ const transformPointRow = (row: any, protocol: string) => {
   }
 
   return {
-    uid: `${device_name}_${device_dev}_${point_name}_${point_m}` || "",
+    uid: generateTimeUniqueId() || "",
     point_name,
     point_m,
     description: pkey || row.description || "",

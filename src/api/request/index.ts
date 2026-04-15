@@ -50,7 +50,7 @@ service.interceptors.response.use(
   (err: AxiosError) => {
     const userStore = useUserStore();
     const errData = err.response?.data as ErrorResponse;
-    console.log("err", errData.detail);
+    //console.log("err", errData.detail);
 
     if (
       errData.detail === "Could not validate credentials" ||

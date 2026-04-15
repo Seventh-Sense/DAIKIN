@@ -152,31 +152,31 @@ const MODBUS_ID_MAP = (key: string) => {
 const dataCheck = (data: any) => {
   // 名称为空校验
   if (data.name === "") {
-    message.warn(t("device.msg_name_cannot_empty"));
+    message.warn(t("msg.msg_name_cannot_empty"));
     return true;
   }
 
   // 寄存器数量为空校验
   if (data.count === null || data.count === "") {
-    message.warn(t("device.msg_reg_count_cannot_empty"));
+    message.warn(t("msg.msg_reg_count_cannot_empty"));
     return true;
   }
 
   // 除数为空校验
   if (data.scale === null || data.scale === "") {
-    message.warn(t("device.msg_divisor_cannot_empty"));
+    message.warn(t("msg.msg_divisor_cannot_empty"));
     return true;
   }
 
   // 地址为空校验
   if (data.address === "") {
-    message.warn(t("device.msg_address_cannot_empty"));
+    message.warn(t("msg.msg_address_cannot_empty"));
     return true;
   }
 
   // 地址格式校验
   if (!validateIntegerOrRange(data.address)) {
-    message.warn(t("device.msg_invalid_address_format"));
+    message.warn(t("msg.msg_invalid_address_format"));
     return true;
   }
 
