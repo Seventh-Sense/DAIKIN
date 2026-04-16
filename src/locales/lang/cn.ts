@@ -149,8 +149,8 @@ export default {
     save_success: "保存成功",
     max_limit_3: "最多只能添加3个Topic",
     topic_repeat: "该分组已存在，请勿重复添加",
-    sn: "设备编号",
-    pkey: "备注信息",
+    sn: "设备SN",
+    pkey: "备注信息(pkey)",
   },
   connectivity_check: {
     title: "连接性检查",

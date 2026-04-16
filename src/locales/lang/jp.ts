@@ -158,7 +158,7 @@ export default {
     topic_repeat:
       "このグループは既に存在します。重複して追加しないでください。",
     sn: "機器番号",
-    pkey: "備考",
+    pkey: "備考(pkey)",
   },
   connectivity_check: {
     title: "接続性チェック",

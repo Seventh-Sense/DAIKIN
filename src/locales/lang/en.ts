@@ -151,7 +151,7 @@ export default {
     max_limit_3: "A maximum of 3 Topics can be added.",
     topic_repeat: "This group already exists, please do not add it repeatedly.",
     sn: "Device SN",
-    pkey: "Remark",
+    pkey: "Remark(pkey)",
   },
   connectivity_check: {
     title: "Connectivity Check",

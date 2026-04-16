@@ -28,12 +28,12 @@
         <a-input-number
           v-model:value="data.interval"
           :min="1"
-          style="width: 376px"
+          style="width: 100%"
         />
       </div>
       <div class="modal-block">
         <span class="modal-block-property">{{ t("mqtt.sn") }}</span>
-        <a-input v-model:value="data.sn" />
+        <a-input v-model:value="data.sn" disabled/>
       </div>
       <div class="modal-block">
         <span class="modal-block-property">{{ t("mqtt.pkey") }}</span>
@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { message } from "ant-design-vue";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -56,6 +56,10 @@ const props = defineProps({
     default: false,
   },
   List: {
+    type: Array,
+    default: () => [],
+  },
+  sns: {
     type: Array,
     default: () => [],
   },
@@ -70,23 +74,13 @@ const data = ref({
   pkey: "",
 });
 
-const baseOptions: any[] = [
-  {
-    value: "BACnet",
-  },
-  {
-    value: "ModbusTCP",
-  },
-  {
-    value: "KNX",
-  },
-];
+const baseOptions = ref(props.sns);
 
 const options = computed(() => {
   // 取出已选的name
   const selectedNames = props.List?.map((item: any) => item.name) || [];
   // 返回未选中的
-  return baseOptions.filter((opt) => !selectedNames.includes(opt.value));
+  return baseOptions.value.filter((opt: any) => !selectedNames.includes(opt.value));
 });
 
 const emit = defineEmits(["update:modelShow", "add"]);
@@ -99,8 +93,16 @@ const handleModalOpenChange = (newOpenState: boolean) => {
   }
 };
 
+watch(
+  () => data.value.serial_number,
+  (newVal) => {
+    data.value.sn = newVal || "";
+  }
+);
+
 const handleOk = () => {
   if (
+    !data.value.serial_number.trim() ||
     !data.value.sub_topic.trim() ||
     !data.value.pub_topic.trim() ||
     !data.value.sn.trim() ||
@@ -133,7 +135,7 @@ const handleOk = () => {
 
 const resetForm = () => {
   data.value = {
-    serial_number: "ModbusTCP",
+    serial_number: "",
     sub_topic: "",
     pub_topic: "",
     interval: 10,

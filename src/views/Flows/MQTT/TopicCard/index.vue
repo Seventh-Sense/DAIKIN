@@ -1,7 +1,7 @@
 <template>
   <div class="topic">
     <div class="topic-header">
-      <span class="topic-title">{{ cardName }}</span>
+      <span class="topic-title">Group-{{ cardName }}</span>
 
       <!-- 非编辑状态：显示编辑/删除图标 -->
       <div class="topic-actions" v-if="!isEditing">
@@ -70,14 +70,7 @@
       </div>
       <div class="topic-item">
         <span class="topic-label">{{ t("mqtt.sn") }}</span>
-        <template v-if="isEditing">
-          <a-input
-            v-model:value="editSn"
-            class="topic-input"
-            style="width: 400px"
-          />
-        </template>
-        <span v-else class="topic-value">{{ sn }}</span>
+        <span  class="topic-value">{{ sn }}</span>
       </div>
       <div class="topic-item">
         <span class="topic-label">{{ t("mqtt.pkey") }}</span>

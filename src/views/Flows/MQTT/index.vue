@@ -51,6 +51,7 @@
       v-if="showModal"
       v-model:modelShow="showModal"
       :List="list"
+      :sns="options"
       @add="handleAdd"
     />
   </div>
@@ -79,6 +80,7 @@ const info = reactive({
 });
 
 const list = reactive<any[]>([]);
+const options = ref<any[]>([]);
 
 const initData = () => {
   info.host = "";
@@ -93,7 +95,7 @@ const initData = () => {
     return;
   }
 
-  const { mqtt } = controllerData;
+  const { mqtt, devices } = controllerData;
 
   if (mqtt) {
     info.host = mqtt.host;
@@ -101,7 +103,15 @@ const initData = () => {
     list.push(...(mqtt.topics || []));
   }
 
-  console.log("当前控制器数据：", controllerData);
+  if (devices && devices.length > 0) {
+    devices.forEach((item: any) => {
+      options.value.push({
+        value: item.device_sn,
+      });
+    });
+  }
+
+  //console.log("当前控制器数据：", controllerData);
 };
 
 watch(
