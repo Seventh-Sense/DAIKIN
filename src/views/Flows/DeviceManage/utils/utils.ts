@@ -404,6 +404,7 @@ const SHEET_CONFIGS = Object.values(DEVICE_PRO_MAP).flatMap((key) => [
 // ===================== 你的原有配置（完全不动） =====================
 const DEVICE_FIELD_CONFIG = {
   BACnet: (device: any) => ({
+    uid: device.uid,
     device_name: device.device_name,
     device_protocol: device.device_type,
     device_sn: device.device_sn,
@@ -420,6 +421,7 @@ const DEVICE_FIELD_CONFIG = {
     segmentation_supported: device.property?.segmentation_supported,
   }),
   KNX: (device: any) => ({
+    uid: device.uid,
     device_name: device.device_name,
     device_protocol: device.device_type,
     device_sn: device.device_sn,
@@ -432,6 +434,7 @@ const DEVICE_FIELD_CONFIG = {
     gateway_port: device.property?.gateway_port,
   }),
   ModbusTCP: (device: any) => ({
+    uid: device.uid,
     device_name: device.device_name,
     device_protocol: device.device_type,
     device_sn: device.device_sn,
@@ -447,6 +450,7 @@ const DEVICE_FIELD_CONFIG = {
 
 const POINT_FIELD_CONFIG = {
   BACnet: (device: any, point: any) => ({
+    uid: point.uid,
     device_name: device.device_name,
     device_dev: device.device_dev,
     point_name: point.point_name,
@@ -459,6 +463,7 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
   }),
   KNX: (device: any, point: any) => ({
+    uid: point.uid,
     device_name: device.device_name,
     device_dev: device.device_dev,
     point_name: point.point_name,
@@ -472,6 +477,7 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
   }),
   ModbusTCP: (device: any, point: any) => ({
+    uid: point.uid,
     device_name: device.device_name,
     device_dev: device.device_dev,
     point_name: point.point_name,
@@ -623,6 +629,7 @@ export const importFileTrans = (sheets: any[]) => {
 
 const transformDeviceRow = (row: any, protocol: string) => {
   const {
+    uid,
     device_name,
     device_protocol,
     device_sn,
@@ -644,7 +651,7 @@ const transformDeviceRow = (row: any, protocol: string) => {
   }
 
   return {
-    uid: generateTimeUniqueId() || "",
+    uid: uid || generateTimeUniqueId(),
     device_name,
     device_type: device_protocol || protocol,
     device_sn,
@@ -660,6 +667,7 @@ const transformDeviceRow = (row: any, protocol: string) => {
 
 const transformPointRow = (row: any, protocol: string) => {
   const {
+    uid,
     device_name,
     device_dev,
     point_name,
@@ -694,7 +702,7 @@ const transformPointRow = (row: any, protocol: string) => {
   }
 
   return {
-    uid: generateTimeUniqueId() || "",
+    uid: uid || generateTimeUniqueId(),
     point_name,
     point_m,
     description: pkey || row.description || "",
