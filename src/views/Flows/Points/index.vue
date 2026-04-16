@@ -135,7 +135,7 @@ const columns = computed(() => [
     dataIndex: "point_m",
   },
   {
-    title: () => t("device_manage.desc"),
+    title: 'Pkey',
     dataIndex: "description",
   },
   {

@@ -31,12 +31,12 @@
       />
       <div class="modal-porperty">{{ $t("device_manage.point_m") }}</div>
       <a-input v-model:value="data.point_m" style="margin-bottom: 12px" />
-      <div class="modal-porperty">{{ $t("device_manage.desc") }}</div>
+      <div class="modal-porperty">Pkey</div>
       <a-input v-model:value="data.description" style="margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.min") }}</div>
-      <a-input-number v-model:value="data.min" style="width: 100%" />
+      <a-input-number v-model:value="data.min" style="width: 100%;margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.max") }}</div>
-      <a-input-number v-model:value="data.max" style="width: 100%" />
+      <a-input-number v-model:value="data.max" style="width: 100%;margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.writable") }}</div>
       <a-select
         v-model:value="data.writable"

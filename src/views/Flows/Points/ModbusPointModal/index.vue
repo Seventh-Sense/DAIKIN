@@ -130,7 +130,7 @@ const MODBUS_ID_MAP = (key: string) => {
   const ID_MAP: { [key: string]: string } = {
     name: t("device_manage.name"),
     m: t("device_manage.point_m"),
-    description: t("device_manage.desc"),
+    description: "Pkey",
     function: t("device_manage.reg_type"),
     address: t("device_manage.reg_attr"),
     count: t("device_manage.reg_num"),

@@ -111,7 +111,7 @@ const KNX_ID_MAP = (key: string) => {
   const ID_MAP: { [key: string]: string } = {
     name: t("device_manage.name"),
     m: t("device_manage.point_m"),
-    description: t("device_manage.desc"),
+    description: "Pkey",
     read_address: t("device_manage.read_address"),
     write_address: t("device_manage.write_address"),
     data_type: t("device_manage.data_type"),
