@@ -108,14 +108,14 @@
       >
         {{ t("connectivity_check.logic_control") }}
       </a-button>
-      <a-button
+      <!-- <a-button
         type="primary"
         class="card-btn"
         @click="onResult()"
         :disabled="downloadLoading"
       >
         {{ t("connectivity_check.trial_run_result") }}
-      </a-button>
+      </a-button> -->
     </div>
   </div>
 </template>

@@ -2,13 +2,13 @@
   <div class="block">
     <div class="block-top">
       <div>{{ data.type }}</div>
-      <Icons
+      <!-- <Icons
         name="display"
         type="mono-line"
         :size="24"
         :color="{ normal: '#222222FF' }"
         @click="handlePreview"
-      />
+      /> -->
     </div>
     <div class="block-actions">
       <div class="block-actions-title">
@@ -16,12 +16,19 @@
         <span class="block-time">{{ formatTime(data.time) }}</span>
       </div>
       <div class="block-actions-btns">
-        <Icons
+        <!-- <Icons
           name="input"
           type="mono-line"
           :size="24"
           :color="{ normal: '#222222FF' }"
           @click="handleRename"
+        /> -->
+        <Icons
+          name="display"
+          type="mono-line"
+          :size="24"
+          :color="{ normal: '#222222FF' }"
+          @click="handlePreview"
         />
         <Icons
           name="edit"
@@ -30,13 +37,13 @@
           :color="{ normal: '#222222FF' }"
           @click="handleEdit"
         />
-        <Icons
+        <!-- <Icons
           name="delete"
           type="mono-line"
           :size="24"
           :color="{ normal: '#F76F83FF' }"
           @click="handleDelete"
-        />
+        /> -->
       </div>
     </div>
   </div>

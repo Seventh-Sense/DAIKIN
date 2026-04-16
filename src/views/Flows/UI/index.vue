@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-top">
       <span class="card-top-title">{{ t("ui.title") }}</span>
-      <a-button type="primary" class="btn-add" @click="onAdd">
+      <!-- <a-button type="primary" class="btn-add" @click="onAdd">
         {{ t("ui.add") }}
         <Icons
           name="addCircle"
@@ -10,7 +10,7 @@
           :size="20"
           :color="{ normal: '#ffffff' }"
         />
-      </a-button>
+      </a-button> -->
     </div>
     <div class="card-content">
       <UICard
@@ -24,9 +24,9 @@
       />
     </div>
     <div class="card-finish">
-      <a-button type="primary" class="card-finish-btn" @click="onClick">
+      <!-- <a-button type="primary" class="card-finish-btn" @click="onClick">
         {{ t("common.edit_complete") }}
-      </a-button>
+      </a-button> -->
     </div>
     <CreateModal
       v-if="showModal"
@@ -58,39 +58,15 @@ const { t } = useI18n();
 const list = ref([
   {
     id: "7a3b9ff3-aaa7-4161-b263-1ed1ac0666de",
-    name: "Demo",
+    name: "Dashboard",
     time: "2025-09-10T13:29:13.147261",
-    type: "graphic",
+    type: "Dashboard",
   },
   {
     id: "7a3b9ff3-aaa7-4161-b263-1ed1ac0666d1",
-    name: "Demo",
+    name: "Graphic",
     time: "2025-09-10T13:29:13.147261",
-    type: "graphic",
-  },
-  {
-    id: "7a3b9ff3-aaa7-4161-b263-1ed1ac0666d2",
-    name: "Demo",
-    time: "2025-09-10T13:29:13.147261",
-    type: "graphic",
-  },
-  {
-    id: "7a3b9ff3-aaa7-4161-b263-1ed1ac0666d3",
-    name: "Demo",
-    time: "2025-09-10T13:29:13.147261",
-    type: "graphic",
-  },
-  {
-    id: "7a3b9ff3-aaa7-4161-b263-1ed1ac0666d4",
-    name: "Demo",
-    time: "2025-09-10T13:29:13.147261",
-    type: "graphic",
-  },
-  {
-    id: "7a3b9ff3-aaa7-4161-b263-1ed1ac0666d6",
-    name: "Demo",
-    time: "2025-09-10T13:29:13.147261",
-    type: "graphic",
+    type: "Graphic",
   },
 ]);
 
