@@ -110,14 +110,45 @@ watch(
   { immediate: true },
 );
 
+// 实时保存 MQTT 配置到 Pinia
+const saveToPinia = () => {
+  const currentIP = stepStore.getCurrentIP();
+
+  if (!currentIP) return;
+
+  const controller = controllerStore.getControllerByIp(currentIP);
+  if (!controller) return;
+
+  const mqttConfig = {
+    host: info.host.trim(),
+    port: info.port.trim(),
+    topics: [...list],
+  };
+
+  controller.mqtt = mqttConfig;
+  controllerStore.addController(currentIP, controller);
+};
+
+watch(
+  () => [info.host, info.port],
+  () => {
+    saveToPinia();
+  },
+  { deep: true },
+);
+
 const handleUpdate = (index: number, newData: any) => {
   // 替换对应索引的项，触发响应式更新
   list[index] = { ...newData };
+
+  saveToPinia();
 };
 
 // 处理卡片删除
 const handleDelete = (index: number) => {
   list.splice(index, 1);
+
+  saveToPinia();
 };
 
 const onAdd = () => {
@@ -136,38 +167,14 @@ const handleAdd = (newTopic: any) => {
   }
 
   list.push(newTopic);
+  saveToPinia();
 };
 
 const onClick = () => {
-  //写入到json
   if (!info.host.trim() || !info.port.trim()) {
     message.warning(t("mqtt.host_port_required"));
     return;
   }
-
-  const currentIP = stepStore.getCurrentIP();
-  if (!currentIP) {
-    message.error(t("mqtt.controller_not_found"));
-    return;
-  }
-
-  const controller = controllerStore.getControllerByIp(currentIP);
-  if (!controller) {
-    message.error(t("mqtt.controller_not_found"));
-    return;
-  }
-
-  const mqttConfig = {
-    host: info.host.trim(),
-    port: info.port.trim(),
-    topics: [...list], // 所有topic列表
-  };
-
-  controller.mqtt = mqttConfig;
-
-  controllerStore.addController(currentIP, controller);
-
-  message.success(t("mqtt.save_success"));
 
   handleEditCompleteJump();
 };
