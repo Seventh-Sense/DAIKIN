@@ -104,6 +104,7 @@ export const useStepStore = defineStore(
       menuOpenKeys.value = init.menuOpenKeys;
       currentMenuData.value = init.currentMenuData;
       currentDeviceInfo.value = init.currentDeviceInfo;
+      rawMenus.value = init.rawMenus;
     };
 
     const setCurrentDeviceInfo = (deviceInfo: any) => {

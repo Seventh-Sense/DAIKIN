@@ -148,7 +148,7 @@ const onSearch = async () => {
       return;
     }
 
-    console.log(deviceList.value);
+    //console.log(deviceList.value, selectList);
 
     data.value = markExistingIds(selectList, deviceList.value);
 
@@ -180,7 +180,7 @@ const markExistingIds = (searchList: any[], existingDeviceList: any[]) => {
   );
 
   return searchList.map((item) => {
-    const currentKey = `${item.address}_${item.device_id}`;
+    const currentKey = `${item.address}:47808_${item.device_id}`;
     return {
       ...item,
       disabled: existKeys.has(currentKey), // 已存在 = 禁用
