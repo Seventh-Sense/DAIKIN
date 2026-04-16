@@ -639,6 +639,9 @@ const runBasicFunctionCheck = async () => {
 
       //模拟量处理：+1 写入 → -1 写入
       if (pointType === "analog") {
+        const raw = readResult.points[0].present_value;
+        const writeValue = Number.isInteger(raw) ? raw + 1.000000001 : raw + 1;
+
         const addRes = await writePointValue({
           device_address: currentIP,
           device_type: item.device_type,
@@ -647,7 +650,7 @@ const runBasicFunctionCheck = async () => {
             {
               point_uid: item.point_uid,
               data_type: item.data_type,
-              value: originalValue + 1,
+              value: writeValue,
               priority: 16,
             },
           ],
@@ -659,6 +662,8 @@ const runBasicFunctionCheck = async () => {
           continue;
         }
 
+        const restoreValue = Number.isInteger(raw) ? raw + 0.000000001 : raw;
+
         const subRes = await writePointValue({
           device_address: currentIP,
           device_type: item.device_type,
@@ -667,7 +672,7 @@ const runBasicFunctionCheck = async () => {
             {
               point_uid: item.point_uid,
               data_type: item.data_type,
-              value: originalValue,
+              value: restoreValue,
               priority: 16,
             },
           ],
