@@ -83,6 +83,8 @@ export default {
     reload: "リロード",
     empty: "データがありません",
     edit_complete: "編集完了",
+    unselect_all: "全選択解除",
+    select_all: "全選択",
   },
   device_search: {
     title: " 機器検索 ",
@@ -420,5 +422,8 @@ export default {
     export_check_no_data: "点検データがありません。エクスポートできません",
     export_check_success: "エクスポートに成功しました",
     export_check_failed: "エクスポートに失敗しました",
+    please_select_points: "ポイントを選択してください",
+    operation_success: "操作に成功しました",
+    add_points_success: "ポイントの追加に成功しました",
   },
 };

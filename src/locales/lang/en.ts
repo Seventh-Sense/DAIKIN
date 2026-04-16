@@ -81,6 +81,8 @@ export default {
     reload: "Reload",
     empty: "No Data",
     edit_complete: "Finish",
+    unselect_all: "Unselect All",
+    select_all: "Select All",
   },
   device_search: {
     title: "Search Device",
@@ -405,5 +407,8 @@ export default {
     export_check_no_data: "No check data available for export",
     export_check_success: "Export successful",
     export_check_failed: "Export failed",
+    please_select_points: "Please select points",
+    operation_success: "Operation successful",
+    add_points_success: "Points added successfully",
   },
 };

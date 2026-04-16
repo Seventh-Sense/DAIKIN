@@ -81,6 +81,8 @@ export default {
     reload: "刷新",
     empty: "暂无数据",
     edit_complete: "编辑完成",
+    unselect_all: "取消全选",
+    select_all: "全选",
   },
   device_search: {
     title: "搜索设备",
@@ -390,5 +392,8 @@ export default {
     export_check_no_data: "暂无检查数据，无法导出",
     export_check_success: "导出成功",
     export_check_failed: "导出失败",
+    please_select_points: "请选择点位",
+    operation_success: "操作成功",
+    add_points_success: "添加点位成功",
   },
 };
