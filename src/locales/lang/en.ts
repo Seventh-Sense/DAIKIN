@@ -402,5 +402,8 @@ export default {
     load_control_config_fail: "Failed to load controller file",
     point_check_unreliability:
       "Current point communication failed, point reliability error.",
+    export_check_no_data: "No check data available for export",
+    export_check_success: "Export successful",
+    export_check_failed: "Export failed",
   },
 };

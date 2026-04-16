@@ -90,7 +90,7 @@ export const resetCheckStatus = (item: any) => {
 export const getPointType = (device_type: string, data_type: string) => {
   let type = "analog";
 
-  console.log("device_type  data_type", device_type, data_type);
+  //console.log("device_type  data_type", device_type, data_type);
   if (device_type === DeviceTypeEnum.BACnet) {
     if (
       data_type === "binary-input" ||

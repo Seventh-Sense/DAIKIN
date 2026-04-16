@@ -144,6 +144,7 @@ import {
 } from "./until";
 import { message } from "ant-design-vue";
 import { getControllerType } from "../DeviceManage/utils/utils";
+import { exportToExcel, SheetConfig } from "../DeviceManage/utils/xlsx";
 
 const controllerStore = useControllerStore();
 const stepStore = useStepStore();
@@ -161,6 +162,14 @@ const checkItems = reactive([
 ]);
 
 const resultInfo = ref<string[]>([]);
+const exportCheckResults = ref<
+  Array<{
+    devicePath: string;
+    checkDesc: string;
+    checkResult: string;
+  }>
+>([]);
+
 const points = ref<any[]>([]);
 
 const typeMap = { 1: "pro", 2: "standard", 3: "lite" };
@@ -247,6 +256,7 @@ const onAllCheck = async () => {
 
   downloadLoading.value = true;
   resultInfo.value = [];
+  exportCheckResults.value = [];
 
   checkItems.forEach((item) => {
     item.percent = 0;
@@ -287,6 +297,7 @@ const onCheck = async (key: any) => {
 
   downloadLoading.value = true;
   resultInfo.value = [];
+  exportCheckResults.value = [];
 
   checkItems.forEach((item) => {
     // 不是当前点击的项，就清空进度、总数、失败数
@@ -799,8 +810,8 @@ const runBasicFunctionCheck = async () => {
 };
 
 const onClear = () => {
-  console.log("onClear");
   resultInfo.value = [];
+  exportCheckResults.value = [];
 
   checkItems.forEach((item) => {
     item.percent = 0;
@@ -818,7 +829,34 @@ const onClear = () => {
 };
 
 const onExport = () => {
-  console.log("onExport");
+  if (!exportCheckResults.value || exportCheckResults.value.length === 0) {
+    message.warning(t("msg.export_check_no_data")); // 无检查数据，无法导出
+    return;
+  }
+
+  try {
+    const sheets = [
+      {
+        sheetName: "CheckResult",
+        data: exportCheckResults.value,
+        // 直接英文表头
+        formatter: (item: any) => ({
+          "Device Path": item.devicePath,
+          "Check Description": item.checkDesc,
+          "Check Result": item.checkResult,
+        }),
+      },
+    ];
+
+    const fileName = `Connectivity_Check_${Date.now()}`;
+
+    exportToExcel(sheets, fileName);
+
+    message.success(t("msg.export_check_success"));
+  } catch (error) {
+    console.error("导出失败", error);
+    message.error(t("msg.export_check_failed"));
+  }
 };
 
 const onControl = () => {
@@ -837,17 +875,31 @@ const addLog = (
   deviceName?: string,
   pointName?: string,
 ) => {
-  // 时间前缀
   const timePrefix = type === "time" ? `[${new Date().toLocaleString()}] ` : "";
-  // 图标
+
   const icon = status === true ? " ✅" : status === false ? " ❌" : "";
-  // 设备+点位前缀
+
   const pointPrefix =
     deviceName && pointName ? `${deviceName} ${pointName} ` : "";
-  // 国际化文本
+
   const text = t(msgKey, params);
 
   resultInfo.value.push(`${timePrefix}${pointPrefix}${text}${icon}`);
+
+  //存储结果为 路径 + 描述 + 检查结果
+  if (type === "time") {
+    exportCheckResults.value.push({
+      devicePath: timePrefix + text,
+      checkDesc: "",
+      checkResult: "",
+    });
+  } else {
+    exportCheckResults.value.push({
+      devicePath: pointPrefix,
+      checkDesc: status ? "Status is OK" : "Status is Failed",
+      checkResult: status ? "Check Passed" : "Check Failed",
+    });
+  }
 };
 </script>
 

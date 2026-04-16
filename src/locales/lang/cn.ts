@@ -386,6 +386,9 @@ export default {
     all_check_failed: "全部检查异常",
     unknown_error: "未知错误",
     load_control_config_fail: "加载控制器文件失败",
-    point_check_unreliability: '当前点位通讯失败，点位可靠性错误',
+    point_check_unreliability: "当前点位通讯失败，点位可靠性错误",
+    export_check_no_data: "暂无检查数据，无法导出",
+    export_check_success: "导出成功",
+    export_check_failed: "导出失败",
   },
 };

@@ -417,5 +417,8 @@ export default {
     load_control_config_fail: "コントローラーファイルの読み込みに失敗しました",
     point_check_unreliability:
       "現在のポイント通信に失敗しました。ポイント信頼性エラーです。",
+    export_check_no_data: "点検データがありません。エクスポートできません",
+    export_check_success: "エクスポートに成功しました",
+    export_check_failed: "エクスポートに失敗しました",
   },
 };
