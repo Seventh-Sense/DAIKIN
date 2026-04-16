@@ -391,10 +391,16 @@ export default {
       "Current value {value} is out of valid range [{min},{max}]. Check failed",
     data_set_success: "Connected, point value set successfully. Check passed",
     data_set_failed: "Connected, failed to set point value. Check failed",
+    data_set_no_writable:
+      "Connected, point settings are not writable. Check passed.",
     clear_success: "Clear success",
     all_check_start: "Start full connectivity check",
     all_check_finish: "Full connectivity check completed",
     all_check_success: "All checks completed successfully",
     all_check_failed: "All checks aborted due to error",
+    unknown_error: "Unknown error",
+    load_control_config_fail: "Failed to load controller file",
+    point_check_unreliability:
+      "Current point communication failed, point reliability error.",
   },
 };

@@ -349,23 +349,34 @@ const runCommunicationCheck = async () => {
         ],
       });
 
-      if (
-        result.success &&
-        result.points &&
-        result.points.length > 0 &&
-        result.points[0].reliability !== 12
-      ) {
-        item.status = "success";
-        successCount++;
+      if (result.success && result.points && result.points.length > 0) {
+        const reliability = result.points[0].reliability;
 
-        addLog(
-          "point",
-          "msg.point_check_success",
-          {},
-          true,
-          item.device_name,
-          item.point_name,
-        );
+        if (reliability !== 12) {
+          item.status = "success";
+          successCount++;
+
+          addLog(
+            "point",
+            "msg.point_check_success",
+            {},
+            true,
+            item.device_name,
+            item.point_name,
+          );
+        } else {
+          item.status = "failed";
+          failCount++;
+
+          addLog(
+            "point",
+            "msg.point_check_unreliability",
+            {},
+            false,
+            item.device_name,
+            item.point_name,
+          );
+        }
       } else {
         item.status = "failed";
         failCount++;
@@ -595,6 +606,19 @@ const runBasicFunctionCheck = async () => {
 
       if (!isValidRead) {
         handlePointFail(item, "msg.point_check_failed");
+        updateProgress();
+        continue;
+      }
+
+      //判断是否可写
+      if (!item.writable) {
+        logPoint(
+          "msg.data_set_no_writable",
+          true,
+          item.device_name,
+          item.point_name,
+        );
+        successCount++;
         updateProgress();
         continue;
       }

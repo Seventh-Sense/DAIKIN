@@ -19,8 +19,15 @@
           style="width: 200px"
         />
         <div class="modal-right">
-          <span>{{ t('msg.total_points', { count: data.length }) }}</span>
-          <a-button type="primary" class="btn-add" @click="onSearch">
+          <span>{{
+            t("msg.total_points", { count: displayData.length })
+          }}</span>
+          <a-button
+            type="primary"
+            class="btn-add"
+            @click="onSearch"
+            :disabled="loading"
+          >
             {{ t("device_manage.search") }}
           </a-button>
         </div>
@@ -30,10 +37,12 @@
         size="middle"
         :loading="loading"
         :columns="columns"
-        :data-source="data"
-        :scroll="{ y: 400 }"
+        :data-source="displayData"
+        :scroll="{ y: 400, x: 'max-content' }"
         :pagination="false"
         :row-selection="rowSelection"
+        virtual
+        :height="400"
       >
       </a-table>
     </div>
@@ -74,11 +83,15 @@ const networkOptions = ref<any[]>([]);
 const selectInterface = ref<string | undefined>(undefined);
 
 const currentIP = stepStore.getCurrentIP();
-
 const deviceInfo: any = inject("deviceInfo");
 
 const { t } = useI18n();
 const loading = ref(false);
+
+// 原始全量数据（不直接渲染，避免性能损耗）
+const rawData = ref<any[]>([]);
+// 表格展示数据（虚拟滚动用）
+const displayData = ref<any[]>([]);
 
 const columns = [
   { title: () => t("device_manage.name"), dataIndex: "object_name" },
@@ -91,7 +104,7 @@ const data = ref<any[]>([]);
 const selectedRowKeys = ref<Key[]>([]);
 
 //已经添加过的点位
-const selectedObjKeys = ref<string[]>([]);
+const selectedObjKeys = ref<Set<number>>(new Set());
 
 const rowSelection = computed(() => ({
   selectedRowKeys: selectedRowKeys.value,
@@ -145,6 +158,7 @@ const onSearch = () => {
 
 const initData = async () => {
   loading.value = true;
+  clearAll();
 
   try {
     const deviceInfo = stepStore.getCurrentDeviceInfo();
@@ -171,7 +185,9 @@ const initData = async () => {
 
     const rawPoints = result?.points || [];
 
-    data.value = convertToDataTypes(props.pointList, rawPoints);
+    rawData.value = convertToDataTypes(props.pointList, rawPoints);
+
+    displayData.value = rawData.value;
   } catch (error) {
     console.error("Error initializing data:", error);
     message.error(t("msg.read_points_error"));
@@ -181,22 +197,23 @@ const initData = async () => {
 };
 
 const convertToDataTypes = (selectedData: any[], resData: any[]): any[] => {
-  selectedObjKeys.value = selectedData.map(
-    (item) => item.property?.object_instance,
+  const selectedSet = new Set<number>(
+    selectedData
+      .map((item) => item.property?.object_instance)
+      .filter(Number.isFinite),
   );
-
-  const mergedKeysSet = new Set(selectedObjKeys.value);
-  //console.log("mergedKeysSet", selectedData, resData);
+  selectedObjKeys.value = selectedSet;
 
   const invalidTypeNames = [""];
 
   return resData
-    .filter((item) => !invalidTypeNames.includes(item.object_type)) // 过滤无效类型
+    .filter((item) => !invalidTypeNames.includes(item.object_type))
     .map((item) => {
+      const ins = Number(item.object_instance);
       return {
         ...item,
-        key: item.object_instance, // 唯一标识符
-        disabled: mergedKeysSet.has(item.object_instance), // 设置禁用状态
+        key: ins, // 数字 key
+        disabled: selectedSet.has(ins), // 数字比较
       };
     });
 };
@@ -209,11 +226,13 @@ const handleOk = async () => {
 
   try {
     const newPoints = selectedRowKeys.value.reduce((list: any, key) => {
+      const ins = Number(key);
+
       // 跳过已存在的点位
-      if (selectedObjKeys.value.includes(String(key))) return list;
+      if (selectedObjKeys.value.has(ins)) return list;
 
       // 查找对应记录
-      const record = data.value.find((item) => item.key === key);
+      const record = rawData.value.find((item) => item.key === ins);
       if (!record) return list;
 
       // 组装点位数据
@@ -270,8 +289,9 @@ const handleModalOpenChange = (newOpenState: boolean) => {
 
 const clearAll = () => {
   selectedRowKeys.value = [];
-  selectedObjKeys.value = [];
-  data.value = [];
+  selectedObjKeys.value.clear();
+  rawData.value = [];
+  displayData.value = [];
 };
 </script>
 

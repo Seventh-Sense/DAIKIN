@@ -318,6 +318,9 @@ const pullControllerFile = async (ip: string) => {
     //console.log(ip, config);
   } catch (e) {
     controllerStore.addController(ip, { ...DeviceInitData });
+
+    const errMsg = (e as any)?.response?.data?.detail || t("msg.unknown_error");
+    message.error(`${t("msg.load_control_config_fail")}: ${errMsg}`);
     console.error("无法获取控制器信息", e);
   }
 };

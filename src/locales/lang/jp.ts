@@ -406,10 +406,16 @@ export default {
       "現在値 {value} は有効範囲 [{min},{max}] 外です。チェック不合格",
     data_set_success: "接続済み、ポイント値を正しく設定しました。チェック合格",
     data_set_failed: "接続済み、ポイント値を設定できません。チェック不合格",
+    data_set_no_writable:
+      "接続済みのため、ポイント設定は書き込みできません。確認に合格しました。",
     clear_success: "クリア成功",
     all_check_start: "全接続性チェックを開始します",
     all_check_finish: "全接続性チェックが完了しました",
     all_check_success: "全てのチェックが正常に完了しました",
     all_check_failed: "エラーにより全チェックを中断しました",
+    unknown_error: "不明なエラー",
+    load_control_config_fail: "コントローラーファイルの読み込みに失敗しました",
+    point_check_unreliability:
+      "現在のポイント通信に失敗しました。ポイント信頼性エラーです。",
   },
 };

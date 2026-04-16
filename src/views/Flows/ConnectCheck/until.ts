@@ -73,6 +73,7 @@ export const getAllPointsInfo = (localData: any) => {
             : point.property.data_type,
         min: point.property.min,
         max: point.property.max,
+        writable: point.writable,
       });
     });
   });
