@@ -151,6 +151,16 @@ export const ModbusTCPData = {
   desc: "",
 };
 
+export const ModbusRTUData = {
+  slaveid: "1",
+  host: "127.0.0.1",
+  port: 5020,
+  connectionOption: "tcp",
+  sn: "",
+  dev: "",
+  desc: "",
+};
+
 export const KNXData = {
   local_ip: "127.0.0.1",
   gateway_ip: "127.0.0.255",

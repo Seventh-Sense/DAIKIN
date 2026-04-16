@@ -26,6 +26,7 @@ export enum ControllerTypeEnum {
 export enum DeviceTypeEnum {
   BACnet = "BACnet",
   ModbusTCP = "ModbusTCP",
+  ModbusRTU = "ModbusRTU",
   KNX = "KNX",
 }
 
@@ -34,6 +35,10 @@ export const TypeOptions = [
     label: "BACnet/IP",
     value: DeviceTypeEnum.BACnet,
   },
+  // {
+  //   label: "ModbusRTU",
+  //   value: DeviceTypeEnum.ModbusRTU,
+  // },
   {
     label: "ModbusTCP",
     value: DeviceTypeEnum.ModbusTCP,

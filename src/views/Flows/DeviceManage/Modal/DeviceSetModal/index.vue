@@ -74,10 +74,12 @@ import {
   createModbusTCPParams,
   createKNXParams,
   ModbusTCPData,
+  ModbusRTUData,
   KNXData,
 } from "../../utils/utils";
 import BACnet from "../../component/BACnet/index.vue";
 import ModbusTCP from "../../component/ModbusTCP/index.vue";
+import ModbusRTU from "../../component/ModbusRTU/index.vue";
 import KNX from "../../component/KNX/index.vue";
 import { cloneDeep } from "lodash";
 import { useControllerStore } from "@/pinia/modules/controller";
@@ -142,7 +144,7 @@ const resetForm = () => {
   data.value = {
     id: "",
     name: "",
-    type: DeviceTypeEnum.ModbusTCP,
+    type: DeviceTypeEnum.BACnet,
     polling: 3,
     enabled: 1,
     property: {},
@@ -203,6 +205,10 @@ const componentConfigMap = {
   [DeviceTypeEnum.ModbusTCP]: {
     component: ModbusTCP,
     defaultProperty: () => cloneDeep(ModbusTCPData),
+  },
+  [DeviceTypeEnum.ModbusRTU]: {
+    component: ModbusRTU,
+    defaultProperty: () => cloneDeep(ModbusRTUData),
   },
   [DeviceTypeEnum.KNX]: {
     component: KNX,
