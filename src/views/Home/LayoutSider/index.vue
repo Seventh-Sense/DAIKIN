@@ -272,6 +272,8 @@ const confirmDelete = () => {
     );
     deleteModalVisible.value = false;
 
+    controllerStore.deleteControllerByIp(deleteSubMenuName.value)
+
     // 重置删除相关状态
     deleteTargetMenu.value = null;
     deleteTargetSubMenu.value = null;

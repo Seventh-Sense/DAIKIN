@@ -59,7 +59,7 @@
         style="margin-bottom: 12px"
         disabled
       />
-      <div class="modal-porperty">{{ $t("device_manage.vendor_name") }}</div>
+      <!-- <div class="modal-porperty">{{ $t("device_manage.vendor_name") }}</div>
       <a-input
         v-model:value="initData.property.vendor_name"
         style="margin-bottom: 12px"
@@ -88,7 +88,7 @@
         v-model:value="initData.property.segmentation_supported"
         style="margin-bottom: 12px"
         disabled
-      />
+      /> -->
     </div>
   </a-modal>
 </template>

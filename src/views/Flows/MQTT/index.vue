@@ -106,7 +106,7 @@ const initData = () => {
   if (devices && devices.length > 0) {
     devices.forEach((item: any) => {
       options.value.push({
-        value: item.device_sn,
+        value: item.group,
       });
     });
   }

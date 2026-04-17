@@ -33,7 +33,7 @@
       </div>
       <div class="modal-block">
         <span class="modal-block-property">{{ t("mqtt.sn") }}</span>
-        <a-input v-model:value="data.sn" disabled/>
+        <a-input v-model:value="data.sn"/>
       </div>
       <div class="modal-block">
         <span class="modal-block-property">{{ t("mqtt.pkey") }}</span>
@@ -92,13 +92,6 @@ const handleModalOpenChange = (newOpenState: boolean) => {
     resetForm();
   }
 };
-
-watch(
-  () => data.value.serial_number,
-  (newVal) => {
-    data.value.sn = newVal || "";
-  }
-);
 
 const handleOk = () => {
   if (

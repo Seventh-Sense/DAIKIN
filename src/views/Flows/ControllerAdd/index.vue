@@ -73,9 +73,11 @@ import { message } from "ant-design-vue";
 import { routerTurnByName } from "../../../router/util";
 import Icons from "@/icons/index.vue";
 import { ref } from "vue";
+import { useControllerStore } from "@/pinia/modules/controller";
 
 const { t } = useI18n();
 const stepStore = useStepStore();
+const controllerStore = useControllerStore();
 
 const deleteModalVisible = ref(false);
 const deleteSubMenuName = ref("");
@@ -93,6 +95,10 @@ const confirmDelete = () => {
     const currentRawMenus = [...stepStore.rawMenus];
 
     let key = stepStore.currentStep.split("-")[0];
+
+    controllerStore.deleteControllerByIp(
+      stepStore.currentMenuData.data.address,
+    );
 
     const targetMenuIndex = currentRawMenus.findIndex(
       (item) => item.key === key,

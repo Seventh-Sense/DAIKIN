@@ -203,6 +203,15 @@ export const useControllerStore = defineStore(
       device.points = [];
     };
 
+    const deleteControllerByIp = (ip: string) => {
+      if (!controllerMap.value[ip]) {
+        console.log("找不到控制器: deleteControllerByIp", ip);
+        return;
+      }
+      // 直接删除对应 ip 的数据
+      delete controllerMap.value[ip];
+    };
+
     // 清空所有
     const clearAll = () => {
       controllerMap.value = {};
@@ -221,6 +230,7 @@ export const useControllerStore = defineStore(
       deletePointFromControllerDevice,
       clearAllPointsByDeviceID,
       setControllerDevices,
+      deleteControllerByIp,
     };
   },
   {
