@@ -33,7 +33,7 @@
       </div>
       <div class="modal-block">
         <span class="modal-block-property">{{ t("mqtt.sn") }}</span>
-        <a-input v-model:value="data.sn"/>
+        <a-input v-model:value="data.sn" />
       </div>
       <div class="modal-block">
         <span class="modal-block-property">{{ t("mqtt.pkey") }}</span>
@@ -80,7 +80,9 @@ const options = computed(() => {
   // 取出已选的name
   const selectedNames = props.List?.map((item: any) => item.name) || [];
   // 返回未选中的
-  return baseOptions.value.filter((opt: any) => !selectedNames.includes(opt.value));
+  return baseOptions.value.filter(
+    (opt: any) => !selectedNames.includes(opt.value),
+  );
 });
 
 const emit = defineEmits(["update:modelShow", "add"]);
