@@ -19,14 +19,19 @@
       />
       <div class="modal-porperty">{{ $t("device_manage.device_type") }}</div>
       <a-input
-        v-model:value="initData.device_type"
+        v-model:value="initData.protocol"
         style="margin-bottom: 12px"
         disabled
       />
       <div class="modal-porperty">{{ $t("device_manage.device_sn") }}</div>
-      <a-input v-model:value="data.device_sn" style="margin-bottom: 12px" />
-      <div class="modal-porperty">{{ $t("device_manage.device_dev") }}</div>
-      <a-input v-model:value="data.device_dev" style="margin-bottom: 12px" />
+      <a-input v-model:value="data.sn" style="margin-bottom: 12px" />
+      <div class="modal-porperty">{{ $t("mqtt.pkey") }}</div>
+      <a-input v-model:value="data.pkey" style="margin-bottom: 12px" />
+      <div class="content-porperty">{{ $t("device_manage.group") }}</div>
+      <a-input
+        v-model:value="data.group"
+        style="width: 100%; margin-bottom: 12px"
+      />
       <div class="modal-porperty">{{ $t("device_manage.address") }}</div>
       <a-input
         v-model:value="initData.address"
@@ -115,8 +120,9 @@ const emit = defineEmits(["update:modelShow", "onSaveSuccess"]);
 
 const data = ref<any>({
   description: "",
-  device_dev: "",
-  device_sn: "",
+  pkey: "",
+  group: "",
+  sn: "",
   enabled: 1,
   polling: 3,
 });
@@ -150,8 +156,9 @@ const initFormData = () => {
   if (!props.initData) return;
   data.value = {
     description: props.initData.description || "",
-    device_dev: props.initData.device_dev || "",
-    device_sn: props.initData.device_sn || "",
+    pkey: props.initData.pkey || "",
+    sn: props.initData.sn || "",
+    group: props.initData.group || "",
     enabled: props.initData.enabled ? 1 : 0,
     polling: props.initData.polling || 3,
   };

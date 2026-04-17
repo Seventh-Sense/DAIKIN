@@ -27,6 +27,7 @@
             key === 'description' ||
             key === 'address' ||
             key === 'm' ||
+            key === 'dev' ||
             key === 'unit'
           "
         >
@@ -110,6 +111,7 @@ const defaultData = {
   uid: "",
   name: "",
   m: "",
+  dev: "",
   description: "",
   function: 4,
   address: "",
@@ -130,7 +132,8 @@ const MODBUS_ID_MAP = (key: string) => {
   const ID_MAP: { [key: string]: string } = {
     name: t("device_manage.name"),
     m: t("device_manage.point_m"),
-    description: "Pkey",
+    dev: t("device_manage.device_dev"),
+    description: t("device_manage.desc"),
     function: t("device_manage.reg_type"),
     address: t("device_manage.reg_attr"),
     count: t("device_manage.reg_num"),
@@ -187,13 +190,14 @@ const addNewPoint = async () => {
   const params = {
     uid: data.value.uid || generateTimeUniqueId(),
     point_name: data.value.name,
-    point_m: data.value.m,
+    m: data.value.m,
+    dev: data.value.dev,
     description: data.value.description,
     writable: data.value.writable === 1,
     property: {
-      function: data.value.function,
-      address: Number(data.value.address),
-      count: data.value.count,
+      register_type: data.value.function,
+      register_address: Number(data.value.address),
+      register_count: data.value.count,
       data_type: data.value.data_type,
       align_format: data.value.align_format,
       scale: data.value.scale,
@@ -237,13 +241,14 @@ const addNewPoints = async () => {
       const params = {
         uid: generateTimeUniqueId(),
         point_name: `${data.value.name} ${currentAddress}`,
-        point_m: data.value.m,
+        m: data.value.m,
+        dev: data.value.dev,
         description: data.value.description,
         writable: data.value.writable === 1,
         property: {
-          function: data.value.function,
-          address: currentAddress,
-          count: data.value.count,
+          register_type: data.value.function,
+          register_address: currentAddress,
+          register_count: data.value.count,
           data_type: data.value.data_type,
           align_format: data.value.align_format,
           scale: data.value.scale,
@@ -296,11 +301,12 @@ watch(
       data.value = {
         uid: props.editData.uid,
         name: props.editData.point_name,
-        m: props.editData.point_m,
+        m: props.editData.m,
+        dev: props.editData.dev,
         description: props.editData.description,
-        function: props.editData.property.function,
-        address: props.editData.property.address.toString(),
-        count: props.editData.property.count,
+        function: props.editData.property.register_type,
+        address: props.editData.property.register_address.toString(),
+        count: props.editData.property.register_count,
         data_type: props.editData.property.data_type,
         scale: props.editData.property.scale,
         offset: props.editData.property.offset,

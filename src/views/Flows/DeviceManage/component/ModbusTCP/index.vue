@@ -16,20 +16,19 @@
       :min="0"
       style="width: 100%; margin-bottom: 12px"
     />
-    <!-- <div class="content-porperty">{{ $t("device_manage.connection") }}</div>
+    <div class="content-porperty">{{ $t("device_manage.group") }}</div>
     <a-input
-      v-model:value="data.property.connectionOption"
-      disabled
+      v-model:value="data.property.group"
       style="width: 100%; margin-bottom: 12px"
-    /> -->
+    />
     <div class="content-porperty">{{ $t("device_manage.device_sn") }}</div>
     <a-input
       v-model:value="data.property.sn"
       style="width: 100%; margin-bottom: 12px"
     />
-    <div class="content-porperty">{{ $t("device_manage.device_dev") }}</div>
+    <div class="content-porperty">{{ $t("mqtt.pkey") }}</div>
     <a-input
-      v-model:value="data.property.dev"
+      v-model:value="data.property.pkey"
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.desc") }}</div>

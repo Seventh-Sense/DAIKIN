@@ -30,13 +30,21 @@
         disabled
       />
       <div class="modal-porperty">{{ $t("device_manage.point_m") }}</div>
-      <a-input v-model:value="data.point_m" style="margin-bottom: 12px" />
-      <div class="modal-porperty">Pkey</div>
+      <a-input v-model:value="data.m" style="margin-bottom: 12px" />
+      <div class="modal-porperty">{{ $t("device_manage.device_dev") }}</div>
+      <a-input v-model:value="data.dev" style="margin-bottom: 12px" />
+      <div class="modal-porperty">{{ $t("device_manage.desc") }}</div>
       <a-input v-model:value="data.description" style="margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.min") }}</div>
-      <a-input-number v-model:value="data.min" style="width: 100%;margin-bottom: 12px" />
+      <a-input-number
+        v-model:value="data.min"
+        style="width: 100%; margin-bottom: 12px"
+      />
       <div class="modal-porperty">{{ $t("device_manage.max") }}</div>
-      <a-input-number v-model:value="data.max" style="width: 100%;margin-bottom: 12px" />
+      <a-input-number
+        v-model:value="data.max"
+        style="width: 100%; margin-bottom: 12px"
+      />
       <div class="modal-porperty">{{ $t("device_manage.writable") }}</div>
       <a-select
         v-model:value="data.writable"
@@ -74,7 +82,8 @@ const { t } = useI18n();
 
 const data = ref<any>({
   description: "",
-  point_m: "",
+  m: "",
+  dev: "",
   writable: 1,
   min: undefined,
   max: undefined,
@@ -95,7 +104,8 @@ const handleOk = () => {
   const submitData = {
     ...props.editData,
     description: data.value.description,
-    point_m: data.value.point_m,
+    m: data.value.m,
+    dev: data.value.dev,
     writable: !!data.value.writable,
     property: {
       ...props.editData.property,
@@ -119,7 +129,8 @@ const initFormData = () => {
   if (!props.editData) return;
   data.value = {
     description: props.editData.description || "",
-    point_m: props.editData.point_m || "",
+    m: props.editData.m || "",
+    dev: props.editData.dev || "",
     writable: props.editData.writable ? 1 : 0,
     min:
       props.editData.property.min === null

@@ -13,10 +13,8 @@ export const formatMessage = (key: string, params?: Record<string, any>) => {
 
 /**
  * 生成带时间戳的唯一ID
- * 格式：时间戳 + 随机串
+ *
  */
 export function generateTimeUniqueId(): string {
-  const timestamp = Date.now().toString(36); // 时间戳转短字符串
-  const randomStr = Math.random().toString(36).slice(2, 8); // 6位随机
-  return `${timestamp}_${randomStr}`;
+  return crypto.randomUUID();
 }

@@ -39,11 +39,13 @@
         </a-col>
       </a-row>
       <div v-if="data.type !== DeviceTypeEnum.BACnet">
-        <div class="modal-porperty" style="margin-top: 12px;">{{ $t("device_manage.enabled") }}</div>
+        <div class="modal-porperty" style="margin-top: 12px">
+          {{ $t("device_manage.enabled") }}
+        </div>
         <a-select
           v-model:value="data.enabled"
           :options="BooleanOption"
-          style="width: 100%;"
+          style="width: 100%"
         />
       </div>
 
@@ -65,7 +67,12 @@
 import { message } from "ant-design-vue";
 import { onMounted, ref, shallowRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { BooleanOption, DataType, DeviceTypeEnum, pollOptions } from "../../utils/options";
+import {
+  BooleanOption,
+  DataType,
+  DeviceTypeEnum,
+  pollOptions,
+} from "../../utils/options";
 import { useStepStore } from "@/pinia/modules/step";
 import {
   getControllerType,
@@ -241,13 +248,14 @@ const initEditData = () => {
     data.value = {
       id: props.initData.uid,
       name: props.initData.device_name,
-      type: props.initData.device_type,
+      type: props.initData.protocol,
       polling: props.initData.polling,
-      enabled: props.initData.enabled ? 1: 0,
+      enabled: props.initData.enabled ? 1 : 0,
       property: {
         ...cloneDeep(props.initData.property),
-        sn: props.initData.device_sn || "",
-        dev: props.initData.device_dev || "",
+        sn: props.initData.sn || "",
+        pkey: props.initData.pkey || "",
+        group: props.initData.group || "",
         desc: props.initData.description || "",
       },
     };

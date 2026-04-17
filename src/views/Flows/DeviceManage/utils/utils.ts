@@ -107,9 +107,10 @@ const validateKNX = (data: DataType): boolean => {
 export const createModbusTCPParams = (data: DataType) => ({
   uid: data.id || generateTimeUniqueId(),
   device_name: data.name,
-  device_type: DeviceTypeEnum.ModbusTCP,
-  device_sn: data.property.sn,
-  device_dev: data.property.dev,
+  protocol: DeviceTypeEnum.ModbusTCP,
+  sn: data.property.sn,
+  pkey: data.property.pkey,
+  group: data.property.group,
   polling: data.polling,
   address: data.property.host + ":" + data.property.port,
   description: data.property.desc,
@@ -126,9 +127,10 @@ export const createModbusTCPParams = (data: DataType) => ({
 export const createKNXParams = (data: DataType) => ({
   uid: data.id || generateTimeUniqueId(),
   device_name: data.name,
-  device_type: DeviceTypeEnum.KNX,
-  device_sn: data.property.sn,
-  device_dev: data.property.dev,
+  protocol: DeviceTypeEnum.KNX,
+  sn: data.property.sn,
+  pkey: data.property.pkey,
+  group: data.property.group,
   polling: data.polling,
   address: data.property.gateway_ip + ":" + data.property.gateway_port,
   description: data.property.desc,
@@ -147,8 +149,9 @@ export const ModbusTCPData = {
   port: 5020,
   connectionOption: "tcp",
   sn: "",
-  dev: "",
+  pkey: "",
   desc: "",
+  group: "",
 };
 
 export const ModbusRTUData = {
@@ -166,8 +169,9 @@ export const KNXData = {
   gateway_ip: "127.0.0.255",
   gateway_port: 3671,
   sn: "",
-  dev: "",
+  pkey: "",
   desc: "",
+  group: "",
 };
 
 /**
@@ -411,99 +415,97 @@ const SHEET_CONFIGS = Object.values(DEVICE_PRO_MAP).flatMap((key) => [
   { sheetName: `${key}_points` },
 ]);
 
-// ===================== 你的原有配置（完全不动） =====================
 const DEVICE_FIELD_CONFIG = {
   BACnet: (device: any) => ({
     uid: device.uid,
     device_name: device.device_name,
-    device_protocol: device.device_type,
-    device_sn: device.device_sn,
-    device_dev: device.device_dev,
+    device_instance: device.property?.device_instance,
+    protocol: device.protocol,
     polling: device.polling,
-    description: device.description,
-    enabled: device.enabled,
     address: device.address,
-    device_id: device.property?.device_id,
-    vendor_name: device.property?.vendor_name,
-    vendor_id: device.property?.vendor_id,
     model_name: device.property?.model_name,
-    max_apdu_length: device.property?.max_apdu_length,
-    segmentation_supported: device.property?.segmentation_supported,
+    description: device.description,
+    group: device.group,
+    sn: device.sn,
+    pkey: device.pkey,
   }),
   KNX: (device: any) => ({
     uid: device.uid,
     device_name: device.device_name,
-    device_protocol: device.device_type,
-    device_sn: device.device_sn,
-    device_dev: device.device_dev,
+    protocol: device.protocol,
     polling: device.polling,
-    description: device.description,
-    enabled: device.enabled,
-    loacl_ip: device.property?.local_ip,
     gateway_ip: device.property?.gateway_ip,
     gateway_port: device.property?.gateway_port,
+    local_ip: device.property?.local_ip,
+    description: device.description,
+    group: device.group,
+    sn: device.sn,
+    pkey: device.pkey,
   }),
   ModbusTCP: (device: any) => ({
     uid: device.uid,
     device_name: device.device_name,
-    device_protocol: device.device_type,
-    device_sn: device.device_sn,
-    device_dev: device.device_dev,
+    protocol: device.protocol,
     polling: device.polling,
-    description: device.description,
-    enabled: device.enabled,
     host: device.property?.host,
     port: device.property?.port,
     slaveid: device.property?.slaveid,
+    description: device.description,
+    group: device.group,
+    sn: device.sn,
+    pkey: device.pkey,
   }),
 };
 
 const POINT_FIELD_CONFIG = {
   BACnet: (device: any, point: any) => ({
     uid: point.uid,
+    device_uid: device.uid,
     device_name: device.device_name,
-    device_dev: device.device_dev,
     point_name: point.point_name,
-    point_m: point.point_m,
-    pkey: point.description,
     writable: point.writable,
     object_type: point.property?.object_type,
     object_instance: point.property?.object_instance,
     min: point.property?.min,
     max: point.property?.max,
+    description: point.description,
+    m: point.m,
+    dev: point.dev,
   }),
   KNX: (device: any, point: any) => ({
     uid: point.uid,
+    device_uid: device.uid,
     device_name: device.device_name,
-    device_dev: device.device_dev,
     point_name: point.point_name,
-    point_m: point.point_m,
-    pkey: point.description,
     writable: point.writable,
-    status_address: point.property?.read_address,
-    control_address: point.property?.write_address,
+    status_address: point.property?.status_address,
+    control_address: point.property?.control_address,
     data_type: point.property?.data_type,
     min: point.property?.min,
     max: point.property?.max,
+    description: point.description,
+    m: point.m,
+    dev: point.dev,
   }),
   ModbusTCP: (device: any, point: any) => ({
     uid: point.uid,
+    device_uid: device.uid,
     device_name: device.device_name,
-    device_dev: device.device_dev,
     point_name: point.point_name,
-    point_m: point.point_m,
-    pkey: point.description,
     writable: point.writable,
-    register_address: point.property?.address,
+    register_address: point.property?.register_address,
     align_format: point.property?.align_format,
-    register_count: point.property?.count,
+    register_count: point.property?.register_count,
     data_type: point.property?.data_type,
-    register_type: point.property?.function,
+    register_type: point.property?.register_type,
     offset: point.property?.offset,
     scale: point.property?.scale,
     unit: point.property?.unit,
     min: point.property?.min,
     max: point.property?.max,
+    description: point.description,
+    m: point.m,
+    dev: point.dev,
   }),
 };
 
@@ -552,7 +554,7 @@ export const exportDataTrans = (deviceList: any[]) => {
   }, {});
 
   deviceList.forEach((device: any) => {
-    const type = device.device_type;
+    const type = device.protocol;
     const key = DEVICE_PRO_MAP[type as keyof typeof DEVICE_PRO_MAP];
     if (!key) return;
 
@@ -598,31 +600,30 @@ export const importFileTrans = (sheets: any[]) => {
   console.log("sheets:", sheetMap);
   const deviceMap = new Map<string, any>();
 
-  Object.entries(DEVICE_PRO_MAP).forEach(([protocol, prefix]) => {
+  Object.entries(DEVICE_PRO_MAP).forEach(([typeKey, prefix]) => {
     const deviceSheetName = `${prefix}_devices`;
     const deviceRows = sheetMap[deviceSheetName] || [];
 
     deviceRows.forEach((row) => {
       // 过滤无效空行
-      if (!row.device_name?.trim() && !row.device_sn?.trim()) return;
+      if (!row.device_name?.trim()) return;
 
-      const device = transformDeviceRow(row, protocol);
-      const uniqueKey = `${device.device_name}_${device.device_dev}`;
+      const device = transformDeviceRow(row, typeKey);
+      const uniqueKey = row.uid;
       deviceMap.set(uniqueKey, device);
     });
   });
 
-  Object.entries(DEVICE_PRO_MAP).forEach(([protocol, prefix]) => {
+  Object.entries(DEVICE_PRO_MAP).forEach(([typeKey, prefix]) => {
     const pointSheetName = `${prefix}_points`;
     const pointRows = sheetMap[pointSheetName] || [];
 
     pointRows.forEach((row) => {
       // 过滤无效空行
-      if (!row.device_name?.trim() && !row.point_name?.trim()) return;
+      if (!row.device_name?.trim() || !row.point_name?.trim()) return;
 
-      const point = transformPointRow(row, protocol);
-      const deviceUniqueKey = `${row.device_name}_${row.device_dev}`;
-      const parentDevice = deviceMap.get(deviceUniqueKey);
+      const point = transformPointRow(row, typeKey);
+      const parentDevice = deviceMap.get(row.device_uid);
 
       if (parentDevice) {
         parentDevice.points.push(point);
@@ -632,91 +633,116 @@ export const importFileTrans = (sheets: any[]) => {
 
   const result = Array.from(deviceMap.values());
 
-  console.log("导入完整数据：", result);
+  //console.log("导入完整数据：", result);
 
   return result;
 };
 
-const transformDeviceRow = (row: any, protocol: string) => {
-  const {
-    uid,
-    device_name,
-    device_protocol,
-    device_sn,
-    device_dev,
-    polling,
-    description,
-    enabled,
-    ...property
-  } = row;
-
-  let address = "";
-
-  if (device_protocol === DeviceTypeEnum.KNX) {
-    address = `${property.gateway_ip}:${property.gateway_port}`;
-  } else if (device_protocol === DeviceTypeEnum.ModbusTCP) {
-    address = `${property.host}:${property.port}`;
-  } else if (device_protocol === DeviceTypeEnum.BACnet) {
-    address = `${property.address}:47808`;
-  }
-
-  return {
-    uid: uid || generateTimeUniqueId(),
-    device_name,
-    device_type: device_protocol || protocol,
-    device_sn,
-    device_dev,
-    polling: polling === "" ? 0 : Number(polling),
-    description,
-    enabled: enabled === "" ? false : Boolean(enabled),
-    address: address,
-    property: Object.keys(property).length ? property : undefined,
+const transformDeviceRow = (row: any, type: string) => {
+  const base = {
+    uid: row.uid || generateTimeUniqueId(),
+    device_name: row.device_name,
+    protocol: type,
+    sn: row.sn,
+    pkey: row.pkey,
+    group: row.group,
+    polling: row.polling === "" ? 0 : Number(row.polling),
+    description: row.description,
+    enabled: true,
     points: [],
   };
+
+  // 差异化逻辑：只处理 address 和 property
+  switch (type) {
+    case DeviceTypeEnum.BACnet:
+      return {
+        ...base,
+        address: row.address,
+        property: {
+          device_instance: row.device_instance,
+          model_name: row.model_name,
+        },
+      };
+    case DeviceTypeEnum.ModbusTCP:
+      return {
+        ...base,
+        address: `${row.host}:${row.port}`,
+        property: {
+          slaveid: row.slaveid,
+          host: row.host,
+          port: row.port,
+        },
+      };
+    case DeviceTypeEnum.KNX:
+      return {
+        ...base,
+        address: `${row.gateway_ip}:${row.gateway_port}`,
+        property: {
+          local_ip: row.local_ip,
+          gateway_ip: row.gateway_ip,
+          gateway_port: row.gateway_port,
+        },
+      };
+    default:
+      return null;
+  }
 };
 
-const transformPointRow = (row: any, protocol: string) => {
-  const {
-    uid,
-    device_name,
-    device_dev,
-    point_name,
-    point_m,
-    pkey,
-    writable,
-    status_address,
-    control_address,
-    register_address,
-    register_count,
-    register_type,
-    ...property
-  } = row;
-
-  let mappedProperty = { ...property };
-
-  if (protocol === "KNX") {
-    mappedProperty = {
-      ...mappedProperty,
-      read_address: status_address,
-      write_address: control_address,
-    };
-  }
-
-  if (protocol === "ModbusTCP") {
-    mappedProperty = {
-      ...mappedProperty,
-      address: register_address,
-      count: register_count,
-      function: register_type,
-    };
-  }
-
-  return {
-    uid: uid || generateTimeUniqueId(),
-    point_name,
-    point_m,
-    description: pkey || row.description || "",
-    writable: writable === "" ? false : Boolean(writable),
-    property: Object.keys(mappedProperty).length ? mappedProperty : undefined,
+const transformPointRow = (row: any, type: string) => {
+  const base = {
+    uid: row.uid || generateTimeUniqueId(),
+    point_name: row.point_name,
+    device_name: row.device_name,
+    m: row.m,
+    dev: row.dev,
+    description: row.description,
+    writable: row.writable === "" ? false : Boolean(row.writable),
   };
+
+  // 差异化只处理 property
+  switch (type) {
+    case DeviceTypeEnum.BACnet:
+      return {
+        ...base,
+        property: {
+          object_type: row.object_type,
+          object_instance: row.object_instance,
+          min: row.min,
+          max: row.max,
+        },
+      };
+
+    case DeviceTypeEnum.ModbusTCP:
+      return {
+        ...base,
+        property: {
+          register_type: row.register_type,
+          register_address: row.register_address,
+          register_count: row.register_count,
+          data_type: row.data_type,
+          align_format: row.align_format,
+          scale: row.scale,
+          offset: row.offset,
+          unit: row.unit,
+          min: row.min,
+          max: row.max,
+        },
+      };
+
+    case DeviceTypeEnum.KNX:
+      return {
+        ...base,
+        property: {
+          status_address: row.status_address,
+          control_address: row.control_address,
+          data_type: row.data_type,
+          min: row.min,
+          max: row.max,
+        },
+      };
+
+    // 防御性处理
+    default:
+      return null;
+  }
 };

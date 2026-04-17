@@ -27,7 +27,8 @@
             key === 'description' ||
             key === 'read_address' ||
             key === 'write_address' ||
-            key === 'm'
+            key === 'm' || 
+            key === 'dev'
           "
         >
           <a-input v-model:value="data[key]" />
@@ -96,6 +97,7 @@ const defaultData = {
   uid: "",
   name: "",
   m: "",
+  dev: "",
   description: "",
   read_address: "0/1/1",
   write_address: "0/0/1",
@@ -111,7 +113,8 @@ const KNX_ID_MAP = (key: string) => {
   const ID_MAP: { [key: string]: string } = {
     name: t("device_manage.name"),
     m: t("device_manage.point_m"),
-    description: "Pkey",
+    dev: t("device_manage.device_dev"),
+    description: t("device_manage.desc"),
     read_address: t("device_manage.read_address"),
     write_address: t("device_manage.write_address"),
     data_type: t("device_manage.data_type"),
@@ -145,12 +148,13 @@ const addNewPoint = async () => {
   const params = {
     uid: data.value.uid || generateTimeUniqueId(),
     point_name: data.value.name,
-    point_m: data.value.m,
+    m: data.value.m,
+    dev: data.value.dev,
     description: data.value.description,
     writable: data.value.writable === 1,
     property: {
-      read_address: data.value.read_address,
-      write_address: data.value.write_address,
+      status_address: data.value.read_address,
+      control_address: data.value.write_address,
       data_type: data.value.data_type,
       min: data.value.min === null ? undefined : data.value.min,
       max: data.value.max === null ? undefined : data.value.max,
@@ -195,10 +199,11 @@ watch(
       data.value = {
         uid: props.editData.uid,
         name: props.editData.point_name,
-        m: props.editData.point_m,
+        m: props.editData.m,
+        dev: props.editData.dev,
         description: props.editData.description,
-        read_address: props.editData.property.read_address,
-        write_address: props.editData.property.write_address,
+        read_address: props.editData.property.status_address,
+        write_address: props.editData.property.control_address,
         data_type: props.editData.property.data_type,
         min: props.editData.property.min,
         max: props.editData.property.max,

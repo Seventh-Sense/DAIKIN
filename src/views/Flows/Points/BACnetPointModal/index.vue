@@ -9,7 +9,7 @@
     :destroyOnClose="true"
     :okText="t('mqtt.save')"
     @ok="handleOk"
-    :confirmLoading="savingLoading" 
+    :confirmLoading="savingLoading"
   >
     <div class="modal">
       <div class="modal-top">
@@ -22,7 +22,9 @@
         <div class="modal-right">
           <span>{{ t("msg.total_points", { count: rawData.length }) }}</span>
           <a-button @click="handleSelectAll" :disabled="loading">
-            {{ isAllSelected ? t("common.unselect_all") : t("common.select_all") }}
+            {{
+              isAllSelected ? t("common.unselect_all") : t("common.select_all")
+            }}
           </a-button>
           <a-button
             type="primary"
@@ -128,7 +130,9 @@ const rowSelection = computed(() => ({
   selectedRowKeys: Array.from(checkedKeys.value),
   onChange: (keys: Key[]) => {
     const currentPageKeys = new Set(displayData.value.map((item) => item.key));
-    const oldChecked = Array.from(checkedKeys.value).filter((k) => currentPageKeys.has(k));
+    const oldChecked = Array.from(checkedKeys.value).filter((k) =>
+      currentPageKeys.has(k),
+    );
     oldChecked.forEach((k) => checkedKeys.value.delete(k));
     keys.forEach((k) => checkedKeys.value.add(k));
     isAllSelected.value = false;
@@ -214,7 +218,7 @@ const initData = async () => {
       return;
     }
     const { address } = device;
-    const deviceId = device.property?.device_id;
+    const deviceId = device.property?.device_instance;
     if (!address || deviceId == null) {
       message.error(t("msg.device_info_invalid"));
       return;
@@ -274,12 +278,14 @@ const handleOk = async () => {
   savingLoading.value = true;
 
   // 2. 强制等待浏览器一帧，让 loading 渲染出来（关键！）
-  await new Promise(resolve => setTimeout(resolve, 16));
+  await new Promise((resolve) => setTimeout(resolve, 16));
 
   try {
     // 3. 再执行大数据量逻辑
     const addList = rawData.value.filter(
-      (item) => selectedList.includes(item.key) && !existedInstanceSet.value.has(item.object_instance)
+      (item) =>
+        selectedList.includes(item.key) &&
+        !existedInstanceSet.value.has(item.object_instance),
     );
 
     if (!addList.length) {
@@ -290,7 +296,8 @@ const handleOk = async () => {
     const newPoints = addList.map((item) => ({
       uid: generateTimeUniqueId(),
       point_name: item.object_name,
-      point_m: "",
+      m: "",
+      dev: "",
       description: "",
       writable: true,
       property: {
@@ -302,13 +309,17 @@ const handleOk = async () => {
     }));
 
     // 分批执行，避免彻底卡死 UI
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       let i = 0;
       const batch = 500;
       function run() {
         const end = Math.min(i + batch, newPoints.length);
         for (; i < end; i++) {
-          controllerStore.addPointToControllerDevice(currentIP, deviceInfo.value.id, newPoints[i]);
+          controllerStore.addPointToControllerDevice(
+            currentIP,
+            deviceInfo.value.id,
+            newPoints[i],
+          );
         }
         if (i >= newPoints.length) {
           resolve(null);

@@ -148,7 +148,7 @@ const onSearch = async () => {
       return;
     }
 
-    //console.log(deviceList.value, selectList);
+    console.log(selectList);
 
     data.value = markExistingIds(selectList, deviceList.value);
 
@@ -193,15 +193,16 @@ const onDownload = async (record: any) => {
   let load = {
     uid: generateTimeUniqueId(),
     device_name: record.device_name,
-    device_type: DeviceTypeEnum.BACnet,
-    device_sn: "",
-    device_dev: "",
+    protocol: DeviceTypeEnum.BACnet,
+    sn: "",
+    pkey: "",
+    group: "",
     polling: props.data.polling,
-    address: record.address + ':47808',
+    address: record.address + ":47808",
     description: "",
     enabled: true,
     property: {
-      device_id: record.device_id,
+      device_instance: record.device_id,
       vendor_name: record.vendor_name,
       vendor_id: record.vendor_id,
       model_name: record.model_name,

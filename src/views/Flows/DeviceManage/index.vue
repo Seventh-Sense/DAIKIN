@@ -138,15 +138,15 @@ const columns = computed(() => [
   },
   {
     title: t("device_manage.device_type"),
-    dataIndex: "device_type",
+    dataIndex: "protocol",
   },
   {
     title: t("device_manage.device_sn"),
-    dataIndex: "device_sn",
+    dataIndex: "sn",
   },
   {
-    title: t("device_manage.device_dev"),
-    dataIndex: "device_dev",
+    title: t("mqtt.pkey"),
+    dataIndex: "pkey",
   },
   { title: t("device_manage.polling"), dataIndex: "polling" },
   {
@@ -333,7 +333,7 @@ const onExport = async () => {
 const onEdit = async (record: any) => {
   deviceData.value = { ...record };
 
-  if (record.device_type === DeviceTypeEnum.BACnet) {
+  if (record.protocol === DeviceTypeEnum.BACnet) {
     showBacnet.value = true;
   } else {
     showModal.value = true;
@@ -354,7 +354,7 @@ const onEnter = (record: any) => {
   //console.log("进入点位:", record);
   routerTurnByNameWithParams("Points", {
     id: record.uid,
-    type: record.device_type,
+    type: record.protocol,
     name: record.device_name,
   });
 
