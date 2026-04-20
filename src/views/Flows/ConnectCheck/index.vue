@@ -871,9 +871,10 @@ const onControl = () => {
   let device = stepStore.currentMenuData.data.name;
 
   let name = window.location.hostname;
+  let port = window.location.port;
   const currentLocale = localeStore.currentLocale;
 
-  window.open(`http://${name}:3000/#/daikin/${ip}/${device}/` + currentLocale, "_blank");
+  window.open(`http://${name}:${port}/#/daikin/${ip}/${device}/` + currentLocale, "_blank");
 };
 
 const onResult = () => {

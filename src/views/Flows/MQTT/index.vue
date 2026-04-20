@@ -20,6 +20,57 @@
           />
         </div>
       </div>
+      <div class="card-content-top">
+        <div class="card-content-block">
+          <span class="card-content-text">{{ t("login.username") }}</span>
+          <a-input v-model:value="info.username" style="width: 309px" />
+        </div>
+        <div class="card-content-block">
+          <span class="card-content-text">{{ t("login.password") }}</span>
+          <a-input-password
+            v-model:value="info.password"
+            style="width: 309px"
+          />
+        </div>
+        <div class="card-content-block">
+          <span class="card-content-text">{{ t("mqtt.auto_connect") }}</span>
+          <a-select
+            v-model:value="info.auto_connect"
+            :options="BooleanOption"
+            style="width: 309px"
+          />
+        </div>
+        <div class="card-content-block">
+          <span class="card-content-text">{{ t("mqtt.last_will_topic") }}</span>
+          <a-input v-model:value="info.last_will_topic" style="width: 309px" />
+        </div>
+        <div class="card-content-block">
+          <span class="card-content-text">{{ t("mqtt.ca_certificate") }}</span>
+          <a-input
+            v-model:value="info.ca_certificate"
+            style="width: 309px"
+            placeholder="47.103.19.245"
+          />
+        </div>
+        <div class="card-content-block">
+          <span class="card-content-text">
+            {{ t("mqtt.client_certificate") }}
+          </span>
+          <a-input
+            v-model:value="info.host"
+            style="width: 309px"
+            placeholder="47.103.19.245"
+          />
+        </div>
+        <div class="card-content-block">
+          <span class="card-content-text">{{ t("mqtt.client_key") }}</span>
+          <a-input
+            v-model:value="info.client_key"
+            style="width: 309px"
+            placeholder="47.103.19.245"
+          />
+        </div>
+      </div>
       <div class="card-content-row">
         <span class="card-content-row-title">{{ t("mqtt.topics") }}</span>
         <a-button type="primary" class="card-btn-add" @click="onAdd">
@@ -67,6 +118,7 @@ import TopicModal from "./TopicModal/index.vue";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { useStepStore } from "@/pinia/modules/step";
 import { message } from "ant-design-vue";
+import { BooleanOption } from "../DeviceManage/utils/options";
 
 const stepStore = useStepStore();
 const controllerStore = useControllerStore();
@@ -77,6 +129,13 @@ const showModal = ref(false);
 const info = reactive({
   host: "",
   port: "",
+  username: "",
+  password: "",
+  auto_connect: 1,
+  last_will_topic: "",
+  ca_certificate: "",
+  client_certificate: "",
+  client_key: "",
 });
 
 const list = reactive<any[]>([]);
@@ -140,7 +199,7 @@ const saveToPinia = () => {
 };
 
 watch(
-  () => [info.host, info.port],
+  () => info,
   () => {
     saveToPinia();
   },
@@ -170,7 +229,7 @@ const onAdd = () => {
 };
 
 const handleAdd = (newTopic: any) => {
-  const isExist = list.some((item) => item.name === newTopic.name);
+  const isExist = list.some((item) => item.group === newTopic.group);
   if (isExist) {
     message.warning(t("mqtt.topic_repeat"));
     return;
@@ -223,12 +282,13 @@ const onClick = () => {
     max-height: calc(100% - 60px);
 
     &-top {
-      height: 56px;
+      min-height: 56px;
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 16px;
       flex-shrink: 0;
+      flex-wrap: wrap;
     }
 
     &-block {
@@ -316,5 +376,45 @@ const onClick = () => {
 
 :deep(.ant-input:focus) {
   box-shadow: none;
+}
+
+:deep(.ant-input-password) {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--header-text-color);
+  padding-left: 0;
+}
+
+:deep(.ant-input:focus, .ant-input-password:focus),
+:deep(.ant-input-password:focus-within) {
+  border-color: var(--header-text-color) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+:deep(.ant-select) {
+  border-bottom: 1px solid var(--header-text-color);
+  box-shadow: none !important;
+  outline: none !important;
+
+  .ant-select-selector {
+    border: 0 !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    padding-left: 0;
+
+    &:focus,
+    &:hover,
+    &.ant-select-selection-active {
+      border-color: transparent !important;
+      box-shadow: none !important;
+      outline: none !important;
+    }
+  }
 }
 </style>

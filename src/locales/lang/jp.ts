@@ -161,6 +161,11 @@ export default {
       "このグループは既に存在します。重複して追加しないでください。",
     sn: "機器番号",
     pkey: "備考(pkey)",
+    auto_connect: "自動再接続",
+    last_will_topic: "遺言トピック",
+    ca_certificate: "CA証明書",
+    client_certificate: "クライアント証明書",
+    client_key: "クライアント秘密鍵",
   },
   connectivity_check: {
     title: "接続性チェック",

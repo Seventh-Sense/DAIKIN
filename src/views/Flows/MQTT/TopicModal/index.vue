@@ -78,7 +78,7 @@ const baseOptions = ref(props.sns);
 
 const options = computed(() => {
   // 取出已选的name
-  const selectedNames = props.List?.map((item: any) => item.name) || [];
+  const selectedNames = props.List?.map((item: any) => Number(item.group)) || [];
   // 返回未选中的
   return baseOptions.value.filter(
     (opt: any) => !selectedNames.includes(opt.value),
@@ -97,8 +97,7 @@ const handleModalOpenChange = (newOpenState: boolean) => {
 
 const handleOk = () => {
   if (
-    !data.value.serial_number.trim() ||
-    !data.value.sub_topic.trim() ||
+    !data.value.serial_number.toString().trim() ||
     !data.value.pub_topic.trim() ||
     !data.value.sn.trim() ||
     !data.value.pkey.trim()

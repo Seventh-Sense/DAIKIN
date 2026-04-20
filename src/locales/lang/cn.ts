@@ -153,6 +153,11 @@ export default {
     topic_repeat: "该分组已存在，请勿重复添加",
     sn: "设备SN",
     pkey: "备注信息(pkey)",
+    auto_connect: "自动重连",
+    last_will_topic: "遗嘱信息",
+    ca_certificate: "CA证书",
+    client_certificate: "客户端证书",
+    client_key: "客户端密钥",
   },
   connectivity_check: {
     title: "连接性检查",

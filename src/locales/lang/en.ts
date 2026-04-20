@@ -154,6 +154,11 @@ export default {
     topic_repeat: "This group already exists, please do not add it repeatedly.",
     sn: "Device SN",
     pkey: "Remark(pkey)",
+    auto_connect: "Auto Reconnect",
+    last_will_topic: "Last Will Topic",
+    ca_certificate: "CA Certificate",
+    client_certificate: "Client Certificate",
+    client_key: "Client Private Key",
   },
   connectivity_check: {
     title: "Connectivity Check",

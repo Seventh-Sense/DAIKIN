@@ -139,7 +139,6 @@ const enterEdit = () => {
 
 const handleSave = () => {
   if (
-    !editSubTopic.value.trim() ||
     !editPubTopic.value.trim() ||
     !editSn.value.trim() ||
     !editPkey.value.trim()
