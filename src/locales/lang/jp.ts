@@ -166,6 +166,16 @@ export default {
     ca_certificate: "CA証明書",
     client_certificate: "クライアント証明書",
     client_key: "クライアント秘密鍵",
+    ca_cert_placeholder: "CA証明書をアップロードしてください",
+    client_cert_placeholder: "クライアント証明書をアップロードしてください",
+    client_key_placeholder: "クライアント秘密鍵をアップロードしてください",
+    ca_upload_success: "CA証明書のアップロードに成功しました",
+    ca_upload_fail: "CA証明書のアップロードに失敗しました",
+    client_cert_upload_success:
+      "クライアント証明書のアップロードに成功しました",
+    client_cert_upload_fail: "クライアント証明書のアップロードに失敗しました",
+    client_key_upload_success: "クライアント秘密鍵のアップロードに成功しました",
+    client_key_upload_fail: "クライアント秘密鍵のアップロードに失敗しました",
   },
   connectivity_check: {
     title: "接続性チェック",

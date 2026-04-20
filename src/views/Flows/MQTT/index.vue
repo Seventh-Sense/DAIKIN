@@ -44,33 +44,90 @@
           <span class="card-content-text">{{ t("mqtt.last_will_topic") }}</span>
           <a-input v-model:value="info.last_will_topic" style="width: 309px" />
         </div>
+      </div>
+      <div class="card-content-top">
         <div class="card-content-block">
           <span class="card-content-text">{{ t("mqtt.ca_certificate") }}</span>
-          <a-input
-            v-model:value="info.ca_certificate"
-            style="width: 309px"
-            placeholder="47.103.19.245"
+          <input
+            type="file"
+            style="display: none"
+            id="caCertFile"
+            accept=".pem,.crt,.cer"
+            @change="handleCaCertUpload"
           />
+          <div class="file-input-row">
+            <a-input
+              v-model:value="info.ca_filename"
+              style="width: 309px"
+              :placeholder="t('mqtt.ca_cert_placeholder')"
+              readonly
+              @click="openFileUpload('ca')"
+            />
+            <Icons
+              name="delete"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#222222' }"
+              @click="clearCert('ca')"
+            />
+          </div>
         </div>
         <div class="card-content-block">
           <span class="card-content-text">
             {{ t("mqtt.client_certificate") }}
           </span>
-          <a-input
-            v-model:value="info.host"
-            style="width: 309px"
-            placeholder="47.103.19.245"
+          <input
+            type="file"
+            style="display: none"
+            id="clientCertFile"
+            accept=".pem,.crt,.cer"
+            @change="handleClientCertUpload"
           />
+          <div class="file-input-row">
+            <a-input
+              v-model:value="info.client_cert_filename"
+              style="width: 309px"
+              :placeholder="t('mqtt.client_cert_placeholder')"
+              readonly
+              @click="openFileUpload('clientCert')"
+            />
+            <Icons
+              name="delete"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#222222' }"
+              @click="clearCert('clientCert')"
+            />
+          </div>
         </div>
         <div class="card-content-block">
           <span class="card-content-text">{{ t("mqtt.client_key") }}</span>
-          <a-input
-            v-model:value="info.client_key"
-            style="width: 309px"
-            placeholder="47.103.19.245"
+          <input
+            type="file"
+            style="display: none"
+            id="clientKeyFile"
+            accept=".pem,.key"
+            @change="handleClientKeyUpload"
           />
+          <div class="file-input-row">
+            <a-input
+              v-model:value="info.client_key_filename"
+              style="width: 309px"
+              :placeholder="t('mqtt.client_key_placeholder')"
+              readonly
+              @click="openFileUpload('clientKey')"
+            />
+            <Icons
+              name="delete"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#222222' }"
+              @click="clearCert('clientKey')"
+            />
+          </div>
         </div>
       </div>
+
       <div class="card-content-row">
         <span class="card-content-row-title">{{ t("mqtt.topics") }}</span>
         <a-button type="primary" class="card-btn-add" @click="onAdd">
@@ -124,6 +181,7 @@ const stepStore = useStepStore();
 const controllerStore = useControllerStore();
 const { t } = useI18n();
 
+const options = ref<any[]>([]);
 const showModal = ref(false);
 
 const info = reactive({
@@ -133,18 +191,35 @@ const info = reactive({
   password: "",
   auto_connect: 1,
   last_will_topic: "",
+  ca_filename: "",
   ca_certificate: "",
+  client_cert_filename: "",
   client_certificate: "",
+  client_key_filename: "",
   client_key: "",
 });
 
 const list = reactive<any[]>([]);
-const options = ref<any[]>([]);
+
+const clearInfo = () => {
+  Object.assign(info, {
+    host: "",
+    port: "",
+    username: "",
+    password: "",
+    last_will_topic: "",
+    ca_filename: "",
+    ca_certificate: "",
+    client_cert_filename: "",
+    client_certificate: "",
+    client_key_filename: "",
+    client_key: "",
+  });
+  list.length = 0;
+};
 
 const initData = () => {
-  info.host = "";
-  info.port = "";
-  list.splice(0, list.length);
+  clearInfo();
 
   const currentIP = stepStore.getCurrentIP();
   const controllerData = controllerStore.getControllerByIp(currentIP);
@@ -157,17 +232,23 @@ const initData = () => {
   const { mqtt, devices } = controllerData;
 
   if (mqtt) {
-    info.host = mqtt.host;
-    info.port = mqtt.port;
+    info.host = mqtt.host || "";
+    info.port = mqtt.port || "";
+    info.username = mqtt.username || "";
+    info.password = mqtt.password || "";
+    info.auto_connect = mqtt.auto_connect ?? 1;
+    info.last_will_topic = mqtt.last_will_topic || "";
+    info.ca_filename = mqtt.ca_filename || "";
+    info.ca_certificate = mqtt.ca_certificate || "";
+    info.client_cert_filename = mqtt.client_cert_filename || "";
+    info.client_certificate = mqtt.client_certificate || "";
+    info.client_key_filename = mqtt.client_key_filename || "";
+    info.client_key = mqtt.client_key || "";
     list.push(...(mqtt.topics || []));
   }
 
-  if (devices && devices.length > 0) {
-    devices.forEach((item: any) => {
-      options.value.push({
-        value: item.group,
-      });
-    });
+  if (devices?.length) {
+    options.value = devices.map((item) => ({ value: item.group }));
   }
 
   //console.log("当前控制器数据：", controllerData);
@@ -182,29 +263,28 @@ watch(
 // 实时保存 MQTT 配置到 Pinia
 const saveToPinia = () => {
   const currentIP = stepStore.getCurrentIP();
-
-  if (!currentIP) return;
-
   const controller = controllerStore.getControllerByIp(currentIP);
   if (!controller) return;
 
-  const mqttConfig = {
+  controller.mqtt = {
     host: info.host.trim(),
     port: info.port.trim(),
+    username: info.username.trim(),
+    password: info.password.trim(),
+    auto_connect: info.auto_connect,
+    last_will_topic: info.last_will_topic.trim(),
+    ca_filename: info.ca_filename,
+    ca_certificate: info.ca_certificate.trim(),
+    client_cert_filename: info.client_cert_filename,
+    client_certificate: info.client_certificate.trim(),
+    client_key_filename: info.client_key_filename,
+    client_key: info.client_key.trim(),
     topics: [...list],
   };
-
-  controller.mqtt = mqttConfig;
   controllerStore.addController(currentIP, controller);
 };
 
-watch(
-  () => info,
-  () => {
-    saveToPinia();
-  },
-  { deep: true },
-);
+watch(info, saveToPinia, { deep: true });
 
 const handleUpdate = (index: number, newData: any) => {
   // 替换对应索引的项，触发响应式更新
@@ -221,7 +301,7 @@ const handleDelete = (index: number) => {
 };
 
 const onAdd = () => {
-  if (list.length >= 3) {
+  if (list.length >= 11) {
     message.warning(t("mqtt.max_limit_3"));
     return;
   }
@@ -229,8 +309,7 @@ const onAdd = () => {
 };
 
 const handleAdd = (newTopic: any) => {
-  const isExist = list.some((item) => item.group === newTopic.group);
-  if (isExist) {
+  if (list.some((i) => i.group === newTopic.group)) {
     message.warning(t("mqtt.topic_repeat"));
     return;
   }
@@ -246,6 +325,84 @@ const onClick = () => {
   }
 
   handleEditCompleteJump();
+};
+
+const openFileUpload = (type: "ca" | "clientCert" | "clientKey") => {
+  let domId = "";
+  if (type === "ca") domId = "caCertFile";
+  if (type === "clientCert") domId = "clientCertFile";
+  if (type === "clientKey") domId = "clientKeyFile";
+
+  const fileInput = document.getElementById(domId) as HTMLInputElement | null;
+  fileInput?.click();
+};
+
+// 读取文件工具
+const readFileContent = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject;
+  });
+};
+
+// 清空证书
+const clearCert = (type: "ca" | "clientCert" | "clientKey") => {
+  if (type === "ca") {
+    info.ca_filename = "";
+    info.ca_certificate = "";
+  }
+  if (type === "clientCert") {
+    info.client_cert_filename = "";
+    info.client_certificate = "";
+  }
+  if (type === "clientKey") {
+    info.client_key_filename = "";
+    info.client_key = "";
+  }
+};
+
+// CA
+const handleCaCertUpload = async (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  try {
+    const text = await readFileContent(file);
+    info.ca_filename = file.name;
+    info.ca_certificate = text;
+    message.success(t("mqtt.ca_upload_success"));
+  } catch {
+    message.error(t("mqtt.ca_upload_fail"));
+  }
+};
+
+// 客户端证书
+const handleClientCertUpload = async (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  try {
+    const text = await readFileContent(file);
+    info.client_cert_filename = file.name;
+    info.client_certificate = text;
+    message.success(t("mqtt.client_cert_upload_success"));
+  } catch {
+    message.error(t("mqtt.client_cert_upload_fail"));
+  }
+};
+
+// 客户端密钥
+const handleClientKeyUpload = async (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  try {
+    const text = await readFileContent(file);
+    info.client_key_filename = file.name;
+    info.client_key = text;
+    message.success(t("mqtt.client_key_upload_success"));
+  } catch {
+    message.error(t("mqtt.client_key_upload_fail"));
+  }
 };
 </script>
 
@@ -285,7 +442,7 @@ const onClick = () => {
       min-height: 56px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 36px;
       margin-bottom: 16px;
       flex-shrink: 0;
       flex-wrap: wrap;
@@ -357,6 +514,12 @@ const onClick = () => {
     right: 24px;
     bottom: 20px;
   }
+}
+
+.file-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 @media (max-width: 768px) {
