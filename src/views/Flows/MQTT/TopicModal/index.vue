@@ -113,7 +113,7 @@ const handleOk = () => {
   }
 
   const newTopic = {
-    name: data.value.serial_number,
+    group: data.value.serial_number,
     sub_topic: data.value.sub_topic.trim(),
     pub_topic: data.value.pub_topic.trim(),
     interval: data.value.interval,

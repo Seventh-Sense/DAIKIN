@@ -155,8 +155,8 @@ const columns = computed(() => [
   },
   { title: t("device_manage.desc"), dataIndex: "description" },
   {
-    title: t("device_manage.enabled"),
-    dataIndex: "enabled",
+    title: t("device_manage.group"),
+    dataIndex: "group",
     customRender: ({ text }: any) => {
       return (text ?? "").toString();
     },

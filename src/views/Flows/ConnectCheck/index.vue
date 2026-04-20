@@ -145,9 +145,11 @@ import {
 import { message } from "ant-design-vue";
 import { getControllerType } from "../DeviceManage/utils/utils";
 import { exportToExcel, SheetConfig } from "../DeviceManage/utils/xlsx";
+import { useLocaleStore } from "@/pinia/modules/locale";
 
 const controllerStore = useControllerStore();
 const stepStore = useStepStore();
+const localeStore = useLocaleStore();
 
 const { t } = useI18n();
 
@@ -865,7 +867,13 @@ const onExport = () => {
 };
 
 const onControl = () => {
-  console.log("onControl");
+  let ip = stepStore.currentMenuData.data.address;
+  let device = stepStore.currentMenuData.data.name;
+
+  let name = window.location.hostname;
+  const currentLocale = localeStore.currentLocale;
+
+  window.open(`http://${name}:3000/#/daikin/${ip}/${device}/` + currentLocale, "_blank");
 };
 
 const onResult = () => {

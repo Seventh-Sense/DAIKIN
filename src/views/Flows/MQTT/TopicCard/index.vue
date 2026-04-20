@@ -114,7 +114,7 @@ const editInterval = ref(1);
 const editSn = ref("");
 const editPkey = ref("");
 
-const cardName = computed(() => props.data.name);
+const cardName = computed(() => props.data.group);
 const subTopic = computed(() => props.data.sub_topic);
 const pubTopic = computed(() => props.data.pub_topic);
 const interval = computed(() => props.data.interval);

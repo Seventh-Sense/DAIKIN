@@ -46,24 +46,28 @@
 <script setup lang="ts">
 import { handleEditCompleteJump } from "../until/util";
 import { useI18n } from "vue-i18n";
-import Icons from "@/icons/index.vue";
 import { onMounted, ref } from "vue";
 import UICard from "./UICard/index.vue";
 import RenameModal from "./RenameModal/index.vue";
 import CreateModal from "./CreateModal/index.vue";
 import { message } from "ant-design-vue";
+import { useStepStore } from "@/pinia/modules/step";
+import { useLocaleStore } from "@/pinia/modules/locale";
 
 const { t } = useI18n();
 
+const localeStore = useLocaleStore();
+const stepStore = useStepStore();
+
 const list = ref([
   {
-    id: "7a3b9ff3-aaa7-4161-b263-1ed1ac0666de",
+    id: "1",
     name: "Dashboard",
     time: "2025-09-10T13:29:13.147261",
     type: "Dashboard",
   },
   {
-    id: "7a3b9ff3-aaa7-4161-b263-1ed1ac0666d1",
+    id: "2",
     name: "Graphic",
     time: "2025-09-10T13:29:13.147261",
     type: "Graphic",
@@ -121,6 +125,28 @@ const handleDelete = (data: any) => {
 
 const handleEdit = (data: any) => {
   console.log("handleEdit", data);
+  //设备IP
+  const IP = stepStore.getCurrentIP();
+  const currentLocale = localeStore.currentLocale;
+
+  //console.log(IP, currentLocale);
+
+  if (data.type === "Dashboard") {
+    let basicUrl = "http://" + IP + ":5173/#/chart/home/1" + currentLocale;
+    window.open(
+      "http://localhost:5173/#/chart/home/5408dffe-3626-4ddc-baed-8858b510d950/" +
+        currentLocale,
+      "_blank",
+    );
+  } else {
+    let basicUrl = "";
+
+    window.open(
+      "http://localhost:5173/#/graphic/ab410d09-9876-47ec-8994-4641c4607a52/" +
+        currentLocale,
+      "_blank",
+    );
+  }
 };
 
 const handlePreview = (data: any) => {

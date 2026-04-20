@@ -27,8 +27,12 @@
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.group") }}</div>
-    <a-input
+    <a-input-number
       v-model:value="data.property.group"
+      :min="1"
+      :max="10"
+      :step="1"
+      :precision="0"
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.desc") }}</div>

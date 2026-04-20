@@ -645,7 +645,7 @@ const transformDeviceRow = (row: any, type: string) => {
     protocol: type,
     sn: row.sn,
     pkey: row.pkey,
-    group: row.group,
+    group: row.group === "" ? 1 : Number(row.group),
     polling: row.polling === "" ? 0 : Number(row.polling),
     description: row.description,
     enabled: true,
@@ -692,7 +692,6 @@ const transformPointRow = (row: any, type: string) => {
   const base = {
     uid: row.uid || generateTimeUniqueId(),
     point_name: row.point_name,
-    device_name: row.device_name,
     m: row.m,
     dev: row.dev,
     description: row.description,
