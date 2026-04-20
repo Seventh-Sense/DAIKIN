@@ -874,7 +874,7 @@ const onControl = () => {
   let port = window.location.port;
   const currentLocale = localeStore.currentLocale;
 
-  window.open(`http://${name}:${port}/#/daikin/${ip}/${device}/` + currentLocale, "_blank");
+  window.open(`http://${name}:${port}/logic/#/daikin/${ip}/${device}/` + currentLocale, "_blank");
 };
 
 const onResult = () => {
