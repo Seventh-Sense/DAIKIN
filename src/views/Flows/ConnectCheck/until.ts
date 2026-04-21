@@ -64,11 +64,11 @@ export const getAllPointsInfo = (localData: any) => {
       result.push({
         device_name: device.device_name,
         device_uid: device.uid,
-        device_type: device.device_type,
+        device_type: device.protocol,
         point_name: point.point_name,
         point_uid: point.uid,
         data_type:
-          device.device_type === "BACnet"
+          device.protocol === "BACnet"
             ? point.property.object_type
             : point.property.data_type,
         min: point.property.min,

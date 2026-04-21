@@ -176,6 +176,7 @@ export default {
     client_cert_upload_fail: "クライアント証明書のアップロードに失敗しました",
     client_key_upload_success: "クライアント秘密鍵のアップロードに成功しました",
     client_key_upload_fail: "クライアント秘密鍵のアップロードに失敗しました",
+    encode_format: "エンコード形式",
   },
   connectivity_check: {
     title: "接続性チェック",

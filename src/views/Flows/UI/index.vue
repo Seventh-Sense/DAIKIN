@@ -126,24 +126,25 @@ const handleDelete = (data: any) => {
 const handleEdit = (data: any) => {
   console.log("handleEdit", data);
   //设备IP
-  const IP = stepStore.getCurrentIP();
   const currentLocale = localeStore.currentLocale;
+  const IP = stepStore.getCurrentIP();
 
-  //console.log(IP, currentLocale);
+  let name = window.location.hostname;
+  let port = window.location.port;
 
   if (data.type === "Dashboard") {
-    let basicUrl = "http://" + IP + ":5173/#/chart/home/1" + currentLocale;
     window.open(
-      "http://localhost:5173/#/chart/home/5408dffe-3626-4ddc-baed-8858b510d950/" +
-        currentLocale,
+      `http://${name}:${port}/editor/#/chart/home/1/${IP}/${currentLocale}`,
       "_blank",
     );
-  } else {
-    let basicUrl = "";
 
+    // window.open(
+    //   `http://${name}:5173/#/chart/home/1/${IP}/${currentLocale}`,
+    //   "_blank",
+    // );
+  } else {
     window.open(
-      "http://localhost:5173/#/graphic/ab410d09-9876-47ec-8994-4641c4607a52/" +
-        currentLocale,
+      `http://${name}:${port}/editor/#/graphic/2/${IP}/${currentLocale}`,
       "_blank",
     );
   }
@@ -151,6 +152,29 @@ const handleEdit = (data: any) => {
 
 const handlePreview = (data: any) => {
   console.log("handlePreview", data);
+  const currentLocale = localeStore.currentLocale;
+  const IP = stepStore.getCurrentIP();
+
+  let name = window.location.hostname;
+  let port = window.location.port;
+
+  //http://192.168.10.85:9090/#/chart/preview/ac37153b-ebc0-4fae-847a-f0c4b1e2026f
+  if (data.type === "Dashboard") {
+    // window.open(
+    //   `http://${name}:5173/#/chart/preview/1/${IP}/${currentLocale}`,
+    //   "_blank",
+    // );
+
+    window.open(
+      `http://${name}:${port}/editor/#/chart/preview/1/${IP}/${currentLocale}`,
+      "_blank",
+    );
+  } else {
+    window.open(
+      `http://${name}:${port}/editor/#/graphic/2/${IP}/${currentLocale}`,
+      "_blank",
+    );
+  }
 };
 </script>
 

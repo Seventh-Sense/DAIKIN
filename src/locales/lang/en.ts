@@ -168,6 +168,7 @@ export default {
     client_cert_upload_fail: "Client certificate upload failed",
     client_key_upload_success: "Client private key uploaded successfully",
     client_key_upload_fail: "Client private key upload failed",
+    encode_format: "Encoding Format",
   },
   connectivity_check: {
     title: "Connectivity Check",

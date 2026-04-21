@@ -167,6 +167,7 @@ export default {
     client_cert_upload_fail: "客户端证书上传失败",
     client_key_upload_success: "客户端密钥上传成功",
     client_key_upload_fail: "客户端密钥上传失败",
+    encode_format: "编码格式",
   },
   connectivity_check: {
     title: "连接性检查",

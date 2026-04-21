@@ -226,7 +226,7 @@ const onDownload = async () => {
   }
 };
 
-const uploadFile = async (localData: any) => {
+const uploadFile = async(localData: any) => {
   try {
     const zipFile = await generateConfigZipFile(localData);
     const controllerType = getControllerType(stepStore.currentStep);
@@ -348,7 +348,7 @@ const runCommunicationCheck = async () => {
 
   for (const item of points.value) {
     try {
-      console.log("item", item);
+      //console.log("item", item);
       const result = await readPointValue({
         device_address: currentIP,
         device_type: item?.device_type || "",

@@ -33,10 +33,10 @@
           />
         </div>
         <div class="card-content-block">
-          <span class="card-content-text">{{ t("mqtt.auto_connect") }}</span>
-          <a-select
-            v-model:value="info.auto_connect"
-            :options="BooleanOption"
+          <span class="card-content-text">{{ t("mqtt.encode_format") }}</span>
+          <a-input-number
+            v-model:value="info.encode_format"
+            :min="0"
             style="width: 309px"
           />
         </div>
@@ -189,7 +189,7 @@ const info = reactive({
   port: "",
   username: "",
   password: "",
-  auto_connect: 1,
+  encode_format: 1,
   last_will_topic: "",
   ca_filename: "",
   ca_certificate: "",
@@ -236,7 +236,7 @@ const initData = () => {
     info.port = mqtt.port || "";
     info.username = mqtt.username || "";
     info.password = mqtt.password || "";
-    info.auto_connect = mqtt.auto_connect ?? 1;
+    info.encode_format = Number(mqtt.encode_format);
     info.last_will_topic = mqtt.last_will_topic || "";
     info.ca_filename = mqtt.ca_filename || "";
     info.ca_certificate = mqtt.ca_certificate || "";
@@ -271,7 +271,7 @@ const saveToPinia = () => {
     port: info.port.trim(),
     username: info.username.trim(),
     password: info.password.trim(),
-    auto_connect: info.auto_connect,
+    encode_format: info.encode_format,
     last_will_topic: info.last_will_topic.trim(),
     ca_filename: info.ca_filename,
     ca_certificate: info.ca_certificate.trim(),
@@ -579,5 +579,33 @@ const handleClientKeyUpload = async (e: Event) => {
       outline: none !important;
     }
   }
+}
+
+
+:deep(.ant-input-number) {
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--header-text-color);
+  padding-left: 0;
+  background-color: transparent !important;
+}
+
+:deep(.ant-input-number:focus),
+:deep(.ant-input-number-focused),
+:deep(.ant-input-number:hover) {
+  border-color: var(--header-text-color) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+// 去掉输入框内部的默认样式
+:deep(.ant-input-number-input) {
+  padding-left: 0;
+  background-color: transparent !important;
 }
 </style>

@@ -236,7 +236,7 @@ export const useControllerStore = defineStore(
   {
     persist: {
       key: "controllerState",
-      storage: sessionStorage,
+      storage: localStorage,
       paths: ["controllerMap"],
     } as PersistOptions,
   },

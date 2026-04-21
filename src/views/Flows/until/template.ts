@@ -5,7 +5,7 @@ export const DeviceInitData = {
     port: "",
     username: "",
     password: "",
-    auto_connect: 1,
+    encode_format: 1,
     last_will_topic: "",
     ca_certificate: "",
     client_certificate: "",
