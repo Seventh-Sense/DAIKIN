@@ -117,7 +117,7 @@ const defaultData = {
   address: "",
   count: 1,
   data_type: "int16",
-  align_format: "",
+  align_format: 1,
   scale: 1,
   offset: 0,
   min: null,
