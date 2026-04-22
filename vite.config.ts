@@ -26,7 +26,7 @@ export default defineConfig({
   },
   build: {
     target: "es2015", // 默认值
-    outDir: "dist", // 构建结果的目录，默认值
+    outDir: "main", // 构建结果的目录，默认值
     assetsDir: "assets", // 放置生成的静态资源的目录，相对outDir
     minify: "terser", // 压缩选项，默认为terser
     terserOptions: {
