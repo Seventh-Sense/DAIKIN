@@ -158,28 +158,35 @@ const handlePreview = (data: any) => {
   let name = window.location.hostname;
   let port = window.location.port;
 
+  let prduction = true;
+
   //http://192.168.10.85:9090/#/chart/preview/ac37153b-ebc0-4fae-847a-f0c4b1e2026f
   //http://192.168.10.85:9090/#/graphic/preview/cc47b6d6-d1c8-410b-b8d7-02ad25bf64ef
-  if (data.type === "Dashboard") {
-    // window.open(
-    //   `http://${name}:5173/#/chart/preview/1/${IP}/${currentLocale}`,
-    //   "_blank",
-    // );
 
-    window.open(
-      `http://${name}:${port}/editor/#/chart/preview/1/${IP}/${currentLocale}`,
-      "_blank",
-    );
+  if (prduction) {
+    if (data.type === "Dashboard") {
+      window.open(
+        `http://${name}:${port}/editor/#/chart/preview/1/${IP}/${currentLocale}`,
+        "_blank",
+      );
+    } else {
+      window.open(
+        `http://${name}:${port}/editor/#/graphic/preview/2/${IP}/${currentLocale}`,
+        "_blank",
+      );
+    }
   } else {
-    // window.open(
-    //   `http://${name}:5173/#/graphic/preview/2/${IP}/${currentLocale}`,
-    //   "_blank",
-    // );
-
-    window.open(
-      `http://${name}:${port}/editor/#/graphic/preview/2/${IP}/${currentLocale}`,
-      "_blank",
-    );
+    if (data.type === "Dashboard") {
+      window.open(
+        `http://${name}:5173/#/chart/preview/1/${IP}/${currentLocale}`,
+        "_blank",
+      );
+    } else {
+      window.open(
+        `http://${name}:5173/#/graphic/preview/2/${IP}/${currentLocale}`,
+        "_blank",
+      );
+    }
   }
 };
 </script>
