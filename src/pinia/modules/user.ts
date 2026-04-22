@@ -3,8 +3,10 @@ import { ref } from "vue";
 import { loginApi } from "@/api";
 import { routerTurnByName } from "@/router/util";
 import { useStepStore } from "./step";
+
 import type { AxiosError } from "axios";
 import LocalStorageUtils from "@/utils/local-storage-utils";
+import { useControllerStore } from "./controller";
 
 interface PersistOptions {
   key: string;
@@ -38,9 +40,12 @@ export const useUserStore = defineStore(
       const stepStore = useStepStore();
       stepStore.reset();
 
+      const controllerStore = useControllerStore();
+      controllerStore.clearAll();
+
       LocalStorageUtils.removeItem("flow");
       LocalStorageUtils.removeItem("work");
-      
+
       routerTurnByName("Login", true, false);
     };
 

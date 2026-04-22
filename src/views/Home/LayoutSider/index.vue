@@ -289,6 +289,7 @@ const handleSecondMenuClick = async (subMenu: any) => {
   //二级菜单展开，拉取设备信息
   if (openKeys.value.includes(subMenu.key)) {
     console.log("二级菜单已展开 →", subMenu.label);
+    controllerStore.setCurrentAdress(subMenu.label)
     pullControllerFile(subMenu.label);
   }
 };

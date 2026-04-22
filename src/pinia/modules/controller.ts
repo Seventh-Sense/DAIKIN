@@ -31,6 +31,15 @@ export const useControllerStore = defineStore(
   "controller",
   () => {
     const controllerMap = ref<Record<string, ControllerInfo>>({});
+    const currentAdress = ref<string>('')
+
+    const setCurrentAdress = (ip: string) => {
+      currentAdress.value = ip
+    }
+
+    const getCurrentAdress = () => {
+      return currentAdress.value
+    }
 
     // 添加/更新控制器（ip 只做 key，不放入对象）
     const addController = (ip: string, controller: ControllerInfo) => {
@@ -215,10 +224,12 @@ export const useControllerStore = defineStore(
     // 清空所有
     const clearAll = () => {
       controllerMap.value = {};
+      currentAdress.value = "";
     };
 
     return {
       controllerMap,
+      currentAdress,
       addController,
       getControllerByIp,
       clearAll,
@@ -231,13 +242,15 @@ export const useControllerStore = defineStore(
       clearAllPointsByDeviceID,
       setControllerDevices,
       deleteControllerByIp,
+      setCurrentAdress,
+      getCurrentAdress,
     };
   },
   {
     persist: {
       key: "controllerState",
       storage: localStorage,
-      paths: ["controllerMap"],
+      paths: ["controllerMap", "currentAdress"],
     } as PersistOptions,
   },
 );
