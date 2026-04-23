@@ -125,6 +125,16 @@ const handleDelete = (data: any) => {
 
 let prduction = true;
 
+const setLang = (currentLocale: string) => {
+  if (currentLocale === "cn") {
+    localStorage.setItem("language", "zh-CN");
+  } else if (currentLocale === "en") {
+    localStorage.setItem("language", "en-US");
+  } else if (currentLocale === "jp") {
+    localStorage.setItem("language", "ja-JP");
+  }
+};
+
 //http://192.168.10.85:9090/#/graphic/cc47b6d6-d1c8-410b-b8d7-02ad25bf64ef
 const handleEdit = (data: any) => {
   console.log("handleEdit", data);
@@ -142,6 +152,7 @@ const handleEdit = (data: any) => {
         "_blank",
       );
     } else {
+      setLang(currentLocale)
       window.open(
         `http://${name}:${port}/editor/#/graphic/2/${IP}/${currentLocale}`,
         "_blank",
@@ -154,6 +165,7 @@ const handleEdit = (data: any) => {
         "_blank",
       );
     } else {
+      setLang(currentLocale)
       window.open(
         `http://${name}:5173/#/graphic/2/${IP}/${currentLocale}`,
         "_blank",
