@@ -7,7 +7,7 @@
           <span class="card-content-text">{{ t("mqtt.host") }}</span>
           <a-input
             v-model:value="info.host"
-            style="width: 309px"
+            style="width: 100%"
             placeholder="47.103.19.245"
           />
         </div>
@@ -15,37 +15,33 @@
           <span class="card-content-text">{{ t("mqtt.port") }}</span>
           <a-input
             v-model:value="info.port"
-            style="width: 309px"
+            style="width: 100%"
             placeholder="1888"
           />
         </div>
-      </div>
-      <div class="card-content-top">
         <div class="card-content-block">
           <span class="card-content-text">{{ t("login.username") }}</span>
-          <a-input v-model:value="info.username" style="width: 309px" />
+          <a-input v-model:value="info.username" style="width: 100%" />
         </div>
         <div class="card-content-block">
           <span class="card-content-text">{{ t("login.password") }}</span>
-          <a-input-password
-            v-model:value="info.password"
-            style="width: 309px"
-          />
+          <a-input-password v-model:value="info.password" style="width: 100%" />
         </div>
         <div class="card-content-block">
           <span class="card-content-text">{{ t("mqtt.encode_format") }}</span>
           <a-input-number
             v-model:value="info.encode_format"
             :min="0"
-            style="width: 309px"
+            style="width: 100%"
           />
         </div>
         <div class="card-content-block">
           <span class="card-content-text">{{ t("mqtt.last_will_topic") }}</span>
-          <a-input v-model:value="info.last_will_topic" style="width: 309px" />
+          <a-input v-model:value="info.last_will_topic" style="width: 100%" />
         </div>
       </div>
-      <div class="card-content-top">
+
+      <div class="card-content-file">
         <div class="card-content-block">
           <span class="card-content-text">{{ t("mqtt.ca_certificate") }}</span>
           <input
@@ -58,7 +54,7 @@
           <div class="file-input-row">
             <a-input
               v-model:value="info.ca_filename"
-              style="width: 309px"
+              style="width: 100%"
               :placeholder="t('mqtt.ca_cert_placeholder')"
               readonly
               @click="openFileUpload('ca')"
@@ -86,7 +82,7 @@
           <div class="file-input-row">
             <a-input
               v-model:value="info.client_cert_filename"
-              style="width: 309px"
+              style="width: 100%"
               :placeholder="t('mqtt.client_cert_placeholder')"
               readonly
               @click="openFileUpload('clientCert')"
@@ -112,7 +108,7 @@
           <div class="file-input-row">
             <a-input
               v-model:value="info.client_key_filename"
-              style="width: 309px"
+              style="width: 100%"
               :placeholder="t('mqtt.client_key_placeholder')"
               readonly
               @click="openFileUpload('clientKey')"
@@ -442,10 +438,32 @@ const handleClientKeyUpload = async (e: Event) => {
       min-height: 56px;
       display: flex;
       align-items: center;
-      gap: 36px;
+      gap: 36px 36px;
       margin-bottom: 16px;
       flex-shrink: 0;
+      /* 👇 关键修改：自动换行 + 控制一行两个 */
       flex-wrap: wrap;
+      /* 平均分配宽度，保证一行两个 */
+      > * {
+        flex: 0 0 calc(50% - 18px); /* 减去一半 gap，避免溢出 */
+        max-width: calc(50% - 18px);
+      }
+    }
+
+    &-file {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 36px; /* 间距保持你原来的 */
+      margin-bottom: 16px;
+      flex-shrink: 0;
+      flex-wrap: wrap; /* 自动换行 */
+
+      /* 👇 核心：一行 3 个 */
+      > * {
+        flex: 0 0 calc(33.333% - 24px);
+        max-width: calc(33.333% - 24px);
+      }
     }
 
     &-block {
@@ -471,9 +489,9 @@ const handleClientKeyUpload = async (e: Event) => {
       margin-bottom: 8px;
 
       &-title {
-        font-weight: 400;
+        font-weight: bold;
         font-size: 14px;
-        color: var(--sider-text-color);
+        color: var(--header-text-color);
         line-height: 20px;
         text-align: left;
         font-style: normal;
@@ -580,7 +598,6 @@ const handleClientKeyUpload = async (e: Event) => {
     }
   }
 }
-
 
 :deep(.ant-input-number) {
   border-top: 0;
