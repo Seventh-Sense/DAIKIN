@@ -78,3 +78,7 @@ export const setConfigFile = (ip: string, file: any, series: string) => {
     },
   });
 };
+
+export const getDeviceStatus = (ip: string, data: any) => {
+  return post("/iot/ping", data);
+};

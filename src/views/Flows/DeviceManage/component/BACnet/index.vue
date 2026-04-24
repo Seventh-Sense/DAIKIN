@@ -163,9 +163,15 @@ const onSearch = async () => {
 };
 
 const markExistingIds = (searchList: any[], existingDeviceList: any[]) => {
+  //当前控制器IP
+  const ip = stepStore.getCurrentIP()
+
+  const filteredList = searchList.filter(item => item.address !== ip);
+
+
   // 提前判空，避免arrayB为undefined/null时报错
   if (!Array.isArray(existingDeviceList))
-    return searchList.map((item) => ({ ...item, disabled: false }));
+    return filteredList.map((item) => ({ ...item, disabled: false }));
 
   const bacnetExistingList = existingDeviceList.filter(
     (item) => item?.device_type === DeviceTypeEnum.BACnet,
@@ -179,7 +185,7 @@ const markExistingIds = (searchList: any[], existingDeviceList: any[]) => {
     }),
   );
 
-  return searchList.map((item) => {
+  return filteredList.map((item) => {
     const currentKey = `${item.address}:47808_${item.device_id}`;
     return {
       ...item,

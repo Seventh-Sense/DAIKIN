@@ -411,5 +411,8 @@ export default {
     please_select_points: "请选择点位",
     operation_success: "操作成功",
     add_points_success: "添加点位成功",
+    device_rebooting_checking: "设备重启中，正在检查状态...",
+    device_online_success: "设备重启完成并上线",
+    device_check_timeout: "设备检查超时，请手动确认设备状态",
   },
 };

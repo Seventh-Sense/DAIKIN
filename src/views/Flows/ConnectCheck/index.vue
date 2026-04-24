@@ -128,6 +128,7 @@ import { useControllerStore } from "@/pinia/modules/controller";
 import { useStepStore } from "@/pinia/modules/step";
 import {
   downloadFile,
+  getDeviceStatus,
   readPointValue,
   rebootDevice,
   setConfigFile,
@@ -211,6 +212,7 @@ const onDownload = async () => {
       return;
     }
 
+    //文件是否有变化
     if (isDataEqual(localData, remoteData)) {
       message.success(t("msg.config_no_update"));
       return;
@@ -226,7 +228,9 @@ const onDownload = async () => {
   }
 };
 
-const uploadFile = async(localData: any) => {
+const uploadFile = async (localData: any) => {
+  let checkLoading: any = null;
+
   try {
     const zipFile = await generateConfigZipFile(localData);
     const controllerType = getControllerType(stepStore.currentStep);
@@ -237,14 +241,58 @@ const uploadFile = async(localData: any) => {
       typeMap[controllerType],
     );
 
-    message.success(t("msg.config_upload_success"));
+    if (result && result.status === "completed") {
+      //发送reboot
+      rebootDevice(currentIP);
 
-    //发送reboot
-    rebootDevice(currentIP);
+      //message.success(t("msg.config_upload_success"));
+      checkLoading = message.loading(t("msg.device_rebooting_checking"), 0);
+      setTimeout(async () => {
+        const checkSuccess = await checkDeviceStatusLoop(currentIP);
+
+        checkLoading();
+
+        if (checkSuccess) {
+          message.success(t("msg.device_online_success"));
+        } else {
+          message.error(t("msg.device_check_timeout"));
+        }
+      }, 15000);
+    }
   } catch (error) {
     console.error("上传失败");
     message.error(t("msg.config_upload_failed"));
   }
+};
+
+const checkDeviceStatusLoop = async (
+  ip: string,
+  maxCount = 20,
+  delay = 3000,
+): Promise<boolean> => {
+  let count = 0;
+
+  while (count < maxCount) {
+    try {
+      // 调用你项目里的【检查设备状态接口】
+      const res = await getDeviceStatus(ip, {
+        device_address: ip,
+      });
+
+      // 根据接口返回判断设备是否正常（按你实际返回修改判断条件）
+      if (res && res.success === true) {
+        return true;
+      }
+    } catch (err) {
+      console.log("检查设备状态异常，继续重试...", err);
+    }
+
+    count++;
+    // 等待指定时间后重试
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  return false;
 };
 
 const onAllCheck = async () => {
@@ -596,6 +644,9 @@ const runBasicFunctionCheck = async () => {
     );
   };
 
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
   for (const item of points.value) {
     try {
       //先读值
@@ -664,6 +715,8 @@ const runBasicFunctionCheck = async () => {
           continue;
         }
 
+        await delay(50);
+
         const restoreValue = Number.isInteger(raw) ? raw + 0.000000001 : raw;
 
         const subRes = await writePointValue({
@@ -714,6 +767,8 @@ const runBasicFunctionCheck = async () => {
           updateProgress();
           continue;
         }
+
+        await delay(50);
 
         const restoreRes = await writePointValue({
           device_address: currentIP,
@@ -777,6 +832,8 @@ const runBasicFunctionCheck = async () => {
             continue;
           }
         }
+
+        await delay(50);
 
         const finalSubRes = await writePointValue({
           device_address: currentIP,
@@ -874,7 +931,10 @@ const onControl = () => {
   let port = window.location.port;
   const currentLocale = localeStore.currentLocale;
 
-  window.open(`http://${name}:${port}/logic/#/daikin/${ip}/${device}/` + currentLocale, "_blank");
+  window.open(
+    `http://${name}:${port}/logic/#/daikin/${ip}/${device}/` + currentLocale,
+    "_blank",
+  );
 };
 
 const onResult = () => {

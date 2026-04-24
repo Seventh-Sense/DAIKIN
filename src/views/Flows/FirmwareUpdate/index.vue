@@ -49,7 +49,7 @@
       <div class="upgrade-loading">
         <a-spin size="large" />
         <span class="loading-text">
-          {{ t("firmware.upgrading") }} {{ progress }}
+          {{ t("firmware.upgrading") }} {{ progress }}%
         </span>
       </div>
     </div>
