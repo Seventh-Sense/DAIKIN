@@ -439,7 +439,7 @@ const handleClientKeyUpload = async (e: Event) => {
       display: flex;
       align-items: center;
       gap: 36px 36px;
-      margin-bottom: 16px;
+      margin-bottom: 36px;
       flex-shrink: 0;
       /* 👇 关键修改：自动换行 + 控制一行两个 */
       flex-wrap: wrap;
@@ -455,7 +455,7 @@ const handleClientKeyUpload = async (e: Event) => {
       display: flex;
       align-items: center;
       gap: 36px; /* 间距保持你原来的 */
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       flex-shrink: 0;
       flex-wrap: wrap; /* 自动换行 */
 
