@@ -41,14 +41,12 @@
         <a-select
           v-model:value="data.property.baudrate"
           :options="baudOptions"
-          :disabled="isEdit"
           style="width: 100%; margin-bottom: 12px"
         />
         <div class="content-porperty">{{ $t("device_manage.stop_bits") }}</div>
         <a-select
           v-model:value="data.property.stop_bit"
           :options="stopbitOptions"
-          :disabled="isEdit"
           style="width: 100%; margin-bottom: 12px"
         />
       </a-col>
@@ -57,14 +55,12 @@
         <a-select
           v-model:value="data.property.data_bit"
           :options="databitOptions"
-          :disabled="isEdit"
           style="width: 100%; margin-bottom: 12px"
         />
         <div class="content-porperty">{{ $t("device_manage.parity") }}</div>
         <a-select
           v-model:value="data.property.parity"
           :options="parityOptions"
-          :disabled="isEdit"
           style="width: 100%; margin-bottom: 12px"
         />
       </a-col>

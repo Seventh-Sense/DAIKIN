@@ -93,11 +93,11 @@ const validateModbusTCP = (data: DataType): boolean => {
 
 const validateModbusRTU = (data: DataType): boolean => {
   if (!data.name || data.property.slaveid === null) {
-    message.warn(formatMessage('device_manage.emptyField'))
-    return true
+    message.warn(formatMessage("device_manage.emptyField"));
+    return true;
   }
-  return false
-}
+  return false;
+};
 
 const validateKNX = (data: DataType): boolean => {
   if (!data.name || data.property.gateway_port === null) {
@@ -443,6 +443,7 @@ const DEVICE_PRO_MAP = {
   BACnet: "bacnet",
   KNX: "knx",
   ModbusTCP: "modbus_tcp",
+  ModbusRTU: "modbus_rtu",
 };
 
 const SHEET_CONFIGS = Object.values(DEVICE_PRO_MAP).flatMap((key) => [
@@ -490,6 +491,22 @@ const DEVICE_FIELD_CONFIG = {
     sn: device.sn,
     pkey: device.pkey,
   }),
+  ModbusRTU: (device: any) => ({
+    uid: device.uid,
+    device_name: device.device_name,
+    protocol: device.protocol,
+    polling: device.polling,
+    slaveid: device.property?.slaveid,
+    serial_port: device.property?.serial_port,
+    baudrate: device.property?.baudrate,
+    data_bit: device.property?.data_bit,
+    parity: device.property?.parity,
+    stop_bit: device.property?.stop_bit,
+    description: device.description,
+    group: device.group,
+    sn: device.sn,
+    pkey: device.pkey,
+  }),
 };
 
 const POINT_FIELD_CONFIG = {
@@ -523,6 +540,26 @@ const POINT_FIELD_CONFIG = {
     dev: point.dev,
   }),
   ModbusTCP: (device: any, point: any) => ({
+    uid: point.uid,
+    device_uid: device.uid,
+    device_name: device.device_name,
+    point_name: point.point_name,
+    writable: point.writable,
+    register_address: point.property?.register_address,
+    align_format: point.property?.align_format,
+    register_count: point.property?.register_count,
+    data_type: point.property?.data_type,
+    register_type: point.property?.register_type,
+    offset: point.property?.offset,
+    scale: point.property?.scale,
+    unit: point.property?.unit,
+    min: point.property?.min,
+    max: point.property?.max,
+    description: point.description,
+    m: point.m,
+    dev: point.dev,
+  }),
+  ModbusRTU: (device: any, point: any) => ({
     uid: point.uid,
     device_uid: device.uid,
     device_name: device.device_name,
@@ -708,6 +745,19 @@ const transformDeviceRow = (row: any, type: string) => {
           port: row.port,
         },
       };
+    case DeviceTypeEnum.ModbusRTU:
+      return {
+        ...base,
+        address: row.slaveid,
+        property: {
+          slaveid: row.slaveid,
+          serial_port: row.serial_port,
+          baudrate: row.baudrate,
+          data_bit: row.data_bit,
+          parity: row.parity,
+          stop_bit: row.stop_bit,
+        },
+      };
     case DeviceTypeEnum.KNX:
       return {
         ...base,
@@ -746,6 +796,7 @@ const transformPointRow = (row: any, type: string) => {
         },
       };
 
+    case DeviceTypeEnum.ModbusRTU:
     case DeviceTypeEnum.ModbusTCP:
       return {
         ...base,
