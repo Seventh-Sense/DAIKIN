@@ -299,8 +299,10 @@ watch(
 <style lang="less" scoped>
 .modal {
   width: 100%;
-  height: 100%;
+  height: 600px;
   padding: 10px 6px 0 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   &-porperty {
     margin-bottom: 4px;
