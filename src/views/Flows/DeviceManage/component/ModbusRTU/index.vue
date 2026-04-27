@@ -1,33 +1,38 @@
 <template>
   <div class="content">
-    <div class="content-porperty">{{ $t("device_manage.slave_id") }}</div>
+    <div class="content-porperty">{{ $t("device_manage.group") }}</div>
     <a-input-number
-      v-if="!isEdit"
-      v-model:value="data.property.slaveid"
+      v-model:value="data.property.group"
       :min="1"
-      :max="254"
+      :max="10"
+      :step="1"
+      :precision="0"
       style="width: 100%; margin-bottom: 12px"
     />
+    <div class="content-porperty">{{ $t("device_manage.device_sn") }}</div>
     <a-input
-      v-else
+      v-model:value="data.property.sn"
+      style="width: 100%; margin-bottom: 12px"
+    />
+    <div class="content-porperty">{{ $t("mqtt.pkey") }}</div>
+    <a-input
+      v-model:value="data.property.pkey"
+      style="width: 100%; margin-bottom: 12px"
+    />
+    <div class="content-porperty">{{ $t("device_manage.desc") }}</div>
+    <a-input
+      v-model:value="data.property.desc"
+      style="width: 100%; margin-bottom: 12px"
+    />
+    <div class="content-porperty">{{ $t("device_manage.slave_id") }}</div>
+    <a-input
       v-model:value="data.property.slaveid"
-      disabled
       style="width: 100%; margin-bottom: 12px"
     />
-    <div class="content-porperty">{{ $t("device_manage.connection") }}</div>
+    <div class="content-porperty">{{ $t("device_manage.serialport") }}</div>
     <a-select
-      v-model:value="data.property.connectionOption"
-      :options="connectionOptions"
-      disabled
-      style="width: 100%; margin-bottom: 12px"
-    />
-    <div class="content-porperty">
-      {{ $t("device_manage.serial_settings") }}
-    </div>
-    <a-select
-      v-model:value="data.property.port"
+      v-model:value="data.property.serial_port"
       :options="serialOptions"
-      :disabled="isEdit"
       style="width: 100%; margin-bottom: 12px"
     />
     <a-row :gutter="32">
@@ -41,7 +46,7 @@
         />
         <div class="content-porperty">{{ $t("device_manage.stop_bits") }}</div>
         <a-select
-          v-model:value="data.property.stopbits"
+          v-model:value="data.property.stop_bit"
           :options="stopbitOptions"
           :disabled="isEdit"
           style="width: 100%; margin-bottom: 12px"
@@ -50,7 +55,7 @@
       <a-col :span="12">
         <div class="content-porperty">{{ $t("device_manage.data_bits") }}</div>
         <a-select
-          v-model:value="data.property.bytesize"
+          v-model:value="data.property.data_bit"
           :options="databitOptions"
           :disabled="isEdit"
           style="width: 100%; margin-bottom: 12px"
@@ -74,7 +79,6 @@ import {
   databitOptions,
   stopbitOptions,
   baudOptions,
-  connectionOptions,
 } from "../../utils/options";
 
 const props = defineProps({
@@ -90,21 +94,29 @@ const props = defineProps({
 
 const serialOptions = ref([
   {
-    label: "COM1",
-    value: "COM1",
+    label: "Modbus1",
+    value: 234881029,
+  },
+  {
+    label: "Modbus2",
+    value: 234881030,
+  },
+  {
+    label: "Modbus2",
+    value: 234881031,
   },
 ]);
 
-onMounted(() => {
-  fetchSerialOptions();
-});
+// onMounted(() => {
+//   fetchSerialOptions();
+// });
 
-const fetchSerialOptions = async () => {
-  try {
-  } catch (error) {
-    console.error("Failed to fetch serial options:", error);
-  }
-};
+// const fetchSerialOptions = async () => {
+//   try {
+//   } catch (error) {
+//     console.error("Failed to fetch serial options:", error);
+//   }
+// };
 </script>
 
 <style lang="less" scoped>

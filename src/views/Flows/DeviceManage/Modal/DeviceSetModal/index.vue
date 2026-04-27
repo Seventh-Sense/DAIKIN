@@ -79,6 +79,7 @@ import {
   getOptions,
   deviceDataCheck,
   createModbusTCPParams,
+  createModbusRTUParams,
   createKNXParams,
   ModbusTCPData,
   ModbusRTUData,
@@ -176,6 +177,9 @@ const handleSubmitByType = async (data: DataType) => {
   switch (data.type) {
     case DeviceTypeEnum.ModbusTCP:
       params = createModbusTCPParams(data);
+      break;
+    case DeviceTypeEnum.ModbusRTU:
+      params = createModbusRTUParams(data);
       break;
     case DeviceTypeEnum.KNX:
       params = createKNXParams(data);
@@ -299,8 +303,10 @@ watch(
 <style lang="less" scoped>
 .modal {
   width: 100%;
-  height: 100%;
+  height: 600px;
   padding: 10px 6px 0 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   &-porperty {
     margin-bottom: 4px;

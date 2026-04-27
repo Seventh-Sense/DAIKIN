@@ -35,10 +35,10 @@ export const TypeOptions = [
     label: "BACnet/IP",
     value: DeviceTypeEnum.BACnet,
   },
-  // {
-  //   label: "ModbusRTU",
-  //   value: DeviceTypeEnum.ModbusRTU,
-  // },
+  {
+    label: "ModbusRTU",
+    value: DeviceTypeEnum.ModbusRTU,
+  },
   {
     label: "ModbusTCP",
     value: DeviceTypeEnum.ModbusTCP,
@@ -127,15 +127,15 @@ export const connectionOptions = [
 export const parityOptions = [
   {
     label: () => formatMessage("device_manage.none"),
-    value: "N",
+    value: 78,
   },
   {
     label: () => formatMessage("device_manage.odd"),
-    value: "O",
+    value: 79,
   },
   {
     label: () => formatMessage("device_manage.even"),
-    value: "E",
+    value: 69,
   },
 ];
 

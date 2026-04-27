@@ -68,6 +68,8 @@ export const deviceDataCheck = (deviceData: DataType): boolean => {
   switch (deviceData.type) {
     case DeviceTypeEnum.ModbusTCP:
       return validateModbusTCP(deviceData);
+    case DeviceTypeEnum.ModbusRTU:
+      return validateModbusRTU(deviceData);
     case DeviceTypeEnum.KNX:
       return validateKNX(deviceData);
     default:
@@ -88,6 +90,14 @@ const validateModbusTCP = (data: DataType): boolean => {
 
   return false;
 };
+
+const validateModbusRTU = (data: DataType): boolean => {
+  if (!data.name || data.property.slaveid === null) {
+    message.warn(formatMessage('device_manage.emptyField'))
+    return true
+  }
+  return false
+}
 
 const validateKNX = (data: DataType): boolean => {
   if (!data.name || data.property.gateway_port === null) {
@@ -124,6 +134,28 @@ export const createModbusTCPParams = (data: DataType) => ({
   points: [],
 });
 
+export const createModbusRTUParams = (data: DataType) => ({
+  uid: data.id || generateTimeUniqueId(),
+  device_name: data.name,
+  protocol: DeviceTypeEnum.ModbusRTU,
+  sn: data.property.sn,
+  pkey: data.property.pkey,
+  group: data.property.group,
+  polling: data.polling,
+  address: data.property.slaveid,
+  description: data.property.desc,
+  enabled: data.enabled === 1,
+  property: {
+    slaveid: data.property.slaveid,
+    serial_port: data.property.serial_port,
+    baudrate: data.property.baudrate,
+    data_bit: data.property.data_bit,
+    parity: data.property.parity,
+    stop_bit: data.property.stop_bit,
+  },
+  points: [],
+});
+
 export const createKNXParams = (data: DataType) => ({
   uid: data.id || generateTimeUniqueId(),
   device_name: data.name,
@@ -155,13 +187,16 @@ export const ModbusTCPData = {
 };
 
 export const ModbusRTUData = {
-  slaveid: "1",
-  host: "127.0.0.1",
-  port: 5020,
-  connectionOption: "tcp",
   sn: "",
-  dev: "",
+  pkey: "",
   desc: "",
+  group: "",
+  slaveid: "1",
+  serial_port: 234881029,
+  baudrate: 115200,
+  data_bit: 8,
+  parity: 78,
+  stop_bit: 1,
 };
 
 export const KNXData = {

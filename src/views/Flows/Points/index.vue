@@ -106,7 +106,6 @@ import ModbusPointModal from "./ModbusPointModal/index.vue";
 import BACnetPointModal from "./BACnetPointModal/index.vue";
 import KNXPointModal from "./KNXPointModal/index.vue";
 import BACnetDisplayModal from "./BACnetDisplayModal/index.vue";
-import PropertyDisplayModal from "../DeviceManage/Modal/PropertyDisplayModal/index.vue";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { useStepStore } from "@/pinia/modules/step";
 
@@ -268,7 +267,10 @@ const onAdd = () => {
   if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
     isBacnet.value = true;
     isEdit.value = false;
-  } else if (deviceInfo.value.type === DeviceTypeEnum.ModbusTCP) {
+  } else if (
+    deviceInfo.value.type === DeviceTypeEnum.ModbusTCP ||
+    deviceInfo.value.type === DeviceTypeEnum.ModbusRTU
+  ) {
     isModbus.value = true;
     isEdit.value = false;
   } else if (deviceInfo.value.type === DeviceTypeEnum.KNX) {
@@ -282,7 +284,10 @@ const onEdit = (record: any) => {
 
   if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
     isBacnetEdit.value = true;
-  } else if (deviceInfo.value.type === DeviceTypeEnum.ModbusTCP) {
+  } else if (
+    deviceInfo.value.type === DeviceTypeEnum.ModbusTCP ||
+    deviceInfo.value.type === DeviceTypeEnum.ModbusRTU
+  ) {
     isModbus.value = true;
     isEdit.value = true;
   } else if (deviceInfo.value.type === DeviceTypeEnum.KNX) {
