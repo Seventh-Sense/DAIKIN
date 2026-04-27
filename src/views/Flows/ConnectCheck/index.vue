@@ -267,7 +267,7 @@ const uploadFile = async (localData: any) => {
 
 const checkDeviceStatusLoop = async (
   ip: string,
-  maxCount = 20,
+  maxCount = 10,
   delay = 3000,
 ): Promise<boolean> => {
   let count = 0;

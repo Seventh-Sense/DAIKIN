@@ -48,9 +48,10 @@
     <div class="global-upgrade-mask">
       <div class="upgrade-loading">
         <a-spin size="large" />
-        <span class="loading-text">
+        <span v-if="!isRestarting" class="loading-text">
           {{ t("firmware.upgrading") }} {{ progress }}%
         </span>
+        <span v-else class="loading-text">{{ t("firmware.rebooting") }}</span>
       </div>
     </div>
   </Teleport>
@@ -65,6 +66,8 @@ import {
   uploadUpgradeFile,
   fetchTaskStatus,
   rebootDevice,
+  rebootColdDevice,
+  getDeviceStatus,
 } from "@/api/modules/page";
 import { useStepStore } from "@/pinia/modules/step";
 import { getControllerType } from "../DeviceManage/utils/utils";
@@ -77,6 +80,7 @@ const file_name = ref<string>("");
 const selectedFile = ref<File | null>(null);
 const fileContent = ref<any>(null);
 const isUpgrading = ref<boolean>(false);
+const isRestarting = ref<boolean>(false);
 
 const isBodyReady = ref<boolean>(false);
 
@@ -161,14 +165,31 @@ const startUpdate = async () => {
         if (res.progress === 100) {
           clearTime();
 
-          message.success(t("firmware.upgrade_success"));
-          updateStatus.value = "success";
-          isUpgrading.value = false;
+          //message.success(t("firmware.upgrade_success"));
           taskID.value = "";
+          isRestarting.value = true
 
           //发送reboot
-          rebootDevice(stepStore.getCurrentIP());
-          message.info(t("firmware.rebooting"));
+          rebootColdDevice(stepStore.getCurrentIP());
+          //message.info(t("firmware.rebooting"));
+
+          setTimeout(async () => {
+            const checkSuccess = await checkDeviceStatusLoop(
+              stepStore.getCurrentIP(),
+            );
+
+            if (checkSuccess) {
+              message.success(t("msg.device_online_success"));
+              updateStatus.value = "success";
+              isUpgrading.value = false;
+              isRestarting.value = false;
+            } else {
+              message.error(t("msg.device_check_timeout"));
+              updateStatus.value = "error";
+              isUpgrading.value = false;
+              isRestarting.value = false;
+            }
+          }, 15000);
         }
       } catch (err) {
         console.error("查询进度失败：", err);
@@ -191,6 +212,36 @@ const startUpdate = async () => {
     // 安全清除定时器
     clearTime();
   }
+};
+
+const checkDeviceStatusLoop = async (
+  ip: string,
+  maxCount = 10,
+  delay = 3000,
+): Promise<boolean> => {
+  let count = 0;
+
+  while (count < maxCount) {
+    try {
+      // 调用你项目里的【检查设备状态接口】
+      const res = await getDeviceStatus(ip, {
+        device_address: ip,
+      });
+
+      // 根据接口返回判断设备是否正常（按你实际返回修改判断条件）
+      if (res && res.success === true) {
+        return true;
+      }
+    } catch (err) {
+      console.log("检查设备状态异常，继续重试...", err);
+    }
+
+    count++;
+    // 等待指定时间后重试
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  return false;
 };
 
 const clearTime = () => {

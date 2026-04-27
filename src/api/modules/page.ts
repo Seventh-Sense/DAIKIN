@@ -55,6 +55,11 @@ export const rebootDevice = (ip: string) => {
   return post("/iot/reboot", { device_address: ip });
 };
 
+export const rebootColdDevice = (ip: string) => {
+  return post("/iot/coldreboot", { device_address: ip });
+};
+
+
 //读取点位当前值
 export const readPointValue = (data: any) => {
   return post(`/iot/read-points`, data);
