@@ -144,7 +144,7 @@ export const createKNXParams = (data: DataType) => ({
 });
 
 export const ModbusTCPData = {
-  slaveid: "1",
+  slaveid: 1,
   host: "127.0.0.1",
   port: 5020,
   connectionOption: "tcp",
@@ -155,7 +155,7 @@ export const ModbusTCPData = {
 };
 
 export const ModbusRTUData = {
-  slaveid: "1",
+  slaveid: 1,
   host: "127.0.0.1",
   port: 5020,
   connectionOption: "tcp",
