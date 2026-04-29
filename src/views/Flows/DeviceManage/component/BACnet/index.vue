@@ -174,13 +174,13 @@ const markExistingIds = (searchList: any[], existingDeviceList: any[]) => {
     return filteredList.map((item) => ({ ...item, disabled: false }));
 
   const bacnetExistingList = existingDeviceList.filter(
-    (item) => item?.device_type === DeviceTypeEnum.BACnet,
+    (item) => item?.protocol === DeviceTypeEnum.BACnet,
   );
 
   const existKeys = new Set(
     bacnetExistingList.map((item) => {
       const addr = item.address || "";
-      const devId = item.property?.device_id ?? "";
+      const devId = item.property?.device_instance ?? "";
       return `${addr}_${devId}`; // 组合唯一键
     }),
   );

@@ -62,9 +62,9 @@
               />
             </div>
           </template>
-          <template v-else-if="column.dataIndex === 'device_type'">
+          <!-- <template v-else-if="column.dataIndex === 'device_type'">
             {{ getDeviceTypeLabel(record.device_type) }}
-          </template>
+          </template> -->
         </template>
       </a-table>
     </div>
