@@ -1,8 +1,9 @@
 <template>
   <div class="content">
     <div class="content-porperty">{{ $t("device_manage.slave_id") }}</div>
-    <a-input
+    <a-input-number
       v-model:value="data.property.slaveid"
+      :min="1"
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.host") }}</div>

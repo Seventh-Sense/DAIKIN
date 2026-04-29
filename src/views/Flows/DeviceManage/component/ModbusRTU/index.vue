@@ -25,8 +25,9 @@
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.slave_id") }}</div>
-    <a-input
+    <a-input-number
       v-model:value="data.property.slaveid"
+      :min="1"
       style="width: 100%; margin-bottom: 12px"
     />
     <div class="content-porperty">{{ $t("device_manage.serialport") }}</div>
@@ -91,15 +92,15 @@ const props = defineProps({
 const serialOptions = ref([
   {
     label: "Modbus1",
-    value: 234881029,
+    value: "Modbus1",
   },
   {
     label: "Modbus2",
-    value: 234881030,
+    value: "Modbus2",
   },
   {
-    label: "Modbus2",
-    value: 234881031,
+    label: "Modbus3",
+    value: "Modbus3",
   },
 ]);
 

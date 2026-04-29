@@ -127,15 +127,15 @@ export const connectionOptions = [
 export const parityOptions = [
   {
     label: () => formatMessage("device_manage.none"),
-    value: 78,
+    value: "N",
   },
   {
     label: () => formatMessage("device_manage.odd"),
-    value: 79,
+    value: "O",
   },
   {
     label: () => formatMessage("device_manage.even"),
-    value: 69,
+    value: "E",
   },
 ];
 

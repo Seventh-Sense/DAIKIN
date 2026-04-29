@@ -176,7 +176,7 @@ export const createKNXParams = (data: DataType) => ({
 });
 
 export const ModbusTCPData = {
-  slaveid: "1",
+  slaveid: 1,
   host: "127.0.0.1",
   port: 5020,
   connectionOption: "tcp",
@@ -191,11 +191,11 @@ export const ModbusRTUData = {
   pkey: "",
   desc: "",
   group: "",
-  slaveid: "1",
-  serial_port: 234881029,
+  slaveid: 1,
+  serial_port: "Modbus1",
   baudrate: 115200,
   data_bit: 8,
-  parity: 78,
+  parity: "N",
   stop_bit: 1,
 };
 
