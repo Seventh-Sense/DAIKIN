@@ -46,7 +46,7 @@ export default defineConfig({
     sourcemap: false,
   },
   server: {
-    open: true, // 是否自动在浏览器打开项目
+    open: false, // 是否自动在浏览器打开项目
     port: 3000, // 设置服务启动时的端口
     host: "0.0.0.0", // 指定服务监听的主机地址
     cors: true
