@@ -131,6 +131,8 @@ const onSearch = async () => {
     return;
   }
 
+  data.value = [];
+
   loading.value = true;
   //console.log("Search clicked with data:", props.data);
 
