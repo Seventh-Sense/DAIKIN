@@ -21,11 +21,19 @@
         </div>
         <div class="card-content-block">
           <span class="card-content-text">{{ t("login.username") }}</span>
-          <a-input v-model:value="info.username" style="width: 100%" />
+          <a-input
+            v-model:value="info.username"
+            autocomplete="off"
+            style="width: 100%"
+          />
         </div>
         <div class="card-content-block">
           <span class="card-content-text">{{ t("login.password") }}</span>
-          <a-input-password v-model:value="info.password" style="width: 100%" />
+          <a-input-password
+            v-model:value="info.password"
+            autocomplete="new-password"
+            style="width: 100%"
+          />
         </div>
         <div class="card-content-block">
           <span class="card-content-text">{{ t("mqtt.encode_format") }}</span>
