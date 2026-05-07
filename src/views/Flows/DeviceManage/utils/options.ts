@@ -32,7 +32,7 @@ export enum DeviceTypeEnum {
 
 export const TypeOptions = [
   {
-    label: "BACnet/IP",
+    label: "BACnet",
     value: DeviceTypeEnum.BACnet,
   },
   // {
