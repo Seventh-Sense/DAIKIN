@@ -40,7 +40,6 @@
                   ? t('device_manage.please_enter_name')
                   : ''
             "
-            :disabled="key === 'address' && props.isEdit"
           />
         </div>
         <div
