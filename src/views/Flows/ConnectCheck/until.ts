@@ -1,5 +1,6 @@
 import JSZip from "jszip";
 import { DeviceTypeEnum } from "../DeviceManage/utils/options";
+import { message } from "ant-design-vue";
 
 export const controllerFileName = "objConfig/objConfig.zip";
 
@@ -130,3 +131,5 @@ export const getPointType = (device_type: string, data_type: string) => {
 
   return type;
 };
+
+

@@ -430,5 +430,9 @@ export default {
     device_online_success: "Device reboot completed and online",
     device_check_timeout:
       "Device check timed out, please confirm device status manually",
+    deviceSnEmpty: "{devName} SN cannot be empty",
+    devicePkeyEmpty: "{devName} Pkey cannot be empty",
+    pointMEmpty: "{devName} → {ptName} M cannot be empty",
+    pointDevEmpty: "{devName} → {ptName} Dev cannot be empty",
   },
 };

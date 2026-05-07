@@ -446,5 +446,9 @@ export default {
     device_online_success: "デバイスの再起動が完了し、オンラインになりました",
     device_check_timeout:
       "デバイス確認がタイムアウトしました。手動で状態を確認してください",
+    deviceSnEmpty: "{devName} のSNを入力してください",
+    devicePkeyEmpty: "{devName} のPkeyを入力してください",
+    pointMEmpty: "{devName} → {ptName} のMを入力してください",
+    pointDevEmpty: "{devName} → {ptName} のDevを入力してください",
   },
 };
