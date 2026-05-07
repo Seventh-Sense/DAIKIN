@@ -313,10 +313,10 @@ const onExport = async () => {
   try {
     const deviceList = controllerStore.getControllerDevices(currentIP);
 
-    if (!deviceList || deviceList.length === 0) {
-      //message.warning(t("device_manage.export_empty_tip"));
-      return;
-    }
+    // if (!deviceList || deviceList.length === 0) {
+    //   //message.warning(t("device_manage.export_empty_tip"));
+    //   return;
+    // }
 
     exportDataTrans(deviceList);
   } catch (error) {
