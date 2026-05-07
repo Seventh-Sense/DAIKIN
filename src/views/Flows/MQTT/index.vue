@@ -252,7 +252,9 @@ const initData = () => {
   }
 
   if (devices?.length) {
-    options.value = devices.map((item) => ({ value: item.group }));
+    options.value = [...new Set(devices.map((item) => item.group))].map(
+      (group) => ({ value: group }),
+    );
   }
 
   //console.log("当前控制器数据：", controllerData);
