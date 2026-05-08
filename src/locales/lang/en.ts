@@ -385,6 +385,7 @@ export default {
     content_missing: "Network interface or device information is missing",
     device_info_invalid: "Device address or device ID is invalid",
     total_points: "Total {count} points",
+    total_devices: "Total {count} devices",
     config_no_local_data: "Failed to get controller configuration data",
     config_start_download: "Start downloading remote configuration file...",
     config_remote_invalid: "Remote configuration file is invalid or missing",

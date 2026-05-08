@@ -373,6 +373,7 @@ export default {
     content_missing: "网络接口或设备信息不存在",
     device_info_invalid: "设备地址或设备ID不合法",
     total_points: "共 {count} 个点位",
+    total_devices: "共 {count} 个设备",
     config_no_local_data: "未获取到控制器配置数据",
     config_start_download: "开始下载远程配置文件...",
     config_remote_invalid: "远程配置文件无效或不存在",

@@ -4,6 +4,7 @@
       <span> {{ t("device_manage.d_title") }} </span>
 
       <div class="content-top-right">
+        <span>{{ t("msg.total_devices", { count: data.length }) }}</span>
         <a-select
           v-model:value="selectInterface"
           :options="networkOptions"

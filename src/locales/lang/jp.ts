@@ -401,6 +401,7 @@ export default {
       "ネットワークインターフェースまたはデバイス情報が存在しません",
     device_info_invalid: "デバイスアドレスまたはデバイスIDが無効です",
     total_points: "全 {count} ポイント",
+    total_devices: "合 {count} 台のデバイス",
     config_no_local_data: "コントローラー設定データを取得できませんでした",
     config_start_download: "リモート設定ファイルをダウンロード中...",
     config_remote_invalid: "リモート設定ファイルが無効または存在しません",
