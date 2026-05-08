@@ -428,7 +428,7 @@ export default {
     operation_success: "Operation successful",
     add_points_success: "Points added successfully",
     device_rebooting_checking: "Device rebooting, checking status...",
-    device_online_success: "Device reboot completed and online",
+    device_online_success: "Device restart completed. Please re-add the controller.",
     device_check_timeout:
       "Device check timed out, please confirm device status manually",
     deviceSnEmpty: "{devName} SN cannot be empty",

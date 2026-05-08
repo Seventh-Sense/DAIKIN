@@ -444,7 +444,7 @@ export default {
     operation_success: "操作に成功しました",
     add_points_success: "ポイントの追加に成功しました",
     device_rebooting_checking: "デバイス再起動中、状態を確認しています...",
-    device_online_success: "デバイスの再起動が完了し、オンラインになりました",
+    device_online_success: "デバイスの再起動が完了しました。コントローラーを再追加してください",
     device_check_timeout:
       "デバイス確認がタイムアウトしました。手動で状態を確認してください",
     deviceSnEmpty: "{devName} のSNを入力してください",
