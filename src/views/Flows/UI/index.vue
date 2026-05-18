@@ -152,7 +152,7 @@ const handleEdit = (data: any) => {
         "_blank",
       );
     } else {
-      setLang(currentLocale)
+      setLang(currentLocale);
       window.open(
         `http://${name}:${port}/editor/#/graphic/2/${IP}/${currentLocale}`,
         "_blank",
@@ -165,7 +165,7 @@ const handleEdit = (data: any) => {
         "_blank",
       );
     } else {
-      setLang(currentLocale)
+      setLang(currentLocale);
       window.open(
         `http://${name}:5173/#/graphic/2/${IP}/${currentLocale}`,
         "_blank",
