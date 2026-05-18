@@ -192,6 +192,11 @@ const onDownload = async () => {
       return;
     }
 
+    //check data valid
+    if (!checkFields(localData)) {
+      return;
+    }
+
     const remoteZipBlob = await downloadFile(currentIP, controllerFileName);
 
     const hasValidData =
@@ -226,6 +231,45 @@ const onDownload = async () => {
   } finally {
     downloadLoading.value = false;
   }
+};
+
+const checkFields = (data: any): boolean => {
+  // 无设备直接通过
+  if (!data.devices?.length) return true;
+
+  // 遍历设备 → 发现空值立即返回
+  for (const [devIdx, dev] of data.devices.entries()) {
+    const devName = dev.device_name;
+
+    // 设备字段校验
+    if (!dev.sn) {
+      message.error(t("msg.deviceSnEmpty", { devName }));
+      return false;
+    }
+    if (!dev.pkey) {
+      message.error(t("msg.devicePkeyEmpty", { devName }));
+      return false;
+    }
+
+    // 无点位跳过
+    if (!dev.points?.length) continue;
+
+    // 遍历点位
+    for (const [ptIdx, pt] of dev.points.entries()) {
+      const ptName = pt.point_name;
+
+      if (!pt.m) {
+        message.error(t("msg.pointMEmpty", { devName, ptName }));
+        return false;
+      }
+      if (!pt.dev) {
+        message.error(t("msg.pointDevEmpty", { devName, ptName }));
+        return false;
+      }
+    }
+  }
+
+  return true;
 };
 
 const uploadFile = async (localData: any) => {

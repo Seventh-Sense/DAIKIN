@@ -4,6 +4,7 @@
       <span> {{ t("device_manage.d_title") }} </span>
 
       <div class="content-top-right">
+        <span>{{ t("msg.total_devices", { count: data.length }) }}</span>
         <a-select
           v-model:value="selectInterface"
           :options="networkOptions"
@@ -78,9 +79,21 @@ const networkOptions = ref<any[]>([]);
 const selectInterface = ref<string | undefined>(undefined);
 
 const columns = [
-  { title: () => t("device_manage.name"), dataIndex: "device_name" },
-  { title: () => t("device_manage.slave_id"), dataIndex: "device_id" },
-  { title: () => t("device_manage.address"), dataIndex: "address" },
+  {
+    title: () => t("device_manage.name"),
+    dataIndex: "device_name",
+    sorter: (a: any, b: any) => a.device_name.localeCompare(b.device_name),
+  },
+  {
+    title: () => t("device_manage.slave_id"),
+    dataIndex: "device_id",
+    sorter: (a: any, b: any) => a.device_id - b.device_id,
+  },
+  {
+    title: () => t("device_manage.address"),
+    dataIndex: "address",
+    sorter: (a: any, b: any) => a.address.localeCompare(b.address),
+  },
   { title: () => t("device_manage.vendor"), dataIndex: "vendor_name" },
   { title: "", dataIndex: "actions", width: 80, align: "center" },
 ];
@@ -131,6 +144,8 @@ const onSearch = async () => {
     return;
   }
 
+  data.value = [];
+
   loading.value = true;
   //console.log("Search clicked with data:", props.data);
 
@@ -164,10 +179,9 @@ const onSearch = async () => {
 
 const markExistingIds = (searchList: any[], existingDeviceList: any[]) => {
   //当前控制器IP
-  const ip = stepStore.getCurrentIP()
+  const ip = stepStore.getCurrentIP();
 
-  const filteredList = searchList.filter(item => item.address !== ip);
-
+  const filteredList = searchList.filter((item) => item.address !== ip);
 
   // 提前判空，避免arrayB为undefined/null时报错
   if (!Array.isArray(existingDeviceList))

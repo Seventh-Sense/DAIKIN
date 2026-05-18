@@ -401,6 +401,7 @@ export default {
       "ネットワークインターフェースまたはデバイス情報が存在しません",
     device_info_invalid: "デバイスアドレスまたはデバイスIDが無効です",
     total_points: "全 {count} ポイント",
+    total_devices: "合 {count} 台のデバイス",
     config_no_local_data: "コントローラー設定データを取得できませんでした",
     config_start_download: "リモート設定ファイルをダウンロード中...",
     config_remote_invalid: "リモート設定ファイルが無効または存在しません",
@@ -443,8 +444,12 @@ export default {
     operation_success: "操作に成功しました",
     add_points_success: "ポイントの追加に成功しました",
     device_rebooting_checking: "デバイス再起動中、状態を確認しています...",
-    device_online_success: "デバイスの再起動が完了し、オンラインになりました",
+    device_online_success: "デバイスの再起動が完了しました。コントローラーを再追加してください",
     device_check_timeout:
       "デバイス確認がタイムアウトしました。手動で状態を確認してください",
+    deviceSnEmpty: "{devName} のSNを入力してください",
+    devicePkeyEmpty: "{devName} のPkeyを入力してください",
+    pointMEmpty: "{devName} → {ptName} のMを入力してください",
+    pointDevEmpty: "{devName} → {ptName} のDevを入力してください",
   },
 };

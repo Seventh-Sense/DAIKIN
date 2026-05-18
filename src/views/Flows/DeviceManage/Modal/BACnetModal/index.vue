@@ -37,11 +37,7 @@
         style="width: 100%; margin-bottom: 12px"
       />
       <div class="modal-porperty">{{ $t("device_manage.address") }}</div>
-      <a-input
-        v-model:value="initData.address"
-        style="margin-bottom: 12px"
-        disabled
-      />
+      <a-input v-model:value="initData.address" style="margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.enabled") }}</div>
       <a-select
         v-model:value="data.enabled"
@@ -61,7 +57,6 @@
       <a-input
         v-model:value="initData.property.model_name"
         style="margin-bottom: 12px"
-        disabled
       />
       <!-- <div class="modal-porperty">{{ $t("device_manage.vendor_name") }}</div>
       <a-input

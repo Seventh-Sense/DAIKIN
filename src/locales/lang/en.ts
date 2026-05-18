@@ -385,6 +385,7 @@ export default {
     content_missing: "Network interface or device information is missing",
     device_info_invalid: "Device address or device ID is invalid",
     total_points: "Total {count} points",
+    total_devices: "Total {count} devices",
     config_no_local_data: "Failed to get controller configuration data",
     config_start_download: "Start downloading remote configuration file...",
     config_remote_invalid: "Remote configuration file is invalid or missing",
@@ -427,8 +428,12 @@ export default {
     operation_success: "Operation successful",
     add_points_success: "Points added successfully",
     device_rebooting_checking: "Device rebooting, checking status...",
-    device_online_success: "Device reboot completed and online",
+    device_online_success: "Device restart completed. Please re-add the controller.",
     device_check_timeout:
       "Device check timed out, please confirm device status manually",
+    deviceSnEmpty: "{devName} SN cannot be empty",
+    devicePkeyEmpty: "{devName} Pkey cannot be empty",
+    pointMEmpty: "{devName} → {ptName} M cannot be empty",
+    pointDevEmpty: "{devName} → {ptName} Dev cannot be empty",
   },
 };
