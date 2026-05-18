@@ -116,6 +116,20 @@ export default {
   },
   device_info: {
     del_device: "削除",
+    modify_device_address: "ネットワーク設定",
+    ip_address: "IPアドレス",
+    gateway: "ゲートウェイ",
+    subnet_mask: "サブネットマスク",
+    please_enter_ip: "IPアドレスを入力してください",
+    please_enter_mask: "サブネットマスクを入力してください",
+    please_enter_gw: "ゲートウェイを入力してください",
+    ip_format_error: "IPアドレスの形式が正しくありません",
+    mask_format_error: "サブネットマスクの形式が正しくありません",
+    gw_format_error: "ゲートウェイの形式が正しくありません",
+    modify_success: "変更完了、機器を再起動しています",
+    modify_failed: "ネットワーク設定の変更に失敗しました",
+    save_network_config_error:
+      "ネットワーク設定の保存に失敗しました。ネットワークまたは機器状態を確認してください",
   },
   firmware: {
     title: "ファームウェア更新",
@@ -444,7 +458,8 @@ export default {
     operation_success: "操作に成功しました",
     add_points_success: "ポイントの追加に成功しました",
     device_rebooting_checking: "デバイス再起動中、状態を確認しています...",
-    device_online_success: "デバイスの再起動が完了しました。コントローラーを再追加してください",
+    device_online_success:
+      "デバイスの再起動が完了しました。コントローラーを再追加してください",
     device_check_timeout:
       "デバイス確認がタイムアウトしました。手動で状態を確認してください",
     deviceSnEmpty: "{devName} のSNを入力してください",

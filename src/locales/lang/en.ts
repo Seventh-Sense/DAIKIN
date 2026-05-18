@@ -111,6 +111,20 @@ export default {
   },
   device_info: {
     del_device: "Delete",
+    modify_device_address: "Network Settings",
+    ip_address: "IP Address",
+    gateway: "Gateway",
+    subnet_mask: "Subnet Mask",
+    please_enter_ip: "Please enter IP address",
+    please_enter_mask: "Please enter subnet mask",
+    please_enter_gw: "Please enter gateway address",
+    ip_format_error: "Incorrect IP address format",
+    mask_format_error: "Incorrect subnet mask format",
+    gw_format_error: "Incorrect gateway format",
+    modify_success: "Modify successful, device is rebooting...",
+    modify_failed: "Failed to modify network config",
+    save_network_config_error:
+      "Failed to save network config, please check network or device",
   },
   firmware: {
     title: "Firmware Update",
@@ -428,7 +442,8 @@ export default {
     operation_success: "Operation successful",
     add_points_success: "Points added successfully",
     device_rebooting_checking: "Device rebooting, checking status...",
-    device_online_success: "Device restart completed. Please re-add the controller.",
+    device_online_success:
+      "Device restart completed. Please re-add the controller.",
     device_check_timeout:
       "Device check timed out, please confirm device status manually",
     deviceSnEmpty: "{devName} SN cannot be empty",

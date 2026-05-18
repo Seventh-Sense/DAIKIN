@@ -1,7 +1,7 @@
 <template>
   <div class="sider">
     <div class="sider-top">
-      <img src="@/assets/logo.png" width="128" height="27" alt="" />
+      <img src="@/assets/adveco.png" width="128" height="27" alt="" />
     </div>
     <div class="menu-wrapper">
       <a-menu

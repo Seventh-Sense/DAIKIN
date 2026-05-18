@@ -5,15 +5,26 @@
         <span class="card-title">
           {{ stepStore.currentMenuData.data.address }}
         </span>
-        <a-button class="card-del" @click="onDelete">
-          <Icons
-            name="delete"
-            type="mono-line"
-            :size="20"
-            :color="{ normal: '#ffffff' }"
-          />
-          {{ t("device_info.del_device") }}
-        </a-button>
+        <div style="display: flex; gap: 12px">
+          <a-button class="card-set" @click="onSetNetWork">
+            <Icons
+              name="network"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#ffffff' }"
+            />
+            {{ t("device_info.modify_device_address") }}
+          </a-button>
+          <a-button class="card-del" @click="onDelete">
+            <Icons
+              name="delete"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#ffffff' }"
+            />
+            {{ t("device_info.del_device") }}
+          </a-button>
+        </div>
       </div>
       <div class="card-raw">
         <span class="card-property">{{ t("device_search.name") }}</span>
@@ -45,6 +56,10 @@
         {{ t("common.edit_complete") }}
       </a-button>
     </div>
+    <NetworkSetModal
+      v-if="modalVisible"
+      v-model:modelShow="modalVisible"
+    />
     <a-modal
       v-model:open="deleteModalVisible"
       :title="t('layout.confirm_delete')"
@@ -74,6 +89,7 @@ import { routerTurnByName } from "../../../router/util";
 import Icons from "@/icons/index.vue";
 import { ref } from "vue";
 import { useControllerStore } from "@/pinia/modules/controller";
+import NetworkSetModal from "./Modal/NetworkSetModal/index.vue";
 
 const { t } = useI18n();
 const stepStore = useStepStore();
@@ -81,7 +97,7 @@ const controllerStore = useControllerStore();
 
 const deleteModalVisible = ref(false);
 const deleteSubMenuName = ref("");
-
+const modalVisible = ref(false);
 const onClick = () => {
   handleEditCompleteJump();
 };
@@ -135,6 +151,11 @@ const confirmDelete = () => {
     message.error(t("layout.msg_1"));
   }
 };
+
+//网络设置
+const onSetNetWork = () => {
+  modalVisible.value = true;
+};
 </script>
 
 <style lang="less" scoped>
@@ -183,7 +204,6 @@ const confirmDelete = () => {
   }
 
   &-del {
-    width: 96px;
     height: 32px;
     background-color: #f76f83ff;
     border-color: #f76f83ff;
@@ -193,7 +213,6 @@ const confirmDelete = () => {
     color: #ffffff;
     line-height: 20px;
     font-style: normal;
-    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -202,6 +221,27 @@ const confirmDelete = () => {
 
   &-del:hover {
     border-color: #f76f83ff;
+    color: #ffffff;
+  }
+
+  &-set {
+    height: 32px;
+    background-color: #0097E0FF;
+    border-color: #0097E0FF;
+    border-radius: 0;
+    font-weight: 400;
+    font-size: 14px;
+    color: #ffffff;
+    line-height: 20px;
+    font-style: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  &-set:hover {
+    border-color: #0097E0FF;
     color: #ffffff;
   }
 

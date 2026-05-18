@@ -9,8 +9,8 @@
     </a-col>
     <a-col :span="9">
       <div class="login-box">
-        <img src="@/assets/logo.png" alt="logo" class="logo-img" />
-        <span class="login-box-title"> {{ t("login.manufacturer") }} </span>
+        <img src="@/assets/adveco.png" alt="logo" width="190" height="42" class="logo-img" />
+        <!-- <span class="login-box-title"> {{ t("login.manufacturer") }} </span> -->
         <span class="login-box-name"> {{ t("login.appname") }} </span>
         <a-form
           :model="formState"
@@ -192,5 +192,9 @@ const onFinishFailed = (errorInfo: any) => {
       height: 40px;
     }
   }
+}
+
+.logo-img {
+  margin-bottom: 32px;
 }
 </style>

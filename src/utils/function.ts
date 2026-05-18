@@ -26,3 +26,8 @@ export function generateTimeUniqueId(): string {
   // 环境正常时继续用原生 API
   return crypto.randomUUID();
 }
+
+export const isValidIP = (ip: string): boolean => {
+  const ipReg = /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
+  return ipReg.test(ip.trim());
+};
