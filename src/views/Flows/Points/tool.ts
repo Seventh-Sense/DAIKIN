@@ -1,4 +1,5 @@
 import {
+  ActiveOption,
   AlignmentOption,
   BooleanOption,
   DatatypeOptions,
@@ -102,6 +103,8 @@ const MODBUS_TEXT_MAPPER: Record<string, any[]> = {
   data_type: DatatypeOptions,
   writable: BooleanOption,
   align_format: AlignmentOption,
+  enable: BooleanOption,
+  status_list: ActiveOption,
 };
 
 const getLabelByValue = (value: any, options: any[]) => {

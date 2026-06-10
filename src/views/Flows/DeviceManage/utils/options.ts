@@ -294,3 +294,8 @@ export const AlignmentOption = [
   { label: "CDAB", value: 4 },
   { label: "DCBA", value: 5 },
 ];
+
+export const ActiveOption = [
+  { label: "Active", value: 1 },
+  { label: "Inactive", value: 0 },
+]

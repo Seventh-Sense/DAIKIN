@@ -19,6 +19,7 @@
         v-for="(val, key, index) in data"
         :key="key"
         style="margin-top: 12px"
+        v-show="!advancedSettings.includes(key)"
       >
         <div class="modal-property">{{ MODBUS_ID_MAP(String(key)) }}</div>
         <div
@@ -68,18 +69,80 @@
         </div>
         <div v-else></div>
       </div>
+
+      <!-- 高级设置 -->
+      <div v-if="deviceType === 'ModbusRTU'">
+        <div class="section-title" style="margin-top: 24px;">{{ t('device_manage.advanced_settings') }}</div>
+        <div
+          v-if="data.data_type === 'bool' || data.data_type === 'boolean'"
+          style="margin-top: 12px"
+        >
+          <div class="modal-property">{{ MODBUS_ID_MAP('enable') }}</div>
+          <a-select
+            v-model:value="data.enable"
+            :options="modbusSelectOptions('enable')"
+            style="width: 100%"
+          />
+        </div>
+        <div
+          v-if="data.data_type === 'bool' || data.data_type === 'boolean'"
+          style="margin-top: 12px"
+        >
+          <div class="modal-property">{{ MODBUS_ID_MAP('status_list') }}</div>
+          <a-select
+            v-model:value="data.status_list"
+            :options="modbusSelectOptions('status_list')"
+            style="width: 100%"
+          />
+        </div>
+        <div
+          v-if="data.data_type !== 'bool' && data.data_type !== 'boolean'"
+          style="margin-top: 12px"
+        >
+          <div class="modal-property">{{ MODBUS_ID_MAP('enable') }}</div>
+          <a-select
+            v-model:value="data.enable"
+            :options="modbusSelectOptions('enable')"
+            style="width: 100%"
+          />
+        </div>
+        <div
+          v-if="data.data_type !== 'bool' && data.data_type !== 'boolean'"
+          style="margin-top: 12px"
+        >
+          <div class="modal-property">{{ MODBUS_ID_MAP('high_limit') }}</div>
+          <a-input-number v-model:value="data.high_limit" :min="-99999" :max="99999" style="width: 100%" />
+        </div>
+        <div
+          v-if="data.data_type !== 'bool' && data.data_type !== 'boolean'"
+          style="margin-top: 12px"
+        >
+          <div class="modal-property">{{ MODBUS_ID_MAP('low_limit') }}</div>
+          <a-input-number v-model:value="data.low_limit" :min="-99999" :max="99999" style="width: 100%" />
+        </div>
+        <div
+          v-if="data.data_type !== 'bool' && data.data_type !== 'boolean'"
+          style="margin-top: 12px"
+        >
+          <div class="modal-property">{{ MODBUS_ID_MAP('deadband') }}</div>
+          <a-input-number v-model:value="data.deadband" :min="0" :max="65535" style="width: 100%" />
+        </div>
+      </div>
     </div>
   </a-modal>
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch } from "vue";
+import { inject, ref, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { modbusSelectOptions, validateIntegerOrRange } from "../tool";
 import { message } from "ant-design-vue";
 import { useStepStore } from "@/pinia/modules/step";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { generateTimeUniqueId } from "@/utils/function";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const stepStore = useStepStore();
 const controllerStore = useControllerStore();
@@ -104,7 +167,12 @@ const deviceInfo: any = inject("deviceInfo");
 
 const currentIP = stepStore.getCurrentIP();
 
+const deviceType = ref("ModbusRTU");
+
 const { t } = useI18n();
+
+// 高级设置属性列表
+const advancedSettings = ref(['enable', 'status_list', 'high_limit', 'low_limit', 'deadband']);
 
 const defaultData = {
   uid: "",
@@ -123,6 +191,11 @@ const defaultData = {
   max: null,
   unit: "",
   writable: 1,
+  enable: 1,
+  status_list: 1,
+  high_limit: 100,
+  low_limit: 0,
+  deadband: 2,
 };
 
 const data = ref({ ...defaultData });
@@ -146,10 +219,21 @@ const MODBUS_ID_MAP = (key: string) => {
     min: t("device_manage.min"),
     max: t("device_manage.max"),
     writable: t("device_manage.writable"),
+    enable: t("device_manage.enable"),
+    status_list: t("device_manage.status_list"),
+    high_limit: t("device_manage.high_limit"),
+    low_limit: t("device_manage.low_limit"),
+    deadband: t("device_manage.deadband"),
   };
 
   return ID_MAP[key] ? ID_MAP[key] : "";
 };
+
+onMounted(() => {
+  const { id, type, name } = route.params;
+
+  deviceType.value = type as string;  
+})
 
 const dataCheck = (data: any) => {
   // 名称为空校验
@@ -204,6 +288,30 @@ const addNewPoint = async () => {
       unit: data.value.unit,
       min: data.value.min === null ? undefined : data.value.min,
       max: data.value.max === null ? undefined : data.value.max,
+      enable: deviceType.value === "ModbusRTU" ? data.value.enable === 1 : undefined,
+      status_list:
+        deviceType.value === "ModbusRTU" &&
+        (data.value.data_type === "bool" || data.value.data_type === "boolean")
+          ? data.value.status_list
+          : undefined,
+      high_limit:
+        deviceType.value === "ModbusRTU" &&
+        data.value.data_type !== "bool" &&
+        data.value.data_type !== "boolean"
+          ? data.value.high_limit
+          : undefined,
+      low_limit:
+        deviceType.value === "ModbusRTU" &&
+        data.value.data_type !== "bool" &&
+        data.value.data_type !== "boolean"
+          ? data.value.low_limit
+          : undefined,
+      deadband:
+        deviceType.value === "ModbusRTU" &&
+        data.value.data_type !== "bool" &&
+        data.value.data_type !== "boolean"
+          ? data.value.deadband
+          : undefined,
     },
   };
 
@@ -255,6 +363,30 @@ const addNewPoints = async () => {
           unit: data.value.unit,
           min: data.value.min === null ? undefined : data.value.min,
           max: data.value.max === null ? undefined : data.value.max,
+          enable: deviceType.value === "ModbusRTU" ? data.value.enable === 1 : undefined,
+          status_list:
+            deviceType.value === "ModbusRTU" &&
+            (data.value.data_type === "bool" || data.value.data_type === "boolean")
+              ? data.value.status_list
+              : undefined,
+          high_limit:
+            deviceType.value === "ModbusRTU" &&
+            data.value.data_type !== "bool" &&
+            data.value.data_type !== "boolean"
+              ? data.value.high_limit
+              : undefined,
+          low_limit:
+            deviceType.value === "ModbusRTU" &&
+            data.value.data_type !== "bool" &&
+            data.value.data_type !== "boolean"
+              ? data.value.low_limit
+              : undefined,
+          deadband:
+            deviceType.value === "ModbusRTU" &&
+            data.value.data_type !== "bool" &&
+            data.value.data_type !== "boolean"
+              ? data.value.deadband
+              : undefined,
         },
       };
 
@@ -314,9 +446,14 @@ watch(
         min: props.editData.property.min,
         max: props.editData.property.max,
         writable: props.editData.writable ? 1 : 0,
+        enable: props.editData.property.enable !== undefined ? (props.editData.property.enable ? 1 : 0) : 1,
+        status_list: props.editData.property.status_list !== undefined ? (props.editData.property.status_list ? 1 : 0) : 1,
+        high_limit: props.editData.property.high_limit || null,
+        low_limit: props.editData.property.low_limit || null,
+        deadband: props.editData.property.deadband || null,
       };
 
-      //console.log('asda', props.editData)
+      console.log('asda', props.editData.property.enable)
     }
   },
   { immediate: true },
@@ -333,5 +470,15 @@ watch(
   &-property {
     margin-bottom: 4px;
   }
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1890ff;
+  padding: 8px 12px;
+  background: #f0f5ff;
+  border-left: 3px solid #1890ff;
+  margin: 16px 0 12px 0;
 }
 </style>
