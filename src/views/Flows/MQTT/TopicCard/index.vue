@@ -61,7 +61,7 @@
         <template v-if="isEditing">
           <a-input-number
             v-model:value="editInterval"
-            :min="1"
+            :min="0"
             class="topic-input"
             style="width: 400px"
           />
@@ -147,10 +147,10 @@ const handleSave = () => {
     return;
   }
 
-  if (!editInterval.value) {
-    message.warn(t("mqtt.interval_invalid"));
-    return;
-  }
+  // if (!editInterval.value) {
+  //   message.warn(t("mqtt.interval_invalid"));
+  //   return;
+  // }
 
   const newData: any = {
     ...props.data,

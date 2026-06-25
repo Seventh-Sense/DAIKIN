@@ -27,7 +27,7 @@
         <span class="modal-block-property">{{ t("mqtt.interval") }}</span>
         <a-input-number
           v-model:value="data.interval"
-          :min="1"
+          :min="0"
           style="width: 100%"
         />
       </div>
@@ -106,10 +106,10 @@ const handleOk = () => {
     return;
   }
 
-  if (!data.value.interval || Number(data.value.interval) < 1) {
-    message.warn(t("mqtt.interval_invalid"));
-    return;
-  }
+  // if (!data.value.interval) {
+  //   message.warn(t("mqtt.interval_invalid"));
+  //   return;
+  // }
 
   const newTopic = {
     group: data.value.serial_number,
