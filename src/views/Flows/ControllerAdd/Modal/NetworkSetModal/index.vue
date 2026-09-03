@@ -58,6 +58,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  fileName: {
+    type: String,
+    default: "eth.json",
+  },
 });
 
 const emit = defineEmits(["update:modelShow"]);
@@ -132,13 +136,17 @@ const handleOk = async () => {
     const blob = new Blob([JSON.stringify(ethJson, null, 2)], {
       type: "application/json",
     });
-    const ethFile = new File([blob], "eth.json", {
+    const ethFile = new File([blob], props.fileName, {
       type: "application/json",
     });
 
     const currentIP = stepStore.currentMenuData.label;
 
-    const result = await uploadUpgradeFile(currentIP, ethFile, "eth/eth.json");
+    const result = await uploadUpgradeFile(
+      currentIP,
+      ethFile,
+      `eth/${props.fileName}`,
+    );
 
     if (!result || !result.task_id) {
       message.error(t("device_info.modify_failed"));

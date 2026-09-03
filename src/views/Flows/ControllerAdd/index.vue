@@ -6,15 +6,37 @@
           {{ stepStore.currentMenuData.data.address }}
         </span>
         <div style="display: flex; gap: 12px">
-          <a-button class="card-set" @click="onSetNetWork">
-            <Icons
-              name="network"
-              type="mono-line"
-              :size="20"
-              :color="{ normal: '#ffffff' }"
-            />
-            {{ t("device_info.modify_device_address") }}
-          </a-button>
+          <template v-if="isDualLanDevice">
+            <a-button class="card-set" @click="onSetNetWorkLan0">
+              <Icons
+                name="network"
+                type="mono-line"
+                :size="20"
+                :color="{ normal: '#ffffff' }"
+              />
+              {{ t("device_info.lan0_config") }}
+            </a-button>
+            <a-button class="card-set" @click="onSetNetWorkLan1">
+              <Icons
+                name="network"
+                type="mono-line"
+                :size="20"
+                :color="{ normal: '#ffffff' }"
+              />
+              {{ t("device_info.lan1_config") }}
+            </a-button>
+          </template>
+          <template v-else>
+            <a-button class="card-set" @click="onSetNetWork">
+              <Icons
+                name="network"
+                type="mono-line"
+                :size="20"
+                :color="{ normal: '#ffffff' }"
+              />
+              {{ t("device_info.modify_device_address") }}
+            </a-button>
+          </template>
           <a-button class="card-del" @click="onDelete">
             <Icons
               name="delete"
@@ -59,6 +81,7 @@
     <NetworkSetModal
       v-if="modalVisible"
       v-model:modelShow="modalVisible"
+      :fileName="ethFileName"
     />
     <a-modal
       v-model:open="deleteModalVisible"
@@ -87,7 +110,7 @@ import { useI18n } from "vue-i18n";
 import { message } from "ant-design-vue";
 import { routerTurnByName } from "../../../router/util";
 import Icons from "@/icons/index.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useControllerStore } from "@/pinia/modules/controller";
 import NetworkSetModal from "./Modal/NetworkSetModal/index.vue";
 
@@ -98,6 +121,13 @@ const controllerStore = useControllerStore();
 const deleteModalVisible = ref(false);
 const deleteSubMenuName = ref("");
 const modalVisible = ref(false);
+const ethFileName = ref("eth.json");
+
+// 判断是否是特殊设备（支持双网口）
+const isDualLanDevice = computed(() => {
+  const deviceName = stepStore.currentMenuData.data?.name;
+  return deviceName === "TIZI-3432-C020" || deviceName === "TIZI-3432-C040";
+});
 const onClick = () => {
   handleEditCompleteJump();
 };
@@ -152,8 +182,21 @@ const confirmDelete = () => {
   }
 };
 
-//网络设置
+//网络设置 - LAN0
+const onSetNetWorkLan0 = () => {
+  ethFileName.value = "eth.json";
+  modalVisible.value = true;
+};
+
+//网络设置 - LAN1
+const onSetNetWorkLan1 = () => {
+  ethFileName.value = "eth1.json";
+  modalVisible.value = true;
+};
+
+//网络设置（兼容旧逻辑）
 const onSetNetWork = () => {
+  ethFileName.value = "eth.json";
   modalVisible.value = true;
 };
 </script>

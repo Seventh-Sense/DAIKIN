@@ -193,7 +193,7 @@ export const ModbusRTUData = {
   group: "",
   slaveid: 1,
   serial_port: "Modbus1",
-  baudrate: 115200,
+  baudrate: 38400,
   data_bit: 8,
   parity: "N",
   stop_bit: 1,

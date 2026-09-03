@@ -112,6 +112,8 @@ export default {
   device_info: {
     del_device: "Delete",
     modify_device_address: "Network Settings",
+    lan0_config: "LAN0 Config",
+    lan1_config: "LAN1 Config",
     ip_address: "IP Address",
     gateway: "Gateway",
     subnet_mask: "Subnet Mask",
@@ -147,6 +149,8 @@ export default {
   },
   mqtt: {
     title: "MQTT",
+    tab_mqtt1: "MQTT1",
+    tab_mqtt2: "MQTT2",
     host: "Host",
     port: "Port",
     topics: "Topics",

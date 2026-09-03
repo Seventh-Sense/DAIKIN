@@ -102,6 +102,10 @@ const serialOptions = ref([
     label: "Modbus3",
     value: "Modbus3",
   },
+  {
+    label: "Modbus4",
+    value: "Modbus4",
+  },
 ]);
 
 // onMounted(() => {
