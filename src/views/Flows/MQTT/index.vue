@@ -3,8 +3,8 @@
     <div class="card-top">{{ t("mqtt.title") }}</div>
     <div class="card-content">
       <a-tabs v-model:activeKey="activeKey" class="mqtt-tabs">
-        <a-tab-pane :key="'mqtt'" :tab="t('mqtt.tab_mqtt1')">
-          <MqttConfigForm ref="mqttForm1" mqtt-key="mqtt" />
+        <a-tab-pane :key="'mqtt1'" :tab="t('mqtt.tab_mqtt1')">
+          <MqttConfigForm ref="mqttForm1" mqtt-key="mqtt1" />
         </a-tab-pane>
         <a-tab-pane v-if="isDualLanDevice" :key="'mqtt2'" :tab="t('mqtt.tab_mqtt2')">
           <MqttConfigForm ref="mqttForm2" mqtt-key="mqtt2" />
@@ -35,14 +35,14 @@ const isDualLanDevice = computed(() => {
   return deviceName === "TIZI-3432-C020" || deviceName === "TIZI-3432-C040";
 });
 
-const activeKey = ref("mqtt");
+const activeKey = ref("mqtt1");
 const mqttForm1 = ref<InstanceType<typeof MqttConfigForm> | null>(null);
 const mqttForm2 = ref<InstanceType<typeof MqttConfigForm> | null>(null);
 
 // 当设备切换为不支持 mqtt2 时，自动切回 mqtt tab
 watch(isDualLanDevice, (supported) => {
   if (!supported && activeKey.value === "mqtt2") {
-    activeKey.value = "mqtt";
+    activeKey.value = "mqtt1";
   }
 }, { immediate: true });
 

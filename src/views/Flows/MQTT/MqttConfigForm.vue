@@ -173,7 +173,7 @@ import { useControllerStore } from "@/pinia/modules/controller";
 import { useStepStore } from "@/pinia/modules/step";
 
 const props = defineProps<{
-  mqttKey: "mqtt" | "mqtt2";
+  mqttKey: "mqtt1" | "mqtt2";
 }>();
 
 const stepStore = useStepStore();
@@ -228,7 +228,7 @@ const initData = () => {
 
   if (!controllerData) return;
 
-  const mqttData = controllerData[props.mqttKey];
+  const mqttData = controllerData.mqtt?.[props.mqttKey];
 
   if (mqttData) {
     info.host = mqttData.host || "";
@@ -265,7 +265,10 @@ const saveToPinia = () => {
   const controller = controllerStore.getControllerByIp(currentIP);
   if (!controller) return;
 
-  controller[props.mqttKey] = {
+  if (!controller.mqtt) {
+    controller.mqtt = {};
+  }
+  controller.mqtt[props.mqttKey] = {
     host: info.host.trim(),
     port: info.port.trim(),
     username: info.username.trim(),

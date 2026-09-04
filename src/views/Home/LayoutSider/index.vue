@@ -311,7 +311,7 @@ const pullControllerFile = async (ip: string) => {
 
     if (!hasValidData) {
       console.log(`[${ip}] 文件为空，使用默认配置`);
-      controllerStore.addController(ip, { ...DeviceInitData });
+      controllerStore.addController(ip, JSON.parse(JSON.stringify(DeviceInitData)));
       return;
     }
 
@@ -320,7 +320,7 @@ const pullControllerFile = async (ip: string) => {
     controllerStore.addController(ip, config);
     //console.log(ip, config);
   } catch (e) {
-    controllerStore.addController(ip, { ...DeviceInitData });
+    controllerStore.addController(ip, JSON.parse(JSON.stringify(DeviceInitData)));
 
     const errMsg = (e as any)?.response?.data?.detail || t("msg.unknown_error");
     message.error(`${t("msg.load_control_config_fail")}: ${errMsg}`);

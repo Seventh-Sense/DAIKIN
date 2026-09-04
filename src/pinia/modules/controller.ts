@@ -11,7 +11,6 @@ interface PersistOptions {
 interface ControllerInfo {
   devices?: any[];
   mqtt?: any;
-  mqtt2?: any;
   [key: string]: any;
 }
 
