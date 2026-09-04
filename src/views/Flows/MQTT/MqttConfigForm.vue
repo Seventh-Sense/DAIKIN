@@ -130,35 +130,37 @@
       </div>
     </div>
 
-    <div class="card-content-row">
-      <span class="card-content-row-title">{{ t("mqtt.topics") }}</span>
-      <a-button type="primary" class="card-btn-add" @click="onAdd">
-        {{ t("mqtt.add") }}
-        <Icons
-          name="addCircle"
-          type="mono-line"
-          :size="20"
-          :color="{ normal: '#ffffff' }"
+    <template v-if="mqttKey === 'mqtt1'">
+      <div class="card-content-row">
+        <span class="card-content-row-title">{{ t("mqtt.topics") }}</span>
+        <a-button type="primary" class="card-btn-add" @click="onAdd">
+          {{ t("mqtt.add") }}
+          <Icons
+            name="addCircle"
+            type="mono-line"
+            :size="20"
+            :color="{ normal: '#ffffff' }"
+          />
+        </a-button>
+      </div>
+      <div class="card-content-list">
+        <TopicCard
+          v-for="(item, index) in list"
+          :key="index"
+          :data="item"
+          @update="handleUpdate(index, $event)"
+          @delete="handleDelete(index)"
         />
-      </a-button>
-    </div>
-    <div class="card-content-list">
-      <TopicCard
-        v-for="(item, index) in list"
-        :key="index"
-        :data="item"
-        @update="handleUpdate(index, $event)"
-        @delete="handleDelete(index)"
-      />
-    </div>
+      </div>
 
-    <TopicModal
-      v-if="showModal"
-      v-model:modelShow="showModal"
-      :List="list"
-      :sns="options"
-      @add="handleAdd"
-    />
+      <TopicModal
+        v-if="showModal"
+        v-model:modelShow="showModal"
+        :List="list"
+        :sns="options"
+        @add="handleAdd"
+      />
+    </template>
   </div>
 </template>
 
@@ -268,7 +270,8 @@ const saveToPinia = () => {
   if (!controller.mqtt) {
     controller.mqtt = {};
   }
-  controller.mqtt[props.mqttKey] = {
+
+  const baseData = {
     host: info.host.trim(),
     port: info.port.trim(),
     username: info.username.trim(),
@@ -281,8 +284,12 @@ const saveToPinia = () => {
     client_certificate: info.client_certificate.trim(),
     client_key_filename: info.client_key_filename,
     client_key: info.client_key.trim(),
-    topics: [...list],
   };
+
+  controller.mqtt[props.mqttKey] =
+    props.mqttKey === "mqtt1"
+      ? { ...baseData, topics: [...list] }
+      : baseData;
   controllerStore.addController(currentIP, controller);
 };
 
