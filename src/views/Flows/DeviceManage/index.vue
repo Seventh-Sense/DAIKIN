@@ -124,9 +124,11 @@ import BACnetModal from "./Modal/BACnetModal/index.vue";
 import { DeviceTypeEnum } from "./utils/options";
 import { useStepStore } from "@/pinia/modules/step";
 import { useControllerStore } from "@/pinia/modules/controller";
+import { useModbusConfigStore } from "@/pinia/modules/modbusConfig";
 
 const stepStore = useStepStore();
 const controllerStore = useControllerStore();
+const modbusConfigStore = useModbusConfigStore();
 
 const { t } = useI18n();
 
@@ -243,6 +245,9 @@ const initData = async () => {
   loading.value = true;
 
   data.value = controllerStore.getControllerDevices(currentIP);
+
+  // 按当前控制器 IP 回填 modbusConfig store
+  modbusConfigStore.restoreFromDevices(currentIP, data.value);
 
   loading.value = false;
 };

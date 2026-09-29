@@ -91,8 +91,10 @@ import ModbusRTU from "../../component/ModbusRTU/index.vue";
 import KNX from "../../component/KNX/index.vue";
 import { cloneDeep } from "lodash";
 import { useControllerStore } from "@/pinia/modules/controller";
+import { useModbusConfigStore } from "@/pinia/modules/modbusConfig";
 
 const controllerStore = useControllerStore();
+const modbusConfigStore = useModbusConfigStore();
 
 const { t } = useI18n();
 const stepStore = useStepStore();
@@ -189,7 +191,26 @@ const handleSubmitByType = async (data: DataType) => {
       return;
   }
 
-  controllerStore.addDeviceToController(stepStore.getCurrentIP(), params);
+  const ip = stepStore.getCurrentIP();
+
+  // 如果是 ModbusRTU，先更新 store（以本次编辑的参数为准）
+  if (data.type === DeviceTypeEnum.ModbusRTU) {
+    const prop = params.property;
+    modbusConfigStore.updatePortParams(ip, prop.serial_port, {
+      baudrate: prop.baudrate,
+      data_bit: prop.data_bit,
+      parity: prop.parity,
+      stop_bit: prop.stop_bit,
+    });
+  }
+
+  // 保存当前设备到 controllerMap
+  controllerStore.addDeviceToController(ip, params);
+
+  // 如果是 ModbusRTU，store → controllerMap 全量对齐
+  if (data.type === DeviceTypeEnum.ModbusRTU) {
+    modbusConfigStore.syncToControllerMap(ip);
+  }
 
   if (props.isEdit) {
     message.success(t("msg.msg_modify_success"));

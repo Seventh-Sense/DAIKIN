@@ -70,13 +70,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import {
   parityOptions,
   databitOptions,
   stopbitOptions,
   baudOptions,
 } from "../../utils/options";
+import { useStepStore } from "@/pinia/modules/step";
+import { useModbusConfigStore } from "@/pinia/modules/modbusConfig";
+
+const stepStore = useStepStore();
+const modbusConfigStore = useModbusConfigStore();
+
+// 当前控制器 IP
+const currentControllerIP = stepStore.getCurrentIP();
 
 const props = defineProps({
   data: {
@@ -108,16 +116,39 @@ const serialOptions = ref([
   },
 ]);
 
-// onMounted(() => {
-//   fetchSerialOptions();
-// });
+// 从 store 加载指定串口的参数到表单
+const applyParamsFromStore = (portName: string) => {
+  const params = modbusConfigStore.getPortParams(currentControllerIP, portName);
+  const p = props.data.property;
+  p.baudrate = params.baudrate;
+  p.data_bit = params.data_bit;
+  p.parity = params.parity;
+  p.stop_bit = params.stop_bit;
+};
 
-// const fetchSerialOptions = async () => {
-//   try {
-//   } catch (error) {
-//     console.error("Failed to fetch serial options:", error);
-//   }
-// };
+onMounted(() => {
+  // 新建设备（isEdit=false）：当前 serial_port（默认 Modbus1）从 store 加载
+  // store 有值则加载；store 没值则 getPortParams 返回 DEFAULT_PARAMS
+  // 编辑设备（isEdit=true）：不覆盖，保留 controllerMap 里的设备原始值
+  if (!props.isEdit) {
+    const portName = props.data.property.serial_port;
+    if (portName) {
+      applyParamsFromStore(portName);
+    }
+  }
+});
+
+// 切换串口时（新建和编辑都触发），从 store 加载该串口的参数
+watch(
+  () => props.data.property.serial_port,
+  (newPort, oldPort) => {
+    if (!newPort) return;
+    // 排除首次触发（组件初始化时 onMounted 已处理过）
+    if (oldPort === undefined) return;
+    if (newPort === oldPort) return;
+    applyParamsFromStore(newPort);
+  }
+);
 </script>
 
 <style lang="less" scoped>
