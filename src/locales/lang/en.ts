@@ -355,6 +355,8 @@ export default {
     high_limit: "High Limit",
     low_limit: "Low Limit",
     deadband: "Deadband",
+    prop_lc_fetch_bit: "Fetch Bit",
+    prop_lc_fetch_bit_tip: "Select fetch bit (multiple)",
     basic_settings: "Basic Settings",
     advanced_settings: "Event Report",
   },

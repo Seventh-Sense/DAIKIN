@@ -19,7 +19,7 @@
         v-for="(val, key, index) in data"
         :key="key"
         style="margin-top: 12px"
-        v-show="!advancedSettings.includes(key)"
+        v-show="!advancedSettings.includes(key) && (key !== 'prop_lc_fetch_bit' || deviceType === 'ModbusRTU')"
       >
         <div class="modal-property">{{ MODBUS_ID_MAP(String(key)) }}</div>
         <div
@@ -55,6 +55,16 @@
             v-model:value="data[key]"
             :options="modbusSelectOptions(key)"
             style="width: 100%"
+          />
+        </div>
+        <div v-else-if="key === 'prop_lc_fetch_bit'">
+          <a-select
+            v-model:value="data[key]"
+            mode="multiple"
+            :options="fetchBitOptions"
+            style="width: 100%"
+            :placeholder="t('device_manage.prop_lc_fetch_bit_tip')"
+            allow-clear
           />
         </div>
         <div v-else-if="key === 'count' || key === 'scale' || key === 'offset'">
@@ -133,7 +143,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch, onMounted } from "vue";
+import { inject, ref, watch, computed, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { modbusSelectOptions, validateIntegerOrRange } from "../tool";
 import { message } from "ant-design-vue";
@@ -185,6 +195,7 @@ const defaultData = {
   count: 1,
   data_type: "int16",
   align_format: 1,
+  prop_lc_fetch_bit: [] as number[],
   scale: 1,
   offset: 0,
   min: null,
@@ -224,10 +235,47 @@ const MODBUS_ID_MAP = (key: string) => {
     high_limit: t("device_manage.high_limit"),
     low_limit: t("device_manage.low_limit"),
     deadband: t("device_manage.deadband"),
+    prop_lc_fetch_bit: t("device_manage.prop_lc_fetch_bit"),
   };
 
   return ID_MAP[key] ? ID_MAP[key] : "";
 };
+
+// 将选中的位数组转换为位掩码数值（如 [0,2,4] → 1+4+16=21）
+const bitsToMask = (bits: number[]): number => {
+  return bits.reduce((sum, bit) => sum | (1 << bit), 0);
+};
+
+// 将位掩码数值反向解析为位数组（如 21 → [0,2,4]）
+const maskToBits = (mask: number): number[] => {
+  const bits: number[] = [];
+  for (let i = 0; i < 32; i++) {
+    if (mask & (1 << i)) {
+      bits.push(i);
+    }
+  }
+  return bits;
+};
+
+// 根据 align_format 动态生成选项
+// AB(0) 或 BA(1) → 16 个选项 (0-15)
+// 其他 → 32 个选项 (0-31)
+const fetchBitOptions = computed(() => {
+  const maxBit = data.value.align_format === 0 || data.value.align_format === 1 ? 16 : 32;
+  return Array.from({ length: maxBit }, (_, i) => ({
+    label: String(i),
+    value: i,
+  }));
+});
+
+// 监听 align_format 变化，清除超出范围的选中位
+watch(
+  () => data.value.align_format,
+  (newVal) => {
+    const maxBit = newVal === 0 || newVal === 1 ? 16 : 32;
+    data.value.prop_lc_fetch_bit = data.value.prop_lc_fetch_bit.filter((bit) => bit < maxBit);
+  },
+);
 
 onMounted(() => {
   const { id, type, name } = route.params;
@@ -312,6 +360,10 @@ const addNewPoint = async () => {
         data.value.data_type !== "boolean"
           ? data.value.deadband
           : undefined,
+      prop_lc_fetch_bit:
+        deviceType.value === "ModbusRTU"
+          ? (data.value.prop_lc_fetch_bit.length > 0 ? bitsToMask(data.value.prop_lc_fetch_bit) : null)
+          : undefined,
     },
   };
 
@@ -387,6 +439,10 @@ const addNewPoints = async () => {
             data.value.data_type !== "boolean"
               ? data.value.deadband
               : undefined,
+          prop_lc_fetch_bit:
+            deviceType.value === "ModbusRTU"
+              ? (data.value.prop_lc_fetch_bit.length > 0 ? bitsToMask(data.value.prop_lc_fetch_bit) : null)
+              : undefined,
         },
       };
 
@@ -429,31 +485,34 @@ watch(
   () => props.isEdit,
   (newVal) => {
     if (newVal) {
+      const property = props.editData.property || {};
       data.value = {
+        ...defaultData,
         uid: props.editData.uid,
         name: props.editData.point_name,
         m: props.editData.m,
         dev: props.editData.dev,
         description: props.editData.description,
-        function: props.editData.property.register_type,
-        address: props.editData.property.register_address.toString(),
-        count: props.editData.property.register_count,
-        data_type: props.editData.property.data_type,
-        scale: props.editData.property.scale,
-        offset: props.editData.property.offset,
-        align_format: props.editData.property.align_format,
-        unit: props.editData.property.unit,
-        min: props.editData.property.min,
-        max: props.editData.property.max,
+        function: property.register_type,
+        address: property.register_address.toString(),
+        count: property.register_count,
+        data_type: property.data_type,
+        align_format: property.align_format,
+        prop_lc_fetch_bit: property.prop_lc_fetch_bit !== undefined
+          ? maskToBits(property.prop_lc_fetch_bit)
+          : [],
+        scale: property.scale,
+        offset: property.offset,
+        unit: property.unit,
+        min: property.min,
+        max: property.max,
         writable: props.editData.writable ? 1 : 0,
-        enable: props.editData.property.enable !== undefined ? (props.editData.property.enable ? 1 : 0) : 1,
-        status_list: props.editData.property.status_list !== undefined ? (props.editData.property.status_list ? 1 : 0) : 1,
-        high_limit: props.editData.property.high_limit || null,
-        low_limit: props.editData.property.low_limit || null,
-        deadband: props.editData.property.deadband || null,
+        enable: property.enable !== undefined ? (property.enable ? 1 : 0) : 1,
+        status_list: property.status_list !== undefined ? (property.status_list ? 1 : 0) : 1,
+        high_limit: property.high_limit || null,
+        low_limit: property.low_limit || null,
+        deadband: property.deadband || null,
       };
-
-      console.log('asda', props.editData.property.enable)
     }
   },
   { immediate: true },

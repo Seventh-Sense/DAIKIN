@@ -362,6 +362,8 @@ export default {
     high_limit: "上限値",
     low_limit: "下限値",
     deadband: "不感帯",
+    prop_lc_fetch_bit: "取得ビット",
+    prop_lc_fetch_bit_tip: "取得ビットを選択（複数可）",
     basic_settings: "基本設定",
     advanced_settings: "イベント報告",
   },

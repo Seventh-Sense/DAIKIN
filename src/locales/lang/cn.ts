@@ -348,6 +348,8 @@ export default {
     high_limit: "上限",
     low_limit: "下限",
     deadband: "死区",
+    prop_lc_fetch_bit: "获取位",
+    prop_lc_fetch_bit_tip: "请选择获取位（可多选）",
     basic_settings: "基础设置",
     advanced_settings: "事件上报",
   },
