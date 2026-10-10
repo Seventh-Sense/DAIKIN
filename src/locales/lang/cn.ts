@@ -247,6 +247,8 @@ export default {
     no_component_tip: "暂无该设备类型的配置组件，请选择其他设备类型",
     emptyField: "配置项不能为空",
     invalidIp: "IP地址格式无效",
+    duplicate_slaveid:
+      "串口 {port} 下已存在 slave ID 为 {id} 的设备「{name}」",
     slave_id: "设备ID",
     vendor: "厂商",
     connection: "连接",

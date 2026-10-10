@@ -166,7 +166,16 @@ const handleOk = () => {
     emit("onSaveSuccess");
     emit("update:modelShow", false);
   } else {
-    if (!deviceDataCheck(data.value)) {
+    const ip = stepStore.getCurrentIP();
+    const existingDevices = controllerStore.getControllerDevices(ip);
+    if (
+      !deviceDataCheck(data.value, {
+        ip,
+        existingDevices,
+        currentUid: data.value.id,
+        isEdit: props.isEdit,
+      })
+    ) {
       handleSubmitByType(data.value);
     }
   }
@@ -176,32 +185,36 @@ const handleSubmitByType = async (data: DataType) => {
   //console.log("Submitting data:", data);
   let params;
 
+  const ip = stepStore.getCurrentIP();
+
   switch (data.type) {
     case DeviceTypeEnum.ModbusTCP:
       params = createModbusTCPParams(data);
       break;
-    case DeviceTypeEnum.ModbusRTU:
+    case DeviceTypeEnum.ModbusRTU: {
       params = createModbusRTUParams(data);
+      const prop = params.property as {
+        serial_port: string;
+        baudrate: number;
+        data_bit: number;
+        parity: string;
+        stop_bit: number;
+      };
+      // 先更新 store（以本次编辑的参数为准）
+      modbusConfigStore.updatePortParams(ip, prop.serial_port, {
+        baudrate: prop.baudrate,
+        data_bit: prop.data_bit,
+        parity: prop.parity,
+        stop_bit: prop.stop_bit,
+      });
       break;
+    }
     case DeviceTypeEnum.KNX:
       params = createKNXParams(data);
       break;
     default:
       console.log("Submitting params:", data);
       return;
-  }
-
-  const ip = stepStore.getCurrentIP();
-
-  // 如果是 ModbusRTU，先更新 store（以本次编辑的参数为准）
-  if (data.type === DeviceTypeEnum.ModbusRTU) {
-    const prop = params.property;
-    modbusConfigStore.updatePortParams(ip, prop.serial_port, {
-      baudrate: prop.baudrate,
-      data_bit: prop.data_bit,
-      parity: prop.parity,
-      stop_bit: prop.stop_bit,
-    });
   }
 
   // 保存当前设备到 controllerMap

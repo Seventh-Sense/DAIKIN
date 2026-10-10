@@ -254,6 +254,8 @@ export default {
       "No configuration component for this device type, please select another type",
     emptyField: "Configuration items cannot be empty",
     invalidIp: "Invalid IP address format",
+    duplicate_slaveid:
+      "A device named \"{name}\" with slave ID {id} already exists on serial port {port}",
     slave_id: "Device ID",
     vendor: "Manufacturer",
     connection: "Connection",

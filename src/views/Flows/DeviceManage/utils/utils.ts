@@ -18,8 +18,8 @@ const formatMessage = (key: string, params?: Record<string, any>) => {
     return key; // 回退返回原始key
   }
 
-  // 使用global.t方法进行翻译
-  return window.$i18n.global.t(key);
+  // 使用global.t方法进行翻译，支持命名插值：t(key, { name: 'xxx' })
+  return window.$i18n.global.t(key, params ?? {});
 };
 
 export const getDeviceTypeLabel = (value: any) => {
@@ -63,13 +63,21 @@ export const getOptions = (type: any) => {
 };
 
 // 数据校验
-export const deviceDataCheck = (deviceData: DataType): boolean => {
+export const deviceDataCheck = (
+  deviceData: DataType,
+  options?: {
+    ip?: string;
+    existingDevices?: any[];
+    currentUid?: string;
+    isEdit?: boolean;
+  },
+): boolean => {
   console.log("Validating device data:", deviceData);
   switch (deviceData.type) {
     case DeviceTypeEnum.ModbusTCP:
       return validateModbusTCP(deviceData);
     case DeviceTypeEnum.ModbusRTU:
-      return validateModbusRTU(deviceData);
+      return validateModbusRTU(deviceData, options);
     case DeviceTypeEnum.KNX:
       return validateKNX(deviceData);
     default:
@@ -91,11 +99,45 @@ const validateModbusTCP = (data: DataType): boolean => {
   return false;
 };
 
-const validateModbusRTU = (data: DataType): boolean => {
+const validateModbusRTU = (
+  data: DataType,
+  options?: {
+    ip?: string;
+    existingDevices?: any[];
+    currentUid?: string;
+    isEdit?: boolean;
+  },
+): boolean => {
   if (!data.name || data.property.slaveid === null) {
     message.warn(formatMessage("device_manage.emptyField"));
     return true;
   }
+
+  // 同一个控制器、同一个串口下，slaveid 不可重复
+  if (options?.existingDevices && options.ip) {
+    const { serial_port, slaveid } = data.property;
+
+    const duplicate = options.existingDevices.find(
+      (device) =>
+        device.protocol === DeviceTypeEnum.ModbusRTU &&
+        // 编辑模式排除自身
+        !(options.isEdit && device.uid === options.currentUid) &&
+        device.property?.serial_port === serial_port &&
+        Number(device.property?.slaveid) === Number(slaveid),
+    );
+
+    if (duplicate) {
+      message.warn(
+        formatMessage("device_manage.duplicate_slaveid", {
+          port: serial_port,
+          id: slaveid,
+          name: duplicate.device_name,
+        }),
+      );
+      return true;
+    }
+  }
+
   return false;
 };
 

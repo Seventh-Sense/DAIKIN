@@ -261,6 +261,8 @@ export default {
       "このデバイスタイプの設定コンポーネントはありません。他のデバイスタイプを選択してください",
     emptyField: "設定項目は空にできません",
     invalidIp: "IPアドレス形式が無効です",
+    duplicate_slaveid:
+      "シリアルポート {port} には、slave ID が {id} のデバイス「{name}」が既に存在します",
     slave_id: "デバイスID",
     vendor: "メーカー",
     connection: "接続",
