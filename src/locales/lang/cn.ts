@@ -185,6 +185,7 @@ export default {
     client_key_upload_success: "客户端密钥上传成功",
     client_key_upload_fail: "客户端密钥上传失败",
     encode_format: "编码格式",
+    client_id: "客户端ID",
   },
   connectivity_check: {
     title: "连接性检查",

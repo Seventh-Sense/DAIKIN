@@ -34,6 +34,13 @@
         />
       </div>
       <div class="card-content-block">
+        <span class="card-content-text">{{ t("mqtt.client_id") }}</span>
+        <a-input
+          v-model:value="info.client_id"
+          style="width: 100%"
+        />
+      </div>
+      <div class="card-content-block">
         <span class="card-content-text">{{ t("mqtt.encode_format") }}</span>
         <a-input-number
           v-model:value="info.encode_format"
@@ -190,6 +197,7 @@ const info = reactive({
   port: "",
   username: "",
   password: "",
+  client_id: "",
   encode_format: 1,
   last_will_topic: "",
   ca_filename: "",
@@ -207,6 +215,7 @@ const defaultInfo = () => ({
   port: "",
   username: "",
   password: "",
+  client_id: "",
   encode_format: 1,
   last_will_topic: "",
   ca_filename: "",
@@ -237,6 +246,7 @@ const initData = () => {
     info.port = mqttData.port || "";
     info.username = mqttData.username || "";
     info.password = mqttData.password || "";
+    info.client_id = mqttData.client_id || "";
     info.encode_format = Number(mqttData.encode_format) || 1;
     info.last_will_topic = mqttData.last_will_topic || "";
     info.ca_filename = mqttData.ca_filename || "";
@@ -279,6 +289,7 @@ const saveToPinia = () => {
     port: info.port.trim(),
     username: info.username.trim(),
     password: info.password.trim(),
+    client_id: info.client_id.trim(),
     encode_format: info.encode_format,
     last_will_topic: info.last_will_topic.trim(),
     ca_filename: info.ca_filename,
