@@ -19,7 +19,7 @@
         v-for="(val, key, index) in data"
         :key="key"
         style="margin-top: 12px"
-        v-show="!advancedSettings.includes(key) && (key !== 'prop_lc_fetch_bit' || deviceType === 'ModbusRTU')"
+        v-show="!advancedSettings.includes(key) && (key !== 'bits_info' || deviceType === 'ModbusRTU')"
       >
         <div class="modal-property">{{ MODBUS_ID_MAP(String(key)) }}</div>
         <div
@@ -57,13 +57,13 @@
             style="width: 100%"
           />
         </div>
-        <div v-else-if="key === 'prop_lc_fetch_bit'">
+        <div v-else-if="key === 'bits_info'">
           <a-select
             v-model:value="data[key]"
             mode="multiple"
             :options="fetchBitOptions"
             style="width: 100%"
-            :placeholder="t('device_manage.prop_lc_fetch_bit_tip')"
+            :placeholder="t('device_manage.bits_info_tip')"
             allow-clear
           />
         </div>
@@ -204,7 +204,7 @@ const defaultData = {
   count: 1,
   data_type: "int16",
   align_format: 1,
-  prop_lc_fetch_bit: [] as number[],
+  bits_info: [] as number[],
   scale: 1,
   offset: 0,
   min: null,
@@ -245,7 +245,7 @@ const MODBUS_ID_MAP = (key: string) => {
     high_limit: t("device_manage.high_limit"),
     low_limit: t("device_manage.low_limit"),
     deadband: t("device_manage.deadband"),
-    prop_lc_fetch_bit: t("device_manage.prop_lc_fetch_bit"),
+    bits_info: t("device_manage.bits_info"),
   };
 
   return ID_MAP[key] ? ID_MAP[key] : "";
@@ -283,7 +283,7 @@ watch(
   () => data.value.align_format,
   (newVal) => {
     const maxBit = newVal === 0 || newVal === 1 ? 16 : 32;
-    data.value.prop_lc_fetch_bit = data.value.prop_lc_fetch_bit.filter((bit) => bit < maxBit);
+    data.value.bits_info = data.value.bits_info.filter((bit) => bit < maxBit);
   },
 );
 
@@ -371,9 +371,9 @@ const addNewPoint = async () => {
         data.value.data_type !== "boolean"
           ? data.value.deadband
           : undefined,
-      prop_lc_fetch_bit:
+      bits_info:
         deviceType.value === "ModbusRTU"
-          ? (data.value.prop_lc_fetch_bit.length > 0 ? bitsToMask(data.value.prop_lc_fetch_bit) : null)
+          ? (data.value.bits_info.length > 0 ? bitsToMask(data.value.bits_info) : null)
           : undefined,
     },
   };
@@ -451,9 +451,9 @@ const addNewPoints = async () => {
             data.value.data_type !== "boolean"
               ? data.value.deadband
               : undefined,
-          prop_lc_fetch_bit:
+          bits_info:
             deviceType.value === "ModbusRTU"
-              ? (data.value.prop_lc_fetch_bit.length > 0 ? bitsToMask(data.value.prop_lc_fetch_bit) : null)
+              ? (data.value.bits_info.length > 0 ? bitsToMask(data.value.bits_info) : null)
               : undefined,
         },
       };
@@ -511,8 +511,8 @@ watch(
         count: property.register_count,
         data_type: property.data_type,
         align_format: property.align_format,
-        prop_lc_fetch_bit: property.prop_lc_fetch_bit !== undefined
-          ? maskToBits(property.prop_lc_fetch_bit)
+        bits_info: property.bits_info !== undefined
+          ? maskToBits(property.bits_info)
           : [],
         scale: property.scale,
         offset: property.offset,
