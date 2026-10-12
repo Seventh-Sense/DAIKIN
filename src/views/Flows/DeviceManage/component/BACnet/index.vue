@@ -216,7 +216,6 @@ const onDownload = async (record: any) => {
     protocol: DeviceTypeEnum.BACnet,
     sn: "",
     pkey: "",
-    group: "",
     polling: props.data.polling,
     address: record.address + ":47808",
     description: "",

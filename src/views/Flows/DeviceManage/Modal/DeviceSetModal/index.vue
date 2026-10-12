@@ -293,7 +293,6 @@ const initEditData = () => {
         ...cloneDeep(props.initData.property),
         sn: props.initData.sn || "",
         pkey: props.initData.pkey || "",
-        group: props.initData.group || "",
         desc: props.initData.description || "",
       },
     };

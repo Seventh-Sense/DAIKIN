@@ -74,6 +74,14 @@
             style="width: 100%"
           />
         </div>
+        <div v-else-if="key === 'group'">
+          <a-input-number
+            v-model:value="data[key]"
+            :min="1"
+            :max="32"
+            style="width: 100%"
+          />
+        </div>
         <div v-else-if="key === 'min' || key === 'max'">
           <a-input-number v-model:value="data[key]" style="width: 100%" />
         </div>
@@ -190,6 +198,7 @@ const defaultData = {
   m: "",
   dev: "",
   description: "",
+  group: null as number | null,
   function: 4,
   address: "",
   count: 1,
@@ -214,6 +223,7 @@ const data = ref({ ...defaultData });
 const MODBUS_ID_MAP = (key: string) => {
   const ID_MAP: { [key: string]: string } = {
     name: t("device_manage.name"),
+    group: t("device_manage.group"),
     m: t("device_manage.point_m"),
     dev: t("device_manage.device_dev"),
     description: t("device_manage.desc"),
@@ -321,6 +331,7 @@ const addNewPoint = async () => {
   const params = {
     uid: data.value.uid || generateTimeUniqueId(),
     point_name: data.value.name,
+    group: data.value.group ?? undefined,
     m: data.value.m,
     dev: data.value.dev,
     description: data.value.description,
@@ -400,6 +411,7 @@ const addNewPoints = async () => {
       const params = {
         uid: generateTimeUniqueId(),
         point_name: `${data.value.name} ${currentAddress}`,
+        group: data.value.group ?? undefined,
         m: data.value.m,
         dev: data.value.dev,
         description: data.value.description,
@@ -490,6 +502,7 @@ watch(
         ...defaultData,
         uid: props.editData.uid,
         name: props.editData.point_name,
+        group: props.editData.group ?? null,
         m: props.editData.m,
         dev: props.editData.dev,
         description: props.editData.description,

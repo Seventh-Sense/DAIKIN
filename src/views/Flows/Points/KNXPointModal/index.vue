@@ -50,6 +50,14 @@
         <div v-else-if="key === 'min' || key === 'max'">
           <a-input-number v-model:value="data[key]" style="width: 100%" />
         </div>
+        <div v-else-if="key === 'group'">
+          <a-input-number
+            v-model:value="data[key]"
+            :min="1"
+            :max="32"
+            style="width: 100%"
+          />
+        </div>
       </div>
     </div>
   </a-modal>
@@ -96,6 +104,7 @@ const currentIP = stepStore.getCurrentIP();
 const defaultData = {
   uid: "",
   name: "",
+  group: null as number | null,
   m: "",
   dev: "",
   description: "",
@@ -112,6 +121,7 @@ const data = ref({ ...defaultData });
 const KNX_ID_MAP = (key: string) => {
   const ID_MAP: { [key: string]: string } = {
     name: t("device_manage.name"),
+    group: t("device_manage.group"),
     m: t("device_manage.point_m"),
     dev: t("device_manage.device_dev"),
     description: t("device_manage.desc"),
@@ -148,6 +158,7 @@ const addNewPoint = async () => {
   const params = {
     uid: data.value.uid || generateTimeUniqueId(),
     point_name: data.value.name,
+    group: data.value.group ?? undefined,
     m: data.value.m,
     dev: data.value.dev,
     description: data.value.description,
@@ -199,6 +210,7 @@ watch(
       data.value = {
         uid: props.editData.uid,
         name: props.editData.point_name,
+        group: props.editData.group ?? null,
         m: props.editData.m,
         dev: props.editData.dev,
         description: props.editData.description,

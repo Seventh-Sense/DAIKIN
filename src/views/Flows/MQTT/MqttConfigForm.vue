@@ -250,7 +250,10 @@ const initData = () => {
 
   const { devices } = controllerData;
   if (devices?.length) {
-    options.value = [...new Set(devices.map((item) => item.group))].map(
+    const allGroups = devices.flatMap((device) =>
+      (device.points || []).map((point: any) => point.group),
+    ).filter((g) => g != null && g !== "");
+    options.value = [...new Set(allGroups)].map(
       (group) => ({ value: group }),
     );
   }
