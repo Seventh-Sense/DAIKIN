@@ -611,6 +611,7 @@ const POINT_FIELD_CONFIG = {
     unit: point.property?.unit,
     min: point.property?.min,
     max: point.property?.max,
+    bits_info: point.property?.bits_info,
     description: point.description,
     m: point.m,
     dev: point.dev,
@@ -832,7 +833,6 @@ const transformPointRow = (row: any, type: string) => {
         },
       };
 
-    case DeviceTypeEnum.ModbusRTU:
     case DeviceTypeEnum.ModbusTCP:
       return {
         ...base,
@@ -847,6 +847,27 @@ const transformPointRow = (row: any, type: string) => {
           unit: row.unit,
           min: row.min,
           max: row.max,
+        },
+      };
+
+    case DeviceTypeEnum.ModbusRTU:
+      return {
+        ...base,
+        property: {
+          register_type: row.register_type,
+          register_address: row.register_address,
+          register_count: row.register_count,
+          data_type: row.data_type,
+          align_format: row.align_format,
+          scale: row.scale,
+          offset: row.offset,
+          unit: row.unit,
+          min: row.min,
+          max: row.max,
+          bits_info:
+            row.bits_info != null && row.bits_info !== ""
+              ? Number(row.bits_info)
+              : null,
         },
       };
 
