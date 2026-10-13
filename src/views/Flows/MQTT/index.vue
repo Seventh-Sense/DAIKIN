@@ -82,27 +82,15 @@ const onClick = () => {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
     margin-bottom: 60px;
     max-height: calc(100% - 60px);
 
     :deep(.ant-tabs) {
-      flex: 1;
       display: flex;
       flex-direction: column;
-
-      .ant-tabs-content-holder {
-        flex: 1;
-        overflow: hidden;
-
-        .ant-tabs-content {
-          height: 100%;
-
-          .ant-tabs-tabpane {
-            height: 100%;
-          }
-        }
-      }
     }
   }
 
