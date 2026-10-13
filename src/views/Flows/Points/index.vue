@@ -6,6 +6,7 @@
         type="mono-line"
         :size="28"
         :color="{ normal: '#222222FF' }"
+        :disabled="isSimulating"
         @click="onBack"
       />
       <span class="card-top-title">
@@ -13,14 +14,28 @@
       </span>
     </div>
     <div class="card-actions">
+      <div class="card-actions-left">
+        <a-button
+          type="primary"
+          :danger="isSimulating"
+          class="btn-simulate"
+          @click="toggleSimulation"
+        >
+          {{
+            isSimulating
+              ? t("device_manage.stop_simulation")
+              : t("device_manage.start_simulation")
+          }}
+        </a-button>
+      </div>
       <div class="card-actions-btns">
         <span>
           {{ t("device_manage.record_count", { count: data.length }) }}
         </span>
-        <a-button type="primary" class="btn-add" @click="onClearAll">
+        <a-button type="primary" class="btn-add" :disabled="isSimulating" @click="onClearAll">
           {{ t("connectivity_check.clear") }}
         </a-button>
-        <a-button type="primary" class="btn-add" @click="onAdd">
+        <a-button type="primary" class="btn-add" :disabled="isSimulating" @click="onAdd">
           {{ t("ui.add") }}
         </a-button>
       </div>
@@ -46,6 +61,7 @@
                 type="mono-line"
                 :size="24"
                 :color="{ normal: '#222222FF' }"
+                :disabled="isSimulating"
                 @click="onEdit(record)"
               />
               <Icons
@@ -53,6 +69,7 @@
                 type="mono-line"
                 :size="24"
                 :color="{ normal: '#F76F83FF' }"
+                :disabled="isSimulating"
                 @click="onDelete(record)"
               />
             </div>
@@ -61,7 +78,7 @@
       </a-table>
     </div>
     <div class="card-finish">
-      <a-button type="primary" class="card-finish-btn" @click="onClick">
+      <a-button type="primary" class="card-finish-btn" :disabled="isSimulating" @click="onClick">
         {{ t("common.edit_complete") }}
       </a-button>
     </div>
@@ -108,6 +125,7 @@ import KNXPointModal from "./KNXPointModal/index.vue";
 import BACnetDisplayModal from "./BACnetDisplayModal/index.vue";
 import { useControllerStore } from "@/pinia/modules/controller";
 import { useStepStore } from "@/pinia/modules/step";
+import { readPointValue } from "@/api/modules/page";
 
 const controllerStore = useControllerStore();
 const stepStore = useStepStore();
@@ -149,6 +167,14 @@ const columns = computed(() => [
     dataIndex: "writable",
     customRender: ({ text }: any) => {
       return (text ?? "").toString();
+    },
+  },
+  {
+    title: () => t("device_manage.current_value"),
+    dataIndex: "currentValue",
+    customRender: ({ record }: any) => {
+      const val = currentValues.value[record.uid];
+      return val !== undefined && val !== null ? String(val) : "-";
     },
   },
   {
@@ -208,6 +234,12 @@ const isBacnetEdit = ref(false);
 const isEdit = ref(false);
 const displayData = ref({});
 
+// 仿真相关
+const isSimulating = ref(false);
+const currentValues = ref<Record<string, any>>({});
+const SIMULATE_INTERVAL = 2000;
+let simulateIntervalTimer: number | null = null;
+
 onMounted(() => {
   calculateTableHeight();
 
@@ -219,6 +251,11 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener("resize", calculateTableHeight);
+
+  // 离开页面前强制停止仿真并清理定时器
+  if (isSimulating.value) {
+    stopSimulation();
+  }
 
   if (interval) {
     clearInterval(interval);
@@ -283,6 +320,8 @@ const onAdd = () => {
 };
 
 const onEdit = (record: any) => {
+  if (isSimulating.value) return;
+
   displayData.value = record;
 
   if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
@@ -300,6 +339,8 @@ const onEdit = (record: any) => {
 };
 
 const onDelete = async (record: any) => {
+  if (isSimulating.value) return;
+
   loading.value = true;
 
   controllerStore.deletePointFromControllerDevice(
@@ -320,8 +361,96 @@ const onClick = () => {
 };
 
 const onBack = () => {
+  if (isSimulating.value) return;
+
   window.history.back();
 };
+
+// ===== 仿真相关 =====
+const toggleSimulation = () => {
+  if (isSimulating.value) {
+    stopSimulation();
+  } else {
+    startSimulation();
+  }
+};
+
+const startSimulation = async () => {
+  if (data.value.length === 0) {
+    message.warning(t("device_manage.no_points_to_simulate"));
+    return;
+  }
+
+  isSimulating.value = true;
+  await batchReadPoints();
+  scheduleNextRead();
+};
+
+const stopSimulation = () => {
+  isSimulating.value = false;
+  if (simulateIntervalTimer !== null) {
+    clearTimeout(simulateIntervalTimer);
+    simulateIntervalTimer = null;
+  }
+  currentValues.value = {};
+};
+
+const scheduleNextRead = () => {
+  if (!isSimulating.value) return;
+  simulateIntervalTimer = window.setTimeout(async () => {
+    await batchReadPoints();
+    scheduleNextRead(); // 自调度：当前完成后再安排下一次
+  }, SIMULATE_INTERVAL);
+};
+
+const batchReadPoints = async () => {
+  if (data.value.length === 0) return;
+
+  const pointParams = data.value.map((item) => ({
+    point_uid: item.uid,
+    data_type: getPointDataType(item),
+    priority: 16,
+  }));
+
+  try {
+    const result = await readPointValue({
+      device_address: currentIP,
+      device_type: deviceInfo.value.type,
+      device_uid: deviceInfo.value.id,
+      points: pointParams,
+    });
+
+    if (result?.success && Array.isArray(result.points)) {
+      // 先用响应中的 point_uid 匹配，如果没有则降级为按索引匹配
+      const respMap = new Map<string, any>();
+      for (const p of result.points) {
+        if (p?.point_uid !== undefined) {
+          respMap.set(String(p.point_uid), p);
+        }
+      }
+
+      const newValues: Record<string, any> = {};
+      data.value.forEach((item, idx) => {
+        let respPoint = respMap.get(String(item.uid));
+        if (!respPoint) respPoint = result.points[idx]; // 降级：按索引匹配
+        if (respPoint?.present_value !== undefined) {
+          newValues[item.uid] = respPoint.present_value;
+        }
+      });
+      currentValues.value = newValues;
+    }
+  } catch (error) {
+    console.error("批量读取点位值失败:", error);
+  }
+};
+
+const getPointDataType = (point: any): string => {
+  if (deviceInfo.value.type === DeviceTypeEnum.BACnet) {
+    return point.property?.object_type ?? "";
+  }
+  return point.property?.data_type ?? "";
+};
+// ===== 仿真相关结束 =====
 
 provide("deviceInfo", deviceInfo);
 </script>
@@ -358,7 +487,13 @@ provide("deviceInfo", deviceInfo);
     height: 52px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
+
+    &-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     &-btns {
       display: flex;
@@ -393,6 +528,10 @@ provide("deviceInfo", deviceInfo);
   justify-content: center;
   align-items: center;
   gap: 8px;
+  border-radius: 0;
+}
+
+.btn-simulate {
   border-radius: 0;
 }
 

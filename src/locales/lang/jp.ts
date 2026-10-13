@@ -367,6 +367,10 @@ export default {
     bits_info_tip: "ビット情報を選択（複数可）",
     basic_settings: "基本設定",
     advanced_settings: "イベント報告",
+    current_value: "現在値",
+    start_simulation: "シミュレーション開始",
+    stop_simulation: "シミュレーション停止",
+    no_points_to_simulate: "シミュレーション可能なポイントがありません",
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",

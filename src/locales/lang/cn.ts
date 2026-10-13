@@ -353,6 +353,10 @@ export default {
     bits_info_tip: "请选择位信息（可多选）",
     basic_settings: "基础设置",
     advanced_settings: "事件上报",
+    current_value: "当前值",
+    start_simulation: "开始仿真",
+    stop_simulation: "停止仿真",
+    no_points_to_simulate: "暂无可仿真点位",
   },
   msg: {
     updateSuccess: "设备状态更新成功",

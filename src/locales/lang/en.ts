@@ -360,6 +360,10 @@ export default {
     bits_info_tip: "Select bits info (multiple)",
     basic_settings: "Basic Settings",
     advanced_settings: "Event Report",
+    current_value: "Current Value",
+    start_simulation: "Start Simulation",
+    stop_simulation: "Stop Simulation",
+    no_points_to_simulate: "No points to simulate",
   },
   msg: {
     updateSuccess: "Device status updated successfully",
