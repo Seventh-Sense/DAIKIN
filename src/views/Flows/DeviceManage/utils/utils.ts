@@ -611,6 +611,11 @@ const POINT_FIELD_CONFIG = {
     unit: point.property?.unit,
     min: point.property?.min,
     max: point.property?.max,
+    enable: point.property?.enable,
+    status_list: point.property?.status_list,
+    high_limit: point.property?.high_limit,
+    low_limit: point.property?.low_limit,
+    deadband: point.property?.deadband,
     bits_info: point.property?.bits_info,
     description: point.description,
     m: point.m,
@@ -864,6 +869,26 @@ const transformPointRow = (row: any, type: string) => {
           unit: row.unit,
           min: row.min,
           max: row.max,
+          enable:
+            row.enable != null && row.enable !== ""
+              ? Boolean(row.enable)
+              : true,
+          status_list:
+            row.status_list != null && row.status_list !== ""
+              ? Number(row.status_list)
+              : null,
+          high_limit:
+            row.high_limit != null && row.high_limit !== ""
+              ? Number(row.high_limit)
+              : null,
+          low_limit:
+            row.low_limit != null && row.low_limit !== ""
+              ? Number(row.low_limit)
+              : null,
+          deadband:
+            row.deadband != null && row.deadband !== ""
+              ? Number(row.deadband)
+              : null,
           bits_info:
             row.bits_info != null && row.bits_info !== ""
               ? Number(row.bits_info)
