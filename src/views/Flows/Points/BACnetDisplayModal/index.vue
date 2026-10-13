@@ -37,7 +37,7 @@
       <a-input-number
         v-model:value="data.group"
         :min="1"
-        :max="32"
+        :max="64"
         style="width: 100%; margin-bottom: 12px"
       />
       <div class="modal-porperty">{{ $t("device_manage.min") }}</div>

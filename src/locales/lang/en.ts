@@ -168,7 +168,7 @@ export default {
     controller_not_found: "Controller information not found",
     host_port_required: "Please enter MQTT host and port",
     save_success: "Saved successfully",
-    max_limit_3: "A maximum of 3 Topics can be added.",
+    max_limit_3: "A maximum of 64 Topics can be added.",
     topic_repeat: "This group already exists, please do not add it repeatedly.",
     sn: "Device SN",
     pkey: "Remark(pkey)",

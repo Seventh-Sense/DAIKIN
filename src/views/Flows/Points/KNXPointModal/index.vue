@@ -53,7 +53,7 @@
           <a-input-number
             v-model:value="data[key]"
             :min="1"
-            :max="32"
+            :max="64"
             style="width: 100%"
           />
         </div>

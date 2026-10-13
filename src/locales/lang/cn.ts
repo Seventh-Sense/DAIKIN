@@ -166,7 +166,7 @@ export default {
     controller_not_found: "未找到对应控制器信息",
     host_port_required: "请填写MQTT主机和端口",
     save_success: "保存成功",
-    max_limit_3: "最多只能添加10个Topic",
+    max_limit_3: "最多只能添加64个Topic",
     topic_repeat: "该分组已存在，请勿重复添加",
     sn: "设备SN",
     pkey: "备注信息(pkey)",

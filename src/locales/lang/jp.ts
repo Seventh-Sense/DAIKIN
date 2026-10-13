@@ -174,7 +174,7 @@ export default {
     controller_not_found: "該当するコントローラー情報が見つかりません",
     host_port_required: "MQTTホストとポートを入力してください",
     save_success: "保存しました",
-    max_limit_3: "トピックは最大3つまで追加できます。",
+    max_limit_3: "トピックは最大64つまで追加できます。",
     topic_repeat:
       "このグループは既に存在します。重複して追加しないでください。",
     sn: "機器番号",
