@@ -23,10 +23,6 @@
         style="margin-bottom: 12px"
         disabled
       />
-      <div class="modal-porperty">{{ $t("device_manage.device_sn") }}</div>
-      <a-input v-model:value="data.sn" style="margin-bottom: 12px" />
-      <div class="modal-porperty">{{ $t("mqtt.pkey") }}</div>
-      <a-input v-model:value="data.pkey" style="margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.address") }}</div>
       <a-input v-model:value="initData.address" style="margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.enabled") }}</div>
@@ -110,8 +106,8 @@ const emit = defineEmits(["update:modelShow", "onSaveSuccess"]);
 
 const data = ref<any>({
   description: "",
-  pkey: "",
-  sn: "",
+  pkey: "test",
+  sn: "test",
   enabled: 1,
   polling: 3,
 });
@@ -145,8 +141,8 @@ const initFormData = () => {
   if (!props.initData) return;
   data.value = {
     description: props.initData.description || "",
-    pkey: props.initData.pkey || "",
-    sn: props.initData.sn || "",
+    pkey: "test",
+    sn: "test",
     enabled: props.initData.enabled ? 1 : 0,
     polling: props.initData.polling || 3,
   };

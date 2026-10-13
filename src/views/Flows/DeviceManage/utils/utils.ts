@@ -219,14 +219,14 @@ export const ModbusTCPData = {
   host: "127.0.0.1",
   port: 5020,
   connectionOption: "tcp",
-  sn: "",
-  pkey: "",
+  sn: "test",
+  pkey: "test",
   desc: "",
 };
 
 export const ModbusRTUData = {
-  sn: "",
-  pkey: "",
+  sn: "test",
+  pkey: "test",
   desc: "",
   slaveid: 1,
   serial_port: "Modbus1",
@@ -240,8 +240,8 @@ export const KNXData = {
   local_ip: "127.0.0.1",
   gateway_ip: "127.0.0.255",
   gateway_port: 3671,
-  sn: "",
-  pkey: "",
+  sn: "test",
+  pkey: "test",
   desc: "",
 };
 
@@ -497,8 +497,6 @@ const DEVICE_FIELD_CONFIG = {
     address: device.address,
     model_name: device.property?.model_name,
     description: device.description,
-    sn: device.sn,
-    pkey: device.pkey,
   }),
   KNX: (device: any) => ({
     uid: device.uid,
@@ -509,8 +507,6 @@ const DEVICE_FIELD_CONFIG = {
     gateway_port: device.property?.gateway_port,
     local_ip: device.property?.local_ip,
     description: device.description,
-    sn: device.sn,
-    pkey: device.pkey,
   }),
   ModbusTCP: (device: any) => ({
     uid: device.uid,
@@ -521,8 +517,6 @@ const DEVICE_FIELD_CONFIG = {
     port: device.property?.port,
     slaveid: device.property?.slaveid,
     description: device.description,
-    sn: device.sn,
-    pkey: device.pkey,
   }),
   ModbusRTU: (device: any) => ({
     uid: device.uid,
@@ -536,8 +530,6 @@ const DEVICE_FIELD_CONFIG = {
     parity: device.property?.parity,
     stop_bit: device.property?.stop_bit,
     description: device.description,
-    sn: device.sn,
-    pkey: device.pkey,
   }),
 };
 
@@ -555,7 +547,6 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
     description: point.description,
     m: point.m,
-    dev: point.dev,
   }),
   KNX: (device: any, point: any) => ({
     uid: point.uid,
@@ -571,7 +562,6 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
     description: point.description,
     m: point.m,
-    dev: point.dev,
   }),
   ModbusTCP: (device: any, point: any) => ({
     uid: point.uid,
@@ -592,7 +582,6 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
     description: point.description,
     m: point.m,
-    dev: point.dev,
   }),
   ModbusRTU: (device: any, point: any) => ({
     uid: point.uid,
@@ -619,7 +608,6 @@ const POINT_FIELD_CONFIG = {
     bits_info: point.property?.bits_info,
     description: point.description,
     m: point.m,
-    dev: point.dev,
   }),
 };
 
@@ -757,8 +745,8 @@ const transformDeviceRow = (row: any, type: string) => {
     uid: row.uid || generateTimeUniqueId(),
     device_name: row.device_name,
     protocol: type,
-    sn: row.sn,
-    pkey: row.pkey,
+    sn: "test",
+    pkey: "test",
     polling: row.polling === "" ? 0 : Number(row.polling),
     description: row.description,
     enabled: true,
@@ -820,7 +808,7 @@ const transformPointRow = (row: any, type: string) => {
     point_name: row.point_name,
     group: row.group !== undefined && row.group !== "" ? Number(row.group) : undefined,
     m: row.m,
-    dev: row.dev,
+    dev: "test",
     description: row.description,
     writable: row.writable === "" ? false : Boolean(row.writable),
   };

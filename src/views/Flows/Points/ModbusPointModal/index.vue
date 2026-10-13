@@ -19,7 +19,7 @@
         v-for="(val, key, index) in data"
         :key="key"
         style="margin-top: 12px"
-        v-show="!advancedSettings.includes(key) && (key !== 'bits_info' || deviceType === 'ModbusRTU')"
+        v-show="!advancedSettings.includes(key) && key !== 'dev' && (key !== 'bits_info' || deviceType === 'ModbusRTU')"
       >
         <div class="modal-property">{{ MODBUS_ID_MAP(String(key)) }}</div>
         <div
@@ -196,7 +196,7 @@ const defaultData = {
   uid: "",
   name: "",
   m: "",
-  dev: "",
+  dev: "test",
   description: "",
   group: null as number | null,
   function: 4,

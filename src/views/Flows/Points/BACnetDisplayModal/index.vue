@@ -31,8 +31,6 @@
       />
       <div class="modal-porperty">{{ $t("device_manage.point_m") }}</div>
       <a-input v-model:value="data.m" style="margin-bottom: 12px" />
-      <div class="modal-porperty">{{ $t("device_manage.device_dev") }}</div>
-      <a-input v-model:value="data.dev" style="margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.desc") }}</div>
       <a-input v-model:value="data.description" style="margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.group") }}</div>
@@ -90,7 +88,7 @@ const { t } = useI18n();
 const data = ref<any>({
   description: "",
   m: "",
-  dev: "",
+  dev: "test",
   group: null,
   writable: 1,
   min: undefined,
@@ -139,7 +137,7 @@ const initFormData = () => {
   data.value = {
     description: props.editData.description || "",
     m: props.editData.m || "",
-    dev: props.editData.dev || "",
+    dev: "test",
     group: props.editData.group ?? null,
     writable: props.editData.writable ? 1 : 0,
     min:

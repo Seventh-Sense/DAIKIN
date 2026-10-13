@@ -142,14 +142,6 @@ const columns = computed(() => [
     title: t("device_manage.device_type"),
     dataIndex: "protocol",
   },
-  {
-    title: t("device_manage.device_sn"),
-    dataIndex: "sn",
-  },
-  {
-    title: t("mqtt.pkey"),
-    dataIndex: "pkey",
-  },
   { title: t("device_manage.polling"), dataIndex: "polling" },
   {
     title: t("device_manage.address"),

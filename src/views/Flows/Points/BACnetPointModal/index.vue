@@ -298,7 +298,7 @@ const handleOk = async () => {
       point_name: item.object_name,
       group: 1,
       m: "",
-      dev: "",
+      dev: "test",
       description: "",
       writable: true,
       property: {

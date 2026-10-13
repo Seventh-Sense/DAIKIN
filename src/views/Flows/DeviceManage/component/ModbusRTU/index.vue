@@ -1,15 +1,5 @@
 <template>
   <div class="content">
-    <div class="content-porperty">{{ $t("device_manage.device_sn") }}</div>
-    <a-input
-      v-model:value="data.property.sn"
-      style="width: 100%; margin-bottom: 12px"
-    />
-    <div class="content-porperty">{{ $t("mqtt.pkey") }}</div>
-    <a-input
-      v-model:value="data.property.pkey"
-      style="width: 100%; margin-bottom: 12px"
-    />
     <div class="content-porperty">{{ $t("device_manage.desc") }}</div>
     <a-input
       v-model:value="data.property.desc"

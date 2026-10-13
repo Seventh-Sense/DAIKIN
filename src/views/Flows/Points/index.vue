@@ -134,10 +134,6 @@ const columns = computed(() => [
     dataIndex: "m",
   },
   {
-    title: () => t("device_manage.device_dev"),
-    dataIndex: "dev",
-  },
-  {
     title: () => t("device_manage.desc"),
     dataIndex: "description",
   },

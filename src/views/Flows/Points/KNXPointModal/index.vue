@@ -27,8 +27,7 @@
             key === 'description' ||
             key === 'read_address' ||
             key === 'write_address' ||
-            key === 'm' || 
-            key === 'dev'
+            key === 'm'
           "
         >
           <a-input v-model:value="data[key]" />
@@ -106,7 +105,7 @@ const defaultData = {
   name: "",
   group: null as number | null,
   m: "",
-  dev: "",
+  dev: "test",
   description: "",
   read_address: "0/1/1",
   write_address: "0/0/1",
