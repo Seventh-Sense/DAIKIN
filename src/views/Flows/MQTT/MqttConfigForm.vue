@@ -48,10 +48,10 @@
           style="width: 100%"
         />
       </div>
-      <div class="card-content-block">
+      <!-- <div class="card-content-block">
         <span class="card-content-text">{{ t("mqtt.last_will_topic") }}</span>
         <a-input v-model:value="info.last_will_topic" style="width: 100%" />
-      </div>
+      </div> -->
     </div>
 
     <div class="card-content-file">
