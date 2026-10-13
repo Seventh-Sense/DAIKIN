@@ -227,7 +227,7 @@ export default {
     device_sn: "设备SN",
     device_dev: "Dev",
     point_name: "点位名称",
-    point_m: "标识",
+    point_m: "标识符",
     type: "类型",
     polling: "轮询(秒)",
     address: "地址",
