@@ -320,7 +320,7 @@ const handleDelete = (index: number) => {
 };
 
 const onAdd = () => {
-  if (list.length >= 11) {
+  if (list.length >= 32) {
     message.warning(t("mqtt.max_limit_3"));
     return;
   }
