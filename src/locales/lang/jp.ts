@@ -238,7 +238,7 @@ export default {
     device_sn: "デバイスSN",
     device_dev: "Dev",
     point_name: "ポイント名",
-    point_m: "M",
+    point_m: "識別",
     type: "種別",
     polling: "ポーリング（秒）",
     address: "アドレス",

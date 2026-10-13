@@ -232,7 +232,7 @@ export default {
     device_sn: "Device SN",
     device_dev: "Dev",
     point_name: "Point Name",
-    point_m: "M",
+    point_m: "Identifier",
     type: "Type",
     polling: "Polling (s)",
     address: "Address",
