@@ -237,7 +237,8 @@ const displayData = ref({});
 // 仿真相关
 const isSimulating = ref(false);
 const currentValues = ref<Record<string, any>>({});
-const SIMULATE_INTERVAL = 2000;
+const SIMULATE_INTERVAL = 3000;
+const BATCH_SIZE = 20;
 let simulateIntervalTimer: number | null = null;
 
 onMounted(() => {
@@ -406,42 +407,52 @@ const scheduleNextRead = () => {
 const batchReadPoints = async () => {
   if (data.value.length === 0) return;
 
-  const pointParams = data.value.map((item) => ({
+  // 1. 构造所有 pointParams
+  const allParams = data.value.map((item) => ({
     point_uid: item.uid,
     data_type: getPointDataType(item),
     priority: 16,
   }));
 
-  try {
-    const result = await readPointValue({
-      device_address: currentIP,
-      device_type: deviceInfo.value.type,
-      device_uid: deviceInfo.value.id,
-      points: pointParams,
-    });
+  // 2. 按 BATCH_SIZE 切片分批
+  const batches: typeof allParams[] = [];
+  for (let i = 0; i < allParams.length; i += BATCH_SIZE) {
+    batches.push(allParams.slice(i, i + BATCH_SIZE));
+  }
 
-    if (result?.success && Array.isArray(result.points)) {
-      // 先用响应中的 point_uid 匹配，如果没有则降级为按索引匹配
-      const respMap = new Map<string, any>();
-      for (const p of result.points) {
-        if (p?.point_uid !== undefined) {
-          respMap.set(String(p.point_uid), p);
+  // 3. 逐批串行调用，收集响应到 respMap
+  const respMap = new Map<string, any>();
+  for (const batch of batches) {
+    try {
+      const result = await readPointValue({
+        device_address: currentIP,
+        device_type: deviceInfo.value.type,
+        device_uid: deviceInfo.value.id,
+        points: batch,
+      });
+
+      if (result?.success && Array.isArray(result.points)) {
+        for (const p of result.points) {
+          if (p?.point_uid !== undefined) {
+            respMap.set(String(p.point_uid), p);
+          }
         }
       }
-
-      const newValues: Record<string, any> = {};
-      data.value.forEach((item, idx) => {
-        let respPoint = respMap.get(String(item.uid));
-        if (!respPoint) respPoint = result.points[idx]; // 降级：按索引匹配
-        if (respPoint?.present_value !== undefined) {
-          newValues[item.uid] = respPoint.present_value;
-        }
-      });
-      currentValues.value = newValues;
+    } catch (error) {
+      console.error("批次读取失败:", error);
+      // 单批失败不中断其他批次
     }
-  } catch (error) {
-    console.error("批量读取点位值失败:", error);
   }
+
+  // 4. 统一映射到 currentValues
+  const newValues: Record<string, any> = {};
+  data.value.forEach((item) => {
+    const respPoint = respMap.get(String(item.uid));
+    if (respPoint?.present_value !== undefined) {
+      newValues[item.uid] = respPoint.present_value;
+    }
+  });
+  currentValues.value = newValues;
 };
 
 const getPointDataType = (point: any): string => {
