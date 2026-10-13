@@ -872,7 +872,7 @@ const transformPointRow = (row: any, type: string) => {
           enable:
             row.enable != null && row.enable !== ""
               ? Boolean(row.enable)
-              : true,
+              : false,
           status_list:
             row.status_list != null && row.status_list !== ""
               ? Number(row.status_list)

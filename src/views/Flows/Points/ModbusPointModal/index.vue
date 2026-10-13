@@ -211,7 +211,7 @@ const defaultData = {
   max: null,
   unit: "",
   writable: 1,
-  enable: 1,
+  enable: 0,
   status_list: 1,
   high_limit: 100,
   low_limit: 0,
