@@ -37,6 +37,15 @@
               {{ t("device_info.modify_device_address") }}
             </a-button>
           </template>
+          <a-button class="card-set" @click="onSetNtp">
+            <Icons
+              name="time"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#ffffff' }"
+            />
+            {{ t("ntp.title") }}
+          </a-button>
           <a-button class="card-del" @click="onDelete">
             <Icons
               name="delete"
@@ -83,6 +92,11 @@
       v-model:modelShow="modalVisible"
       :fileName="ethFileName"
     />
+    <NtpConfigModal
+      v-if="ntpModalVisible"
+      v-model:modelShow="ntpModalVisible"
+      :currentIp="stepStore.currentMenuData.data.address"
+    />
     <a-modal
       v-model:open="deleteModalVisible"
       :title="t('layout.confirm_delete')"
@@ -113,6 +127,7 @@ import Icons from "@/icons/index.vue";
 import { ref, computed } from "vue";
 import { useControllerStore } from "@/pinia/modules/controller";
 import NetworkSetModal from "./Modal/NetworkSetModal/index.vue";
+import NtpConfigModal from "./Modal/NtpConfigModal/index.vue";
 
 const { t } = useI18n();
 const stepStore = useStepStore();
@@ -122,6 +137,7 @@ const deleteModalVisible = ref(false);
 const deleteSubMenuName = ref("");
 const modalVisible = ref(false);
 const ethFileName = ref("eth.json");
+const ntpModalVisible = ref(false);
 
 // 判断是否是特殊设备（支持双网口）
 const isDualLanDevice = computed(() => {
@@ -198,6 +214,11 @@ const onSetNetWorkLan1 = () => {
 const onSetNetWork = () => {
   ethFileName.value = "eth.json";
   modalVisible.value = true;
+};
+
+//NTP配置
+const onSetNtp = () => {
+  ntpModalVisible.value = true;
 };
 </script>
 

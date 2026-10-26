@@ -11,6 +11,7 @@ interface PersistOptions {
 interface ControllerInfo {
   devices?: any[];
   mqtt?: any;
+  ntp?: any;
   [key: string]: any;
 }
 
@@ -212,6 +213,7 @@ export const useControllerStore = defineStore(
       device.points = [];
     };
 
+    // 删除指定控制器
     const deleteControllerByIp = (ip: string) => {
       if (!controllerMap.value[ip]) {
         console.log("找不到控制器: deleteControllerByIp", ip);
@@ -219,6 +221,33 @@ export const useControllerStore = defineStore(
       }
       // 直接删除对应 ip 的数据
       delete controllerMap.value[ip];
+    };
+
+    // 设置 NTP 配置
+    const setControllerNtp = (
+      ip: string,
+      ntpData: {
+        ip: string;
+        port: number | string;
+        interval: number | string;
+      },
+    ) => {
+      const controller = controllerMap.value[ip];
+      if (!controller) {
+        console.log("找不到控制器: setControllerNtp", ip);
+        return false;
+      }
+      controller.ntp = {
+        ip: ntpData.ip,
+        port: Number(ntpData.port),
+        interval: Number(ntpData.interval),
+      };
+      return true;
+    };
+
+    // 获取 NTP 配置
+    const getControllerNtp = (ip: string) => {
+      return controllerMap.value[ip]?.ntp || null;
     };
 
     // 清空所有
@@ -242,6 +271,8 @@ export const useControllerStore = defineStore(
       clearAllPointsByDeviceID,
       setControllerDevices,
       deleteControllerByIp,
+      setControllerNtp,
+      getControllerNtp,
       setCurrentAdress,
       getCurrentAdress,
     };
