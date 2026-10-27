@@ -1,6 +1,16 @@
 <template>
   <div class="card">
-    <div class="card-top">{{ t("mqtt.title") }}</div>
+    <div class="card-top">
+      <span class="card-top-title">{{ t("mqtt.title") }}</span>
+      <div class="card-top-actions">
+        <a-button type="primary" class="card-btn" @click="onImport">
+          {{ t("ui.import") }}
+        </a-button>
+        <a-button type="primary" class="card-btn" @click="onExport">
+          {{ t("ui.export") }}
+        </a-button>
+      </div>
+    </div>
     <div class="card-content">
       <MqttConfigForm ref="mqttForm" />
     </div>
@@ -9,23 +19,82 @@
         {{ t("common.edit_complete") }}
       </a-button>
     </div>
+
+    <!-- 隐藏的文件输入 -->
+    <input
+      ref="fileInput"
+      type="file"
+      accept=".xlsx,.xls"
+      style="display: none"
+      @change="handleFileUpload"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { message } from "ant-design-vue";
 import { handleEditCompleteJump } from "../until/util";
 import MqttConfigForm from "./MqttConfigForm.vue";
+import { exportMqttData, importMqttData } from "./utils/xlsx";
+import { useControllerStore } from "@/pinia/modules/controller";
+import { useStepStore } from "@/pinia/modules/step";
 
 const { t } = useI18n();
+const controllerStore = useControllerStore();
+const stepStore = useStepStore();
 
 const mqttForm = ref<InstanceType<typeof MqttConfigForm> | null>(null);
+const fileInput = ref<HTMLInputElement | null>(null);
+
+const currentIP = stepStore.getCurrentIP();
 
 const onClick = () => {
   if (mqttForm.value && !mqttForm.value.validate()) return;
 
   handleEditCompleteJump();
+};
+
+// ========== 导出 ==========
+const onExport = () => {
+  const ctrl = controllerStore.getControllerByIp(currentIP);
+  exportMqttData(ctrl?.mqtt || {});
+};
+
+// ========== 导入 ==========
+const onImport = () => {
+  fileInput.value?.click();
+};
+
+const handleFileUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (!input.files?.length) return;
+
+  const file = input.files[0];
+  try {
+    await importMqttData(file, applyImportedData);
+  } catch (error) {
+    console.error("MQTT 导入失败:", error);
+  } finally {
+    input.value = "";
+  }
+};
+
+const applyImportedData = (mqtt: Record<string, any>) => {
+  const ctrl = controllerStore.getControllerByIp(currentIP);
+  if (!ctrl) {
+    message.error(t("mqtt.controller_not_found"));
+    return;
+  }
+
+  // 直接替换 mqtt 对象并重置计数器
+  ctrl.mqtt = mqtt;
+  ctrl._mqttPrimaryCounter = null;
+  ctrl._mqttSecondaryCounter = null;
+
+  // 刷新表单
+  mqttForm.value?.refresh();
 };
 </script>
 
@@ -43,14 +112,23 @@ const onClick = () => {
   &-top {
     height: 52px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    font-weight: bold;
-    font-size: 14px;
-    color: var(--header-text-color);
-    line-height: 20px;
-    text-align: left;
-    font-style: normal;
     flex-shrink: 0;
+
+    &-title {
+      font-weight: bold;
+      font-size: 14px;
+      color: var(--header-text-color);
+      line-height: 20px;
+      text-align: left;
+      font-style: normal;
+    }
+
+    &-actions {
+      display: flex;
+      gap: 8px;
+    }
   }
 
   &-content {

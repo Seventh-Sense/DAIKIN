@@ -197,6 +197,11 @@ export default {
     product_secret: "Product Secret",
     username: "Username",
     password: "Password",
+    export_success: "MQTT 配置导出成功",
+    export_empty: "暂无 MQTT 配置数据，无法导出",
+    import_success: "MQTT 配置导入成功",
+    import_failed: "MQTT 配置导入失败，请检查文件格式",
+    excelSelectTip: "请选择 Excel 文件（.xlsx/.xls）",
   },
   ntp: {
     title: "NTP配置",

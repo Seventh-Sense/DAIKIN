@@ -738,7 +738,7 @@ const validate = () => {
   return true;
 };
 
-defineExpose({ validate });
+defineExpose({ validate, refresh: initData });
 </script>
 
 <style lang="less" scoped>

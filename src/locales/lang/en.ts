@@ -199,6 +199,11 @@ export default {
     product_secret: "Product Secret",
     username: "Username",
     password: "Password",
+    export_success: "MQTT configuration exported successfully",
+    export_empty: "No MQTT configuration data to export",
+    import_success: "MQTT configuration imported successfully",
+    import_failed: "MQTT configuration import failed, please check the file format",
+    excelSelectTip: "Please select an Excel file (.xlsx/.xls)",
   },
   ntp: {
     title: "NTP Configuration",
