@@ -138,44 +138,69 @@ const { t } = useI18n();
 const pointRef = ref<HTMLDivElement | null>(null);
 const tableScrollHeight = ref<string | number>("auto");
 
-const columns = computed(() => [
-  {
-    title: () => t("device_manage.point_name"),
-    dataIndex: "point_name",
+const isModbusDevice = computed(
+  () =>
+    deviceInfo.value.type === DeviceTypeEnum.ModbusRTU ||
+    deviceInfo.value.type === DeviceTypeEnum.ModbusTCP,
+);
+
+const registerAddressColumn: any = {
+  title: () => t("device_manage.reg_attr"),
+  dataIndex: "register_address",
+  customRender: ({ record }: any) => {
+    return record.property?.register_address ?? "-";
   },
-  {
-    title: () => t("device_manage.device_name"),
-    dataIndex: "device_name",
-  },
-  {
-    title: () => t("device_manage.point_m"),
-    dataIndex: "m",
-  },
-  {
-    title: () => t("device_manage.desc"),
-    dataIndex: "description",
-  },
-  {
-    title: () => t("device_manage.writable"),
-    dataIndex: "writable",
-    customRender: ({ text }: any) => {
-      return (text ?? "").toString();
+};
+
+const columns = computed(() => {
+  const cols: any[] = [
+    {
+      title: () => t("device_manage.point_name"),
+      dataIndex: "point_name",
     },
-  },
-  {
-    title: () => t("device_manage.current_value"),
-    dataIndex: "currentValue",
-    customRender: ({ record }: any) => {
-      const val = currentValues.value[record.uid];
-      return val !== undefined && val !== null ? String(val) : "-";
+    {
+      title: () => t("device_manage.device_name"),
+      dataIndex: "device_name",
     },
-  },
-  {
-    title: "",
-    dataIndex: "actions",
-    width: 120,
-  },
-]);
+    {
+      title: () => t("device_manage.point_m"),
+      dataIndex: "m",
+    },
+  ];
+
+  if (isModbusDevice.value) {
+    cols.push(registerAddressColumn);
+  }
+
+  cols.push(
+    {
+      title: () => t("device_manage.desc"),
+      dataIndex: "description",
+    },
+    {
+      title: () => t("device_manage.writable"),
+      dataIndex: "writable",
+      customRender: ({ text }: any) => {
+        return (text ?? "").toString();
+      },
+    },
+    {
+      title: () => t("device_manage.current_value"),
+      dataIndex: "currentValue",
+      customRender: ({ record }: any) => {
+        const val = currentValues.value[record.uid];
+        return val !== undefined && val !== null ? String(val) : "-";
+      },
+    },
+    {
+      title: "",
+      dataIndex: "actions",
+      width: 120,
+    },
+  );
+
+  return cols;
+});
 
 const calculateTableHeight = () => {
   if (!pointRef.value) {
