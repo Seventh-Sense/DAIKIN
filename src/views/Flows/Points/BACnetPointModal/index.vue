@@ -296,7 +296,6 @@ const handleOk = async () => {
     const newPoints = addList.map((item) => ({
       uid: generateTimeUniqueId(),
       point_name: item.object_name,
-      group: 1,
       m: "",
       dev: "test",
       description: "",

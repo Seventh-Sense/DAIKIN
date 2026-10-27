@@ -156,13 +156,6 @@ const columns = computed(() => [
     dataIndex: "description",
   },
   {
-    title: () => t("device_manage.group"),
-    dataIndex: "group",
-    customRender: ({ text }: any) => {
-      return (text ?? "").toString();
-    },
-  },
-  {
     title: () => t("device_manage.writable"),
     dataIndex: "writable",
     customRender: ({ text }: any) => {

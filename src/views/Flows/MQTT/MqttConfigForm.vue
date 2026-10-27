@@ -260,9 +260,15 @@ const initData = () => {
 
   const { devices } = controllerData;
   if (devices?.length) {
-    const allGroups = devices.flatMap((device) =>
-      (device.points || []).map((point: any) => point.group),
-    ).filter((g) => g != null && g !== "");
+    const allGroups = devices.flatMap((device) => {
+      // 优先使用新的 device.group
+      if (device.group != null && device.group !== "") {
+        return [device.group];
+      }
+      // 兼容旧数据：从首条点位取 group
+      const firstPointGroup = device.points?.[0]?.group;
+      return firstPointGroup != null ? [firstPointGroup] : [];
+    }).filter((g) => g != null && g !== "");
     options.value = [...new Set(allGroups)].map(
       (group) => ({ value: group }),
     );

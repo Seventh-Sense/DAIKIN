@@ -33,13 +33,6 @@
       <a-input v-model:value="data.m" style="margin-bottom: 12px" />
       <div class="modal-porperty">{{ $t("device_manage.desc") }}</div>
       <a-input v-model:value="data.description" style="margin-bottom: 12px" />
-      <div class="modal-porperty">{{ $t("device_manage.group") }}</div>
-      <a-input-number
-        v-model:value="data.group"
-        :min="1"
-        :max="64"
-        style="width: 100%; margin-bottom: 12px"
-      />
       <div class="modal-porperty">{{ $t("device_manage.min") }}</div>
       <a-input-number
         v-model:value="data.min"
@@ -89,7 +82,6 @@ const data = ref<any>({
   description: "",
   m: "",
   dev: "test",
-  group: null,
   writable: 1,
   min: undefined,
   max: undefined,
@@ -112,7 +104,6 @@ const handleOk = () => {
     description: data.value.description,
     m: data.value.m,
     dev: data.value.dev,
-    group: data.value.group ?? undefined,
     writable: !!data.value.writable,
     property: {
       ...props.editData.property,
@@ -138,7 +129,6 @@ const initFormData = () => {
     description: props.editData.description || "",
     m: props.editData.m || "",
     dev: "test",
-    group: props.editData.group ?? null,
     writable: props.editData.writable ? 1 : 0,
     min:
       props.editData.property.min === null

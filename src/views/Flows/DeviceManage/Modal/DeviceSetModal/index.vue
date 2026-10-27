@@ -48,6 +48,15 @@
           style="width: 100%"
         />
       </div>
+      <div class="modal-porperty" style="margin-top: 12px">
+        {{ $t("device_manage.group") }}
+      </div>
+      <a-input-number
+        v-model:value="data.group"
+        :min="1"
+        :max="64"
+        style="width: 100%"
+      />
 
       <div
         v-if="content"
@@ -122,6 +131,7 @@ const data = ref<DataType>({
   type: DeviceTypeEnum.ModbusTCP,
   polling: 3,
   enabled: 1,
+  group: null,
   property: {},
 });
 
@@ -157,6 +167,7 @@ const resetForm = () => {
     type: DeviceTypeEnum.BACnet,
     polling: 3,
     enabled: 1,
+    group: null,
     property: {},
   };
 };
@@ -289,6 +300,7 @@ const initEditData = () => {
       type: props.initData.protocol,
       polling: props.initData.polling,
       enabled: props.initData.enabled ? 1 : 0,
+      group: props.initData.group ?? null,
       property: {
         ...cloneDeep(props.initData.property),
         sn: props.initData.sn || "",

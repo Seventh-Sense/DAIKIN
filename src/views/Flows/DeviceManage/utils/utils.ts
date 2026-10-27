@@ -166,6 +166,7 @@ export const createModbusTCPParams = (data: DataType) => ({
   address: data.property.host + ":" + data.property.port,
   description: data.property.desc,
   enabled: data.enabled === 1,
+  group: data.group,
   property: {
     slaveid: data.property.slaveid,
     host: data.property.host,
@@ -185,6 +186,7 @@ export const createModbusRTUParams = (data: DataType) => ({
   address: data.property.slaveid,
   description: data.property.desc,
   enabled: data.enabled === 1,
+  group: data.group,
   property: {
     slaveid: data.property.slaveid,
     serial_port: data.property.serial_port,
@@ -206,6 +208,7 @@ export const createKNXParams = (data: DataType) => ({
   address: data.property.gateway_ip + ":" + data.property.gateway_port,
   description: data.property.desc,
   enabled: data.enabled === 1,
+  group: data.group,
   property: {
     local_ip: data.property.local_ip,
     gateway_ip: data.property.gateway_ip,
@@ -496,6 +499,7 @@ const DEVICE_FIELD_CONFIG = {
     polling: device.polling,
     address: device.address,
     model_name: device.property?.model_name,
+    group: device.group,
     description: device.description,
   }),
   KNX: (device: any) => ({
@@ -506,6 +510,7 @@ const DEVICE_FIELD_CONFIG = {
     gateway_ip: device.property?.gateway_ip,
     gateway_port: device.property?.gateway_port,
     local_ip: device.property?.local_ip,
+    group: device.group,
     description: device.description,
   }),
   ModbusTCP: (device: any) => ({
@@ -516,6 +521,7 @@ const DEVICE_FIELD_CONFIG = {
     host: device.property?.host,
     port: device.property?.port,
     slaveid: device.property?.slaveid,
+    group: device.group,
     description: device.description,
   }),
   ModbusRTU: (device: any) => ({
@@ -529,6 +535,7 @@ const DEVICE_FIELD_CONFIG = {
     data_bit: device.property?.data_bit,
     parity: device.property?.parity,
     stop_bit: device.property?.stop_bit,
+    group: device.group,
     description: device.description,
   }),
 };
@@ -539,7 +546,6 @@ const POINT_FIELD_CONFIG = {
     device_uid: device.uid,
     device_name: device.device_name,
     point_name: point.point_name,
-    group: point.group,
     writable: point.writable,
     object_type: point.property?.object_type,
     object_instance: point.property?.object_instance,
@@ -553,7 +559,6 @@ const POINT_FIELD_CONFIG = {
     device_uid: device.uid,
     device_name: device.device_name,
     point_name: point.point_name,
-    group: point.group,
     writable: point.writable,
     status_address: point.property?.status_address,
     control_address: point.property?.control_address,
@@ -568,7 +573,6 @@ const POINT_FIELD_CONFIG = {
     device_uid: device.uid,
     device_name: device.device_name,
     point_name: point.point_name,
-    group: point.group,
     writable: point.writable,
     register_address: point.property?.register_address,
     align_format: point.property?.align_format,
@@ -588,7 +592,6 @@ const POINT_FIELD_CONFIG = {
     device_uid: device.uid,
     device_name: device.device_name,
     point_name: point.point_name,
-    group: point.group,
     writable: point.writable,
     register_address: point.property?.register_address,
     align_format: point.property?.align_format,
@@ -748,6 +751,7 @@ const transformDeviceRow = (row: any, type: string) => {
     sn: "test",
     pkey: "test",
     polling: row.polling === "" ? 0 : Number(row.polling),
+    group: row.group !== undefined && row.group !== "" ? Number(row.group) : null,
     description: row.description,
     enabled: true,
     points: [],
@@ -806,7 +810,6 @@ const transformPointRow = (row: any, type: string) => {
   const base = {
     uid: row.uid || generateTimeUniqueId(),
     point_name: row.point_name,
-    group: row.group !== undefined && row.group !== "" ? Number(row.group) : undefined,
     m: row.m,
     dev: "test",
     description: row.description,

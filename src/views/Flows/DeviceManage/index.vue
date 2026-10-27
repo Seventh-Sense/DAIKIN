@@ -147,6 +147,11 @@ const columns = computed(() => [
     title: t("device_manage.address"),
     dataIndex: "address",
   },
+  {
+    title: t("device_manage.group"),
+    dataIndex: "group",
+    customRender: ({ text }: any) => (text ?? "").toString(),
+  },
   { title: t("device_manage.desc"), dataIndex: "description" },
   {
     title: "",

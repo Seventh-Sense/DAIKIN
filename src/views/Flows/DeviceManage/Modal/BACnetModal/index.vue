@@ -40,6 +40,13 @@
       />
       <div class="modal-porperty">{{ $t("device_manage.desc") }}</div>
       <a-input v-model:value="data.description" style="margin-bottom: 12px" />
+      <div class="modal-porperty">{{ $t("device_manage.group") }}</div>
+      <a-input-number
+        v-model:value="data.group"
+        :min="1"
+        :max="64"
+        style="width: 100%; margin-bottom: 12px"
+      />
       <div class="modal-porperty">{{ $t("device_manage.model_name") }}</div>
       <a-input
         v-model:value="initData.property.model_name"
@@ -110,6 +117,7 @@ const data = ref<any>({
   sn: "test",
   enabled: 1,
   polling: 3,
+  group: null,
 });
 
 onMounted(() => {
@@ -145,6 +153,7 @@ const initFormData = () => {
     sn: "test",
     enabled: props.initData.enabled ? 1 : 0,
     polling: props.initData.polling || 3,
+    group: props.initData.group ?? null,
   };
 };
 

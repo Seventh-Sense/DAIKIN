@@ -14,6 +14,7 @@ export interface DataType {
   type: string;
   polling: number;
   enabled: number;
+  group: number | null;
   property: null | any;
 }
 
