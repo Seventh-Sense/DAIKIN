@@ -2,14 +2,7 @@
   <div class="card">
     <div class="card-top">{{ t("mqtt.title") }}</div>
     <div class="card-content">
-      <a-tabs v-model:activeKey="activeKey" class="mqtt-tabs">
-        <a-tab-pane :key="'mqtt1'" :tab="t('mqtt.tab_mqtt1')">
-          <MqttConfigForm ref="mqttForm1" mqtt-key="mqtt1" />
-        </a-tab-pane>
-        <a-tab-pane v-if="isDualLanDevice" :key="'mqtt2'" :tab="t('mqtt.tab_mqtt2')">
-          <MqttConfigForm ref="mqttForm2" mqtt-key="mqtt2" />
-        </a-tab-pane>
-      </a-tabs>
+      <MqttConfigForm ref="mqttForm" mqtt-key="mqtt1" />
     </div>
     <div class="card-finish">
       <a-button type="primary" class="card-btn" @click="onClick">
@@ -20,35 +13,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { handleEditCompleteJump } from "../until/util";
-import { useStepStore } from "@/pinia/modules/step";
 import MqttConfigForm from "./MqttConfigForm.vue";
 
 const { t } = useI18n();
-const stepStore = useStepStore();
 
-// 只有 TIZI-3432-C020 和 TIZI-3432-C040 支持 mqtt2
-const isDualLanDevice = computed(() => {
-  const deviceName = stepStore.currentMenuData?.data?.name;
-  return deviceName === "TIZI-3432-C020" || deviceName === "TIZI-3432-C040";
-});
-
-const activeKey = ref("mqtt1");
-const mqttForm1 = ref<InstanceType<typeof MqttConfigForm> | null>(null);
-const mqttForm2 = ref<InstanceType<typeof MqttConfigForm> | null>(null);
-
-// 当设备切换为不支持 mqtt2 时，自动切回 mqtt tab
-watch(isDualLanDevice, (supported) => {
-  if (!supported && activeKey.value === "mqtt2") {
-    activeKey.value = "mqtt1";
-  }
-}, { immediate: true });
+const mqttForm = ref<InstanceType<typeof MqttConfigForm> | null>(null);
 
 const onClick = () => {
-  if (mqttForm1.value && !mqttForm1.value.validate()) return;
-  if (isDualLanDevice.value && mqttForm2.value && !mqttForm2.value.validate()) return;
+  if (mqttForm.value && !mqttForm.value.validate()) return;
 
   handleEditCompleteJump();
 };
@@ -87,11 +62,6 @@ const onClick = () => {
     overflow-x: hidden;
     margin-bottom: 60px;
     max-height: calc(100% - 60px);
-
-    :deep(.ant-tabs) {
-      display: flex;
-      flex-direction: column;
-    }
   }
 
   &-btn {
@@ -106,18 +76,6 @@ const onClick = () => {
     right: 24px;
     bottom: 20px;
   }
-}
-
-:deep(.ant-tabs-tab) {
-  color: var(--header-text-color) !important;
-}
-
-:deep(.ant-tabs-tab-active) {
-  font-weight: bold !important;
-}
-
-:deep(.ant-tabs-ink-bar) {
-  background-color: var(--header-text-color) !important;
 }
 
 :deep(.ant-input) {
