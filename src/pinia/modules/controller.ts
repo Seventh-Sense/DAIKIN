@@ -256,6 +256,115 @@ export const useControllerStore = defineStore(
       currentAdress.value = "";
     };
 
+    // --- MQTT 多记录 Counter 管理（每个控制器独立维护） ---
+    // 主系列: [1000, 2000),  从系列: [2000, 3000)
+    const PRIMARY_BASE = 1000;
+    const PRIMARY_MAX = 2000;
+    const SECONDARY_BASE = 2000;
+    const SECONDARY_MAX = 3000;
+
+    // 在 [base, max) 范围内找到当前 ctrl.mqtt 中第一个未被占用的编号
+    const findFirstAvailable = (
+      ctrl: ControllerInfo,
+      base: number,
+      max: number,
+    ): number => {
+      const used = new Set<number>();
+      if (ctrl.mqtt) {
+        for (const key of Object.keys(ctrl.mqtt)) {
+          const num = parseInt(key.replace("mqtt", ""), 10);
+          if (!Number.isNaN(num) && num >= base && num < max) {
+            used.add(num);
+          }
+        }
+      }
+      for (let n = base; n < max; n++) {
+        if (!used.has(n)) return n;
+      }
+      return base; // 全满兜底（理论上 Topic 上限 64 永远不会到）
+    };
+
+    const getMqttPrimaryCounter = (ip: string): number => {
+      const ctrl = controllerMap.value[ip];
+      if (!ctrl) return PRIMARY_BASE;
+      if (ctrl._mqttPrimaryCounter == null) ctrl._mqttPrimaryCounter = PRIMARY_BASE;
+      return ctrl._mqttPrimaryCounter;
+    };
+
+    const getMqttSecondaryCounter = (ip: string): number => {
+      const ctrl = controllerMap.value[ip];
+      if (!ctrl) return SECONDARY_BASE;
+      if (ctrl._mqttSecondaryCounter == null) ctrl._mqttSecondaryCounter = SECONDARY_BASE;
+      return ctrl._mqttSecondaryCounter;
+    };
+
+    const nextMqttPrimaryKey = (ip: string): string => {
+      const ctrl = controllerMap.value[ip];
+      if (!ctrl) return `mqtt${PRIMARY_BASE}`;
+      if (ctrl._mqttPrimaryCounter == null) ctrl._mqttPrimaryCounter = PRIMARY_BASE;
+
+      let n = ctrl._mqttPrimaryCounter;
+      if (n >= PRIMARY_MAX) {
+        // 超过范围，从下界开始找第一个空洞
+        n = findFirstAvailable(ctrl, PRIMARY_BASE, PRIMARY_MAX);
+      } else if (ctrl.mqtt && ctrl.mqtt[`mqtt${n}`] != null) {
+        // 当前 counter 位置已被占用（说明之前删过，counter 没回退），直接找空洞
+        n = findFirstAvailable(ctrl, PRIMARY_BASE, PRIMARY_MAX);
+      }
+      ctrl._mqttPrimaryCounter = n + 1;
+      return `mqtt${n}`;
+    };
+
+    const nextMqttSecondaryKey = (ip: string): string => {
+      const ctrl = controllerMap.value[ip];
+      if (!ctrl) return `mqtt${SECONDARY_BASE}`;
+      if (ctrl._mqttSecondaryCounter == null) ctrl._mqttSecondaryCounter = SECONDARY_BASE;
+
+      let n = ctrl._mqttSecondaryCounter;
+      if (n >= SECONDARY_MAX) {
+        n = findFirstAvailable(ctrl, SECONDARY_BASE, SECONDARY_MAX);
+      } else if (ctrl.mqtt && ctrl.mqtt[`mqtt${n}`] != null) {
+        n = findFirstAvailable(ctrl, SECONDARY_BASE, SECONDARY_MAX);
+      }
+      ctrl._mqttSecondaryCounter = n + 1;
+      return `mqtt${n}`;
+    };
+
+    // 判断 mqtt key 属于主系列还是从系列
+    const isPrimaryKey = (key: string): boolean => {
+      const num = parseInt(key.replace("mqtt", ""), 10);
+      return num >= 1000 && num < 2000;
+    };
+
+    const isSecondaryKey = (key: string): boolean => {
+      const num = parseInt(key.replace("mqtt", ""), 10);
+      return num >= 2000 && num < 3000;
+    };
+
+    // 删除某系列的所有 mqtt 记录
+    const deleteMqttSeries = (ip: string, series: "primary" | "secondary") => {
+      const ctrl = controllerMap.value[ip];
+      if (!ctrl || !ctrl.mqtt) return;
+      for (const key of Object.keys(ctrl.mqtt)) {
+        const num = parseInt(key.replace("mqtt", ""), 10);
+        if (series === "primary" && num >= 1000 && num < 2000) {
+          delete ctrl.mqtt[key];
+        } else if (series === "secondary" && num >= 2000 && num < 3000) {
+          delete ctrl.mqtt[key];
+        }
+      }
+    };
+
+    // 返回所有 mqtt 主系列 keys / 从系列 keys
+    const getMqttKeysBySeries = (ip: string, series: "primary" | "secondary"): string[] => {
+      const ctrl = controllerMap.value[ip];
+      if (!ctrl || !ctrl.mqtt) return [];
+      return Object.keys(ctrl.mqtt).filter((key) => {
+        const num = parseInt(key.replace("mqtt", ""), 10);
+        return series === "primary" ? num >= 1000 && num < 2000 : num >= 2000 && num < 3000;
+      });
+    };
+
     return {
       controllerMap,
       currentAdress,
@@ -275,6 +384,14 @@ export const useControllerStore = defineStore(
       getControllerNtp,
       setCurrentAdress,
       getCurrentAdress,
+      getMqttPrimaryCounter,
+      getMqttSecondaryCounter,
+      nextMqttPrimaryKey,
+      nextMqttSecondaryKey,
+      isPrimaryKey,
+      isSecondaryKey,
+      deleteMqttSeries,
+      getMqttKeysBySeries,
     };
   },
   {

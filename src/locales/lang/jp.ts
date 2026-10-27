@@ -173,10 +173,12 @@ export default {
     serial_number: "グループ",
     controller_not_found: "該当するコントローラー情報が見つかりません",
     host_port_required: "MQTTホストとポートを入力してください",
+    host_port_or_secondary_required: "プライマリホスト+ポートまたはセカンダリホスト+ポートの少なくとも1セットを入力してください",
     save_success: "保存しました",
     max_limit_3: "トピックは最大64つまで追加できます。",
     topic_repeat:
       "このグループは既に存在します。重複して追加しないでください。",
+    editing_address_blocked: "プライマリ/セカンダリのホストとポートの編集を完了してからTopicを追加してください。",
     sn: "機器番号",
     pkey: "備考(pkey)",
     auto_connect: "自動再接続",

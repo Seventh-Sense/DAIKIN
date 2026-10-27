@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-top">{{ t("mqtt.title") }}</div>
     <div class="card-content">
-      <MqttConfigForm ref="mqttForm" mqtt-key="mqtt1" />
+      <MqttConfigForm ref="mqttForm" />
     </div>
     <div class="card-finish">
       <a-button type="primary" class="card-btn" @click="onClick">
