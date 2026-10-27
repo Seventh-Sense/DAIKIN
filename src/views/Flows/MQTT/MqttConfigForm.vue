@@ -2,7 +2,7 @@
   <div class="card-content-inner">
     <div class="card-content-top">
       <div class="card-content-block">
-        <span class="card-content-text">{{ t("mqtt.host") }}</span>
+        <span class="card-content-text">{{ t("mqtt.primary_host") }}</span>
         <a-input
           v-model:value="info.host"
           style="width: 100%"
@@ -10,7 +10,7 @@
         />
       </div>
       <div class="card-content-block">
-        <span class="card-content-text">{{ t("mqtt.port") }}</span>
+        <span class="card-content-text">{{ t("mqtt.primary_port") }}</span>
         <a-input
           v-model:value="info.port"
           style="width: 100%"
@@ -18,40 +18,19 @@
         />
       </div>
       <div class="card-content-block">
-        <span class="card-content-text">{{ t("login.username") }}</span>
+        <span class="card-content-text">{{ t("mqtt.secondary_host") }}</span>
         <a-input
-          v-model:value="info.username"
-          autocomplete="off"
+          v-model:value="info.secondary_host"
           style="width: 100%"
         />
       </div>
       <div class="card-content-block">
-        <span class="card-content-text">{{ t("login.password") }}</span>
-        <a-input-password
-          v-model:value="info.password"
-          autocomplete="new-password"
-          style="width: 100%"
-        />
-      </div>
-      <div class="card-content-block">
-        <span class="card-content-text">{{ t("mqtt.client_id") }}</span>
+        <span class="card-content-text">{{ t("mqtt.secondary_port") }}</span>
         <a-input
-          v-model:value="info.client_id"
+          v-model:value="info.secondary_port"
           style="width: 100%"
         />
       </div>
-      <div class="card-content-block">
-        <span class="card-content-text">{{ t("mqtt.encode_format") }}</span>
-        <a-input-number
-          v-model:value="info.encode_format"
-          :min="0"
-          style="width: 100%"
-        />
-      </div>
-      <!-- <div class="card-content-block">
-        <span class="card-content-text">{{ t("mqtt.last_will_topic") }}</span>
-        <a-input v-model:value="info.last_will_topic" style="width: 100%" />
-      </div> -->
     </div>
 
     <div class="card-content-file">
@@ -195,10 +174,9 @@ const showModal = ref(false);
 const info = reactive({
   host: "",
   port: "",
-  username: "",
-  password: "",
-  client_id: "",
-  encode_format: 1,
+  secondary_host: "",
+  secondary_port: "",
+  encode_format: 2,
   last_will_topic: "",
   ca_filename: "",
   ca_certificate: "",
@@ -213,10 +191,9 @@ const list = reactive<any[]>([]);
 const defaultInfo = () => ({
   host: "",
   port: "",
-  username: "",
-  password: "",
-  client_id: "",
-  encode_format: 1,
+  secondary_host: "",
+  secondary_port: "",
+  encode_format: 2,
   last_will_topic: "",
   ca_filename: "",
   ca_certificate: "",
@@ -244,10 +221,9 @@ const initData = () => {
   if (mqttData) {
     info.host = mqttData.host || "";
     info.port = mqttData.port || "";
-    info.username = mqttData.username || "";
-    info.password = mqttData.password || "";
-    info.client_id = mqttData.client_id || "";
-    info.encode_format = Number(mqttData.encode_format) || 1;
+    info.secondary_host = mqttData.secondary_host || "";
+    info.secondary_port = mqttData.secondary_port || "";
+    info.encode_format = 2;
     info.last_will_topic = mqttData.last_will_topic || "";
     info.ca_filename = mqttData.ca_filename || "";
     info.ca_certificate = mqttData.ca_certificate || "";
@@ -293,9 +269,8 @@ const saveToPinia = () => {
   const baseData = {
     host: info.host.trim(),
     port: info.port.trim(),
-    username: info.username.trim(),
-    password: info.password.trim(),
-    client_id: info.client_id.trim(),
+    secondary_host: info.secondary_host.trim(),
+    secondary_port: info.secondary_port.trim(),
     encode_format: info.encode_format,
     last_will_topic: info.last_will_topic.trim(),
     ca_filename: info.ca_filename,

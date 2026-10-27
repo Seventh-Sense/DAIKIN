@@ -4,10 +4,9 @@ export const DeviceInitData = {
     mqtt1: {
       host: "",
       port: "",
-      username: "",
-      password: "",
-      client_id: "",
-      encode_format: 1,
+      secondary_host: "",
+      secondary_port: "",
+      encode_format: 2,
       last_will_topic: "",
       ca_certificate: "",
       client_certificate: "",

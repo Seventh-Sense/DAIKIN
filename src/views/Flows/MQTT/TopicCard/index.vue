@@ -69,19 +69,37 @@
         <span v-else class="topic-value">{{ interval }}</span>
       </div>
       <div class="topic-item">
-        <span class="topic-label">{{ t("mqtt.sn") }}</span>
-        <span  class="topic-value">{{ sn }}</span>
-      </div>
-      <div class="topic-item">
-        <span class="topic-label">{{ t("mqtt.pkey") }}</span>
+        <span class="topic-label">{{ t("mqtt.device_sn") }}</span>
         <template v-if="isEditing">
           <a-input
-            v-model:value="editPkey"
+            v-model:value="editDeviceSn"
             class="topic-input"
             style="width: 400px"
           />
         </template>
-        <span v-else class="topic-value">{{ pkey }}</span>
+        <span v-else class="topic-value">{{ deviceSn }}</span>
+      </div>
+      <div class="topic-item">
+        <span class="topic-label">{{ t("mqtt.product_key") }}</span>
+        <template v-if="isEditing">
+          <a-input
+            v-model:value="editProductKey"
+            class="topic-input"
+            style="width: 400px"
+          />
+        </template>
+        <span v-else class="topic-value">{{ productKey }}</span>
+      </div>
+      <div class="topic-item">
+        <span class="topic-label">{{ t("mqtt.product_secret") }}</span>
+        <template v-if="isEditing">
+          <a-input
+            v-model:value="editProductSecret"
+            class="topic-input"
+            style="width: 400px"
+          />
+        </template>
+        <span v-else class="topic-value">{{ productSecret }}</span>
       </div>
     </div>
   </div>
@@ -111,15 +129,33 @@ const isEditing = ref(false);
 const editSubTopic = ref("");
 const editPubTopic = ref("");
 const editInterval = ref(1);
-const editSn = ref("");
-const editPkey = ref("");
+const editDeviceSn = ref("");
+const editProductKey = ref("");
+const editProductSecret = ref("");
 
 const cardName = computed(() => props.data.group);
 const subTopic = computed(() => props.data.sub_topic);
 const pubTopic = computed(() => props.data.pub_topic);
 const interval = computed(() => props.data.interval);
-const sn = computed(() => props.data.sn || "");
-const pkey = computed(() => props.data.pkey || "");
+const deviceSn = computed(() => {
+  const u = props.data.username || "";
+  const idx = u.indexOf("&");
+  return idx >= 0 ? u.substring(idx + 1) : u;
+});
+const productKey = computed(() => {
+  const u = props.data.username || "";
+  const idx = u.indexOf("&");
+  return idx >= 0 ? u.substring(0, idx) : "";
+});
+const productSecret = computed(() => props.data.password || "");
+
+const splitUsername = (username: string) => {
+  const idx = username.indexOf("&");
+  if (idx >= 0) {
+    return { product_key: username.substring(0, idx), device_sn: username.substring(idx + 1) };
+  }
+  return { product_key: "", device_sn: username };
+};
 
 watch(
   () => props.data,
@@ -127,8 +163,10 @@ watch(
     editSubTopic.value = newData.sub_topic;
     editPubTopic.value = newData.pub_topic;
     editInterval.value = newData.interval;
-    editSn.value = newData.sn;
-    editPkey.value = newData.pkey;
+    const { product_key, device_sn } = splitUsername(newData.username || "");
+    editProductKey.value = product_key;
+    editDeviceSn.value = device_sn;
+    editProductSecret.value = newData.password || "";
   },
   { immediate: true },
 );
@@ -140,8 +178,8 @@ const enterEdit = () => {
 const handleSave = () => {
   if (
     !editPubTopic.value.trim() ||
-    !editSn.value.trim() ||
-    !editPkey.value.trim()
+    !editDeviceSn.value.trim() ||
+    !editProductKey.value.trim()
   ) {
     message.warn(t("mqtt.no_empty"));
     return;
@@ -152,13 +190,15 @@ const handleSave = () => {
   //   return;
   // }
 
+  const username = `${editProductKey.value.trim()}&${editDeviceSn.value.trim()}`;
   const newData: any = {
     ...props.data,
     sub_topic: editSubTopic.value.trim(),
     pub_topic: editPubTopic.value.trim(),
     interval: editInterval.value,
-    sn: editSn.value.trim(),
-    pkey: editPkey.value.trim(),
+    username,
+    password: editProductSecret.value.trim(),
+    client_id: `${editDeviceSn.value.trim()}&v1`,
   };
 
   emit("update", newData);
@@ -170,8 +210,10 @@ const handleCancel = () => {
   editSubTopic.value = props.data.sub_topic;
   editPubTopic.value = props.data.pub_topic;
   editInterval.value = props.data.interval;
-  editSn.value = props.data.sn;
-  editPkey.value = props.data.pkey;
+  const { product_key, device_sn } = splitUsername(props.data.username || "");
+  editProductKey.value = product_key;
+  editDeviceSn.value = device_sn;
+  editProductSecret.value = props.data.password || "";
 
   isEditing.value = false;
 };
@@ -183,7 +225,7 @@ const handleDelete = () => {
 
 <style lang="less" scoped>
 .topic {
-  height: 250px;
+  height: 280px;
   width: 100%;
   background-color: var(--topic-card-bg-color);
   border-radius: 6px;

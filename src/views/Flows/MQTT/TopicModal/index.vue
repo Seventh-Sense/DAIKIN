@@ -32,12 +32,16 @@
         />
       </div>
       <div class="modal-block">
-        <span class="modal-block-property">{{ t("mqtt.sn") }}</span>
-        <a-input v-model:value="data.sn" />
+        <span class="modal-block-property">{{ t("mqtt.device_sn") }}</span>
+        <a-input v-model:value="data.device_sn" />
       </div>
       <div class="modal-block">
-        <span class="modal-block-property">{{ t("mqtt.pkey") }}</span>
-        <a-input v-model:value="data.pkey" />
+        <span class="modal-block-property">{{ t("mqtt.product_key") }}</span>
+        <a-input v-model:value="data.product_key" />
+      </div>
+      <div class="modal-block">
+        <span class="modal-block-property">{{ t("mqtt.product_secret") }}</span>
+        <a-input v-model:value="data.product_secret" />
       </div>
     </div>
   </a-modal>
@@ -45,7 +49,7 @@
 
 <script setup lang="ts">
 import { message } from "ant-design-vue";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -70,8 +74,9 @@ const data = ref({
   sub_topic: "",
   pub_topic: "",
   interval: 10,
-  sn: "",
-  pkey: "",
+  device_sn: "",
+  product_key: "",
+  product_secret: "",
 });
 
 const baseOptions = ref(props.sns);
@@ -99,8 +104,8 @@ const handleOk = () => {
   if (
     !data.value.serial_number.toString().trim() ||
     !data.value.pub_topic.trim() ||
-    !data.value.sn.trim() ||
-    !data.value.pkey.trim()
+    !data.value.device_sn.trim() ||
+    !data.value.product_key.trim()
   ) {
     message.warn(t("mqtt.no_empty"));
     return;
@@ -111,13 +116,15 @@ const handleOk = () => {
   //   return;
   // }
 
+  const username = `${data.value.product_key.trim()}&${data.value.device_sn.trim()}`;
   const newTopic = {
     group: data.value.serial_number,
     sub_topic: data.value.sub_topic.trim(),
     pub_topic: data.value.pub_topic.trim(),
     interval: data.value.interval,
-    sn: data.value.sn.trim(),
-    pkey: data.value.pkey.trim(),
+    username,
+    password: data.value.product_secret.trim(),
+    client_id: `${data.value.device_sn.trim()}&v1`,
   };
 
   emit("add", newTopic);
@@ -133,8 +140,9 @@ const resetForm = () => {
     sub_topic: "",
     pub_topic: "",
     interval: 10,
-    sn: "",
-    pkey: "",
+    device_sn: "",
+    product_key: "",
+    product_secret: "",
   };
 };
 </script>
