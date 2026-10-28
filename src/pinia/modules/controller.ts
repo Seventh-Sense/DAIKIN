@@ -284,50 +284,45 @@ export const useControllerStore = defineStore(
       return base; // 全满兜底（理论上 Topic 上限 64 永远不会到）
     };
 
-    const getMqttPrimaryCounter = (ip: string): number => {
-      const ctrl = controllerMap.value[ip];
-      if (!ctrl) return PRIMARY_BASE;
-      if (ctrl._mqttPrimaryCounter == null) ctrl._mqttPrimaryCounter = PRIMARY_BASE;
-      return ctrl._mqttPrimaryCounter;
-    };
+    // 把 ctrl.mqtt 内 [base, max) 范围的 key 重新编号为紧凑连续的 mqtt{base+idx}
+    const renumberMqtt = (ctrl: ControllerInfo, base: number, max: number): void => {
+      if (!ctrl.mqtt) return;
+      const oldKeys = Object.keys(ctrl.mqtt)
+        .filter((k) => {
+          const n = parseInt(k.replace("mqtt", ""), 10);
+          return !Number.isNaN(n) && n >= base && n < max;
+        })
+        .sort((a, b) => parseInt(a.replace("mqtt", ""), 10) - parseInt(b.replace("mqtt", ""), 10));
 
-    const getMqttSecondaryCounter = (ip: string): number => {
-      const ctrl = controllerMap.value[ip];
-      if (!ctrl) return SECONDARY_BASE;
-      if (ctrl._mqttSecondaryCounter == null) ctrl._mqttSecondaryCounter = SECONDARY_BASE;
-      return ctrl._mqttSecondaryCounter;
+      oldKeys.forEach((oldKey, idx) => {
+        const newKey = `mqtt${base + idx}`;
+        if (oldKey !== newKey) {
+          ctrl.mqtt[newKey] = ctrl.mqtt[oldKey];
+          delete ctrl.mqtt[oldKey];
+        }
+      });
     };
 
     const nextMqttPrimaryKey = (ip: string): string => {
       const ctrl = controllerMap.value[ip];
       if (!ctrl) return `mqtt${PRIMARY_BASE}`;
-      if (ctrl._mqttPrimaryCounter == null) ctrl._mqttPrimaryCounter = PRIMARY_BASE;
-
-      let n = ctrl._mqttPrimaryCounter;
-      if (n >= PRIMARY_MAX) {
-        // 超过范围，从下界开始找第一个空洞
-        n = findFirstAvailable(ctrl, PRIMARY_BASE, PRIMARY_MAX);
-      } else if (ctrl.mqtt && ctrl.mqtt[`mqtt${n}`] != null) {
-        // 当前 counter 位置已被占用（说明之前删过，counter 没回退），直接找空洞
-        n = findFirstAvailable(ctrl, PRIMARY_BASE, PRIMARY_MAX);
-      }
-      ctrl._mqttPrimaryCounter = n + 1;
-      return `mqtt${n}`;
+      renumberMqtt(ctrl, PRIMARY_BASE, PRIMARY_MAX);
+      const count = Object.keys(ctrl.mqtt).filter((k) => {
+        const n = parseInt(k.replace("mqtt", ""), 10);
+        return !Number.isNaN(n) && n >= PRIMARY_BASE && n < PRIMARY_MAX;
+      }).length;
+      return `mqtt${PRIMARY_BASE + count}`;
     };
 
     const nextMqttSecondaryKey = (ip: string): string => {
       const ctrl = controllerMap.value[ip];
       if (!ctrl) return `mqtt${SECONDARY_BASE}`;
-      if (ctrl._mqttSecondaryCounter == null) ctrl._mqttSecondaryCounter = SECONDARY_BASE;
-
-      let n = ctrl._mqttSecondaryCounter;
-      if (n >= SECONDARY_MAX) {
-        n = findFirstAvailable(ctrl, SECONDARY_BASE, SECONDARY_MAX);
-      } else if (ctrl.mqtt && ctrl.mqtt[`mqtt${n}`] != null) {
-        n = findFirstAvailable(ctrl, SECONDARY_BASE, SECONDARY_MAX);
-      }
-      ctrl._mqttSecondaryCounter = n + 1;
-      return `mqtt${n}`;
+      renumberMqtt(ctrl, SECONDARY_BASE, SECONDARY_MAX);
+      const count = Object.keys(ctrl.mqtt).filter((k) => {
+        const n = parseInt(k.replace("mqtt", ""), 10);
+        return !Number.isNaN(n) && n >= SECONDARY_BASE && n < SECONDARY_MAX;
+      }).length;
+      return `mqtt${SECONDARY_BASE + count}`;
     };
 
     // 判断 mqtt key 属于主系列还是从系列
@@ -384,8 +379,6 @@ export const useControllerStore = defineStore(
       getControllerNtp,
       setCurrentAdress,
       getCurrentAdress,
-      getMqttPrimaryCounter,
-      getMqttSecondaryCounter,
       nextMqttPrimaryKey,
       nextMqttSecondaryKey,
       isPrimaryKey,

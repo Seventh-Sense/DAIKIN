@@ -88,10 +88,8 @@ const applyImportedData = (mqtt: Record<string, any>) => {
     return;
   }
 
-  // 直接替换 mqtt 对象并重置计数器
+  // 直接替换 mqtt 对象
   ctrl.mqtt = mqtt;
-  ctrl._mqttPrimaryCounter = null;
-  ctrl._mqttSecondaryCounter = null;
 
   // 刷新表单
   mqttForm.value?.refresh();

@@ -7,10 +7,9 @@
           v-if="primaryEditing"
           v-model:value="info.host"
           style="width: 100%"
-          placeholder="47.103.19.245"
         />
         <div v-else class="input-placeholder" :title="info.host || ''">
-          {{ info.host || "47.103.19.245" }}
+          {{ info.host }}
         </div>
       </div>
       <div class="card-content-block">
@@ -20,18 +19,36 @@
             v-if="primaryEditing"
             v-model:value="info.port"
             style="width: 100%"
-            placeholder="1888"
           />
           <div v-else class="input-placeholder" :title="info.port || ''">
-            {{ info.port || "1888" }}
+            {{ info.port }}
           </div>
+          <template v-if="primaryEditing">
+            <Icons
+              name="checkmark"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#1677ff' }"
+              class="action-icon"
+              @click="togglePrimaryEditing"
+            />
+            <Icons
+              name="dismiss"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#ff4d4f' }"
+              class="action-icon"
+              @click="cancelPrimaryEditing"
+            />
+          </template>
           <Icons
+            v-else
             name="edit"
             type="mono-line"
             :size="20"
-            :color="{ normal: primaryEditing ? '#1677ff' : '#222222' }"
+            :color="{ normal: '#222222' }"
             class="action-icon"
-            @click="primaryEditing = !primaryEditing"
+            @click="togglePrimaryEditing"
           />
         </div>
       </div>
@@ -57,13 +74,32 @@
           <div v-else class="input-placeholder" :title="info.secondary_port || ''">
             {{ info.secondary_port }}
           </div>
+          <template v-if="secondaryEditing">
+            <Icons
+              name="checkmark"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#1677ff' }"
+              class="action-icon"
+              @click="toggleSecondaryEditing"
+            />
+            <Icons
+              name="dismiss"
+              type="mono-line"
+              :size="20"
+              :color="{ normal: '#ff4d4f' }"
+              class="action-icon"
+              @click="cancelSecondaryEditing"
+            />
+          </template>
           <Icons
+            v-else
             name="edit"
             type="mono-line"
             :size="20"
-            :color="{ normal: secondaryEditing ? '#1677ff' : '#222222' }"
+            :color="{ normal: '#222222' }"
             class="action-icon"
-            @click="secondaryEditing = !secondaryEditing"
+            @click="toggleSecondaryEditing"
           />
         </div>
       </div>
@@ -435,6 +471,63 @@ const updateAllCommonConfig = () => {
   }
 };
 
+// --- 编辑前的快照（用于取消时还原） ---
+let primarySnapshot: { host: string; port: string } | null = null;
+let secondarySnapshot: { secondary_host: string; secondary_port: string } | null = null;
+
+// --- 主/从地址切换：退出编辑时才执行地址变化检测 ---
+const togglePrimaryEditing = () => {
+  const wasEditing = primaryEditing.value;
+  if (wasEditing) {
+    // 点确定：退出编辑 → 同步 host/port 值到 store + 处理删/补系列
+    primaryEditing.value = false;
+    primarySnapshot = null;
+    onFormConfigChange();
+    handleAddressChanges();
+  } else {
+    // 点 edit 图标：进入编辑 → 存快照
+    primarySnapshot = { host: info.host, port: info.port };
+    primaryEditing.value = true;
+  }
+};
+
+const toggleSecondaryEditing = () => {
+  const wasEditing = secondaryEditing.value;
+  if (wasEditing) {
+    secondaryEditing.value = false;
+    secondarySnapshot = null;
+    onFormConfigChange();
+    handleAddressChanges();
+  } else {
+    secondarySnapshot = { secondary_host: info.secondary_host, secondary_port: info.secondary_port };
+    secondaryEditing.value = true;
+  }
+};
+
+// --- 取消编辑：还原快照，不触发任何 store 写入 ---
+const cancelPrimaryEditing = () => {
+  if (primarySnapshot) {
+    info.host = primarySnapshot.host;
+    info.port = primarySnapshot.port;
+    // 手动更新 prev 以免后续 watch 误判变化
+    prevHost = info.host;
+    prevPort = info.port;
+  }
+  primarySnapshot = null;
+  primaryEditing.value = false;
+};
+
+const cancelSecondaryEditing = () => {
+  if (secondarySnapshot) {
+    info.secondary_host = secondarySnapshot.secondary_host;
+    info.secondary_port = secondarySnapshot.secondary_port;
+    prevSecHost = info.secondary_host;
+    prevSecPort = info.secondary_port;
+  }
+  secondarySnapshot = null;
+  secondaryEditing.value = false;
+};
+
 // --- 主/从地址变化检测：清空删除，补填补建 ---
 const handleAddressChanges = () => {
   const curHasPrimary = hasPrimary();
@@ -447,18 +540,18 @@ const handleAddressChanges = () => {
     return;
   }
 
-  // 主地址变空 → 删除所有主系列记录
-  if (prevHasPrimary && !curHasPrimary) {
+  // 主地址变空 → 删除所有主系列记录（编辑中跳过，退出编辑后再执行）
+  if (prevHasPrimary && !curHasPrimary && !primaryEditing.value) {
     controllerStore.deleteMqttSeries(ip, "primary");
   }
 
-  // 从地址变空 → 删除所有从系列记录
-  if (prevHasSecondary && !curHasSecondary) {
+  // 从地址变空 → 删除所有从系列记录（编辑中跳过）
+  if (prevHasSecondary && !curHasSecondary && !secondaryEditing.value) {
     controllerStore.deleteMqttSeries(ip, "secondary");
   }
 
   // 主地址从无到有 → 为所有从系列记录补建对应的主记录
-  if (!prevHasPrimary && curHasPrimary) {
+  if (!prevHasPrimary && curHasPrimary && !primaryEditing.value) {
     const secondaryKeys = controllerStore.getMqttKeysBySeries(ip, "secondary");
     for (const secKey of secondaryKeys) {
       const topic = ctrl.mqtt[secKey]?.topics?.[0];
@@ -481,7 +574,7 @@ const handleAddressChanges = () => {
   }
 
   // 从地址从无到有 → 为所有主系列记录补建对应的从记录
-  if (!prevHasSecondary && curHasSecondary) {
+  if (!prevHasSecondary && curHasSecondary && !secondaryEditing.value) {
     const primaryKeys = controllerStore.getMqttKeysBySeries(ip, "primary");
     for (const priKey of primaryKeys) {
       const topic = ctrl.mqtt[priKey]?.topics?.[0];
@@ -505,6 +598,9 @@ const handleAddressChanges = () => {
 
   prevHasPrimary = curHasPrimary;
   prevHasSecondary = curHasSecondary;
+
+  // 地址变化触发删除/补建后，重新聚合 topics 以刷新 UI
+  aggregateList();
 };
 
 // --- 表单配置变化 → 更新已有记录 + 处理地址变化 ---
@@ -522,35 +618,36 @@ const onFormConfigChange = () => {
     return;
   }
 
-  // 如果 host/port 改了（不是清空/补填）→ 更新已有主系列记录的 host/port
-  if (info.host.trim() !== prevHost.trim() || info.port.trim() !== prevPort.trim()) {
-    if (hasPrimary()) {
-      const primaryKeys = controllerStore.getMqttKeysBySeries(ip, "primary");
-      for (const key of primaryKeys) {
-        ctrl.mqtt[key].host = info.host.trim();
-        ctrl.mqtt[key].port = info.port.trim();
+  // 编辑中不实时更新 store host/port，等退出编辑时统一处理
+  if (!primaryEditing.value) {
+    if (info.host.trim() !== prevHost.trim() || info.port.trim() !== prevPort.trim()) {
+      if (hasPrimary()) {
+        const primaryKeys = controllerStore.getMqttKeysBySeries(ip, "primary");
+        for (const key of primaryKeys) {
+          ctrl.mqtt[key].host = info.host.trim();
+          ctrl.mqtt[key].port = info.port.trim();
+        }
       }
+      prevHost = info.host;
+      prevPort = info.port;
     }
-    prevHost = info.host;
-    prevPort = info.port;
   }
-  if (info.secondary_host.trim() !== prevSecHost.trim() || info.secondary_port.trim() !== prevSecPort.trim()) {
-    if (hasSecondary()) {
-      const secondaryKeys = controllerStore.getMqttKeysBySeries(ip, "secondary");
-      for (const key of secondaryKeys) {
-        ctrl.mqtt[key].host = info.secondary_host.trim();
-        ctrl.mqtt[key].port = info.secondary_port.trim();
+  if (!secondaryEditing.value) {
+    if (info.secondary_host.trim() !== prevSecHost.trim() || info.secondary_port.trim() !== prevSecPort.trim()) {
+      if (hasSecondary()) {
+        const secondaryKeys = controllerStore.getMqttKeysBySeries(ip, "secondary");
+        for (const key of secondaryKeys) {
+          ctrl.mqtt[key].host = info.secondary_host.trim();
+          ctrl.mqtt[key].port = info.secondary_port.trim();
+        }
       }
+      prevSecHost = info.secondary_host;
+      prevSecPort = info.secondary_port;
     }
-    prevSecHost = info.secondary_host;
-    prevSecPort = info.secondary_port;
   }
 
-  // 更新公共配置
+  // 更新公共配置（证书等）始终实时
   updateAllCommonConfig();
-
-  // 处理地址清空/补填
-  handleAddressChanges();
 };
 
 // --- init watch ---
