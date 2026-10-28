@@ -48,15 +48,17 @@
           style="width: 100%"
         />
       </div>
-      <div class="modal-porperty" style="margin-top: 12px">
-        {{ $t("device_manage.group") }}
-      </div>
-      <a-input-number
-        v-model:value="data.group"
-        :min="1"
-        :max="64"
-        style="width: 100%"
-      />
+      <template v-if="data.type !== DeviceTypeEnum.BACnet">
+        <div class="modal-porperty" style="margin-top: 12px">
+          {{ $t("device_manage.group") }}
+        </div>
+        <a-input-number
+          v-model:value="data.group"
+          :min="1"
+          :max="64"
+          style="width: 100%"
+        />
+      </template>
 
       <div
         v-if="content"
