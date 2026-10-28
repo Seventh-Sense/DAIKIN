@@ -181,8 +181,8 @@ const deviceType = ref("ModbusRTU");
 
 const { t } = useI18n();
 
-// 是否为离线点位（保存时需要保留顶层 is_offline 标记）
-const isOfflinePoint = computed(() => props.isEdit && props.editData?.is_offline === true);
+// 是否为状态点位（保存时需要保留顶层 is_status 标记）
+const isStatusPoint = computed(() => props.isEdit && props.editData?.is_status === true);
 
 // 高级设置属性列表
 const advancedSettings = ref(['enable', 'status_list', 'high_limit', 'low_limit', 'deadband']);
@@ -323,7 +323,7 @@ const dataCheck = (data: any) => {
 const addNewPoint = async () => {
   const params = {
     uid: data.value.uid || generateTimeUniqueId(),
-    is_offline: isOfflinePoint.value ? true : undefined,
+    is_status: isStatusPoint.value ? true : undefined,
     point_name: data.value.name,
     m: data.value.m,
     dev: data.value.dev,

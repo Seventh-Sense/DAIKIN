@@ -244,7 +244,7 @@ const handleSubmitByType = async (data: DataType) => {
       params.uid,
     );
     const hasOffline = existingPoints.some(
-      (p: any) => p.is_offline === true,
+      (p: any) => p.is_status === true,
     );
     if (!hasOffline) {
       const offlinePoint = createModbusRTUOfflinePoint(data.name);

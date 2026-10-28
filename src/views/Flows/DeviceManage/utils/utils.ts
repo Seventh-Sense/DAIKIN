@@ -220,9 +220,9 @@ export const createKNXParams = (data: DataType) => ({
 
 export const createModbusRTUOfflinePoint = (deviceName: string) => ({
   uid: generateTimeUniqueId(),
-  is_offline: true,
-  point_name: `${deviceName}_offline`,
-  m: `${deviceName}_offline`,
+  is_status: true,
+  point_name: `${deviceName}_status`,
+  m: `${deviceName}_status`,
   dev: "test",
   description: "Device Offline Status",
   writable: false,
@@ -579,7 +579,7 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
     description: point.description,
     m: point.m,
-    is_offline: point.is_offline ? 1 : 0,
+    is_status: point.is_status ? 1 : 0,
   }),
   KNX: (device: any, point: any) => ({
     uid: point.uid,
@@ -594,7 +594,7 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
     description: point.description,
     m: point.m,
-    is_offline: point.is_offline ? 1 : 0,
+    is_status: point.is_status ? 1 : 0,
   }),
   ModbusTCP: (device: any, point: any) => ({
     uid: point.uid,
@@ -614,7 +614,7 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
     description: point.description,
     m: point.m,
-    is_offline: point.is_offline ? 1 : 0,
+    is_status: point.is_status ? 1 : 0,
   }),
   ModbusRTU: (device: any, point: any) => ({
     uid: point.uid,
@@ -640,7 +640,7 @@ const POINT_FIELD_CONFIG = {
     bits_info: point.property?.bits_info,
     description: point.description,
     m: point.m,
-    is_offline: point.is_offline ? 1 : 0,
+    is_status: point.is_status ? 1 : 0,
   }),
 };
 
@@ -849,9 +849,9 @@ const transformPointRow = (row: any, type: string) => {
     dev: "test",
     description: row.description,
     writable: row.writable === "" ? false : Boolean(row.writable),
-    is_offline:
-      row.is_offline !== undefined && row.is_offline !== ""
-        ? Boolean(Number(row.is_offline))
+    is_status:
+      row.is_status !== undefined && row.is_status !== ""
+        ? Boolean(Number(row.is_status))
         : false,
   };
 
