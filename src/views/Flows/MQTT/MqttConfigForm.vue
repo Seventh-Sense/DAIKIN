@@ -540,13 +540,15 @@ const handleAddressChanges = () => {
     return;
   }
 
-  // 主地址变空 → 删除所有主系列记录（编辑中跳过，退出编辑后再执行）
-  if (prevHasPrimary && !curHasPrimary && !primaryEditing.value) {
+  // 主地址+port 都空 → 删除所有主系列记录（编辑中跳过）
+  const curPrimaryEmpty = info.host.trim() === "" && info.port.trim() === "";
+  if (prevHasPrimary && curPrimaryEmpty && !primaryEditing.value) {
     controllerStore.deleteMqttSeries(ip, "primary");
   }
 
-  // 从地址变空 → 删除所有从系列记录（编辑中跳过）
-  if (prevHasSecondary && !curHasSecondary && !secondaryEditing.value) {
+  // 从地址+port 都空 → 删除所有从系列记录（编辑中跳过）
+  const curSecondaryEmpty = info.secondary_host.trim() === "" && info.secondary_port.trim() === "";
+  if (prevHasSecondary && curSecondaryEmpty && !secondaryEditing.value) {
     controllerStore.deleteMqttSeries(ip, "secondary");
   }
 
