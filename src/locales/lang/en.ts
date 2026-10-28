@@ -395,6 +395,9 @@ export default {
     start_simulation: "Start Simulation",
     stop_simulation: "Stop Simulation",
     no_points_to_simulate: "No points to simulate",
+    offline_point_mode: "Offline Point",
+    no_create: "Don't Create",
+    auto_create: "Auto Create",
   },
   msg: {
     updateSuccess: "Device status updated successfully",

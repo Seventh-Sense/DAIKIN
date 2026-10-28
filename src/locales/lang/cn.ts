@@ -388,6 +388,9 @@ export default {
     start_simulation: "开始仿真",
     stop_simulation: "停止仿真",
     no_points_to_simulate: "暂无可仿真点位",
+    offline_point_mode: "离线点位",
+    no_create: "不创建",
+    auto_create: "自动创建",
   },
   msg: {
     updateSuccess: "设备状态更新成功",

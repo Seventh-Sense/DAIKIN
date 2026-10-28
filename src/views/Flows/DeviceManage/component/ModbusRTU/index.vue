@@ -47,11 +47,20 @@
         />
       </a-col>
     </a-row>
+    <div style="margin-top: 12px">
+      <div class="content-porperty">{{ $t("device_manage.offline_point_mode") }}</div>
+      <a-select
+        v-model:value="data.property.auto_create_offline"
+        :options="offlinePointOptions"
+        style="width: 100%; margin-bottom: 12px"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import {
   parityOptions,
   databitOptions,
@@ -63,6 +72,7 @@ import { useModbusConfigStore } from "@/pinia/modules/modbusConfig";
 
 const stepStore = useStepStore();
 const modbusConfigStore = useModbusConfigStore();
+const { t } = useI18n();
 
 // 当前控制器 IP
 const currentControllerIP = stepStore.getCurrentIP();
@@ -94,6 +104,17 @@ const serialOptions = ref([
   {
     label: "Modbus4",
     value: "Modbus4",
+  },
+]);
+
+const offlinePointOptions = ref([
+  {
+    label: t("device_manage.no_create"),
+    value: 0,
+  },
+  {
+    label: t("device_manage.auto_create"),
+    value: 1,
   },
 ]);
 

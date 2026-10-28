@@ -217,6 +217,29 @@ export const createKNXParams = (data: DataType) => ({
   points: [],
 });
 
+export const createModbusRTUOfflinePoint = (deviceName: string) => ({
+  uid: generateTimeUniqueId(),
+  is_offline: true,
+  point_name: `${deviceName}_offline`,
+  m: `${deviceName}_offline`,
+  dev: "test",
+  description: "Device Offline Status",
+  writable: false,
+  property: {
+    enable: 1,
+    register_type: 0,
+    register_address: 0,
+    register_count: 1,
+    data_type: "bool",
+    align_format: 1,
+    scale: 1,
+    offset: 0,
+    unit: "",
+    min: null,
+    max: null,
+  },
+});
+
 export const ModbusTCPData = {
   slaveid: 1,
   host: "127.0.0.1",
@@ -237,6 +260,7 @@ export const ModbusRTUData = {
   data_bit: 8,
   parity: "N",
   stop_bit: 1,
+  auto_create_offline: 0,
 };
 
 export const KNXData = {
@@ -537,6 +561,7 @@ const DEVICE_FIELD_CONFIG = {
     stop_bit: device.property?.stop_bit,
     group: device.group,
     description: device.description,
+    auto_create_offline: device.property?.auto_create_offline ?? 0,
   }),
 };
 
@@ -553,6 +578,7 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
     description: point.description,
     m: point.m,
+    is_offline: point.is_offline ? 1 : 0,
   }),
   KNX: (device: any, point: any) => ({
     uid: point.uid,
@@ -567,6 +593,7 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
     description: point.description,
     m: point.m,
+    is_offline: point.is_offline ? 1 : 0,
   }),
   ModbusTCP: (device: any, point: any) => ({
     uid: point.uid,
@@ -586,6 +613,7 @@ const POINT_FIELD_CONFIG = {
     max: point.property?.max,
     description: point.description,
     m: point.m,
+    is_offline: point.is_offline ? 1 : 0,
   }),
   ModbusRTU: (device: any, point: any) => ({
     uid: point.uid,
@@ -611,6 +639,7 @@ const POINT_FIELD_CONFIG = {
     bits_info: point.property?.bits_info,
     description: point.description,
     m: point.m,
+    is_offline: point.is_offline ? 1 : 0,
   }),
 };
 
@@ -789,6 +818,11 @@ const transformDeviceRow = (row: any, type: string) => {
           data_bit: row.data_bit,
           parity: row.parity,
           stop_bit: row.stop_bit,
+          auto_create_offline:
+            row.auto_create_offline !== undefined &&
+            row.auto_create_offline !== ""
+              ? Number(row.auto_create_offline)
+              : 0,
         },
       };
     case DeviceTypeEnum.KNX:
@@ -814,6 +848,10 @@ const transformPointRow = (row: any, type: string) => {
     dev: "test",
     description: row.description,
     writable: row.writable === "" ? false : Boolean(row.writable),
+    is_offline:
+      row.is_offline !== undefined && row.is_offline !== ""
+        ? Boolean(Number(row.is_offline))
+        : false,
   };
 
   // 差异化只处理 property

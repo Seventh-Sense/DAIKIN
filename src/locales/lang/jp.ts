@@ -402,6 +402,9 @@ export default {
     start_simulation: "シミュレーション開始",
     stop_simulation: "シミュレーション停止",
     no_points_to_simulate: "シミュレーション可能なポイントがありません",
+    offline_point_mode: "オフラインポイント",
+    no_create: "作成しない",
+    auto_create: "自動作成",
   },
   msg: {
     updateSuccess: "デバイスステータスの更新に成功しました",

@@ -91,6 +91,7 @@ import {
   deviceDataCheck,
   createModbusTCPParams,
   createModbusRTUParams,
+  createModbusRTUOfflinePoint,
   createKNXParams,
   ModbusTCPData,
   ModbusRTUData,
@@ -233,6 +234,24 @@ const handleSubmitByType = async (data: DataType) => {
   // 保存当前设备到 controllerMap
   controllerStore.addDeviceToController(ip, params);
 
+  // ModbusRTU 设备：启用自动创建离线点位（新建或编辑），且设备尚无离线点位时
+  if (
+    data.type === DeviceTypeEnum.ModbusRTU &&
+    data.property.auto_create_offline === 1
+  ) {
+    const existingPoints = controllerStore.getControllerPointsByDeviceId(
+      ip,
+      params.uid,
+    );
+    const hasOffline = existingPoints.some(
+      (p: any) => p.is_offline === true,
+    );
+    if (!hasOffline) {
+      const offlinePoint = createModbusRTUOfflinePoint(data.name);
+      controllerStore.addPointToControllerDevice(ip, params.uid, offlinePoint);
+    }
+  }
+
   // 如果是 ModbusRTU，store → controllerMap 全量对齐
   if (data.type === DeviceTypeEnum.ModbusRTU) {
     modbusConfigStore.syncToControllerMap(ip);
@@ -308,6 +327,8 @@ const initEditData = () => {
         sn: props.initData.sn || "",
         pkey: props.initData.pkey || "",
         desc: props.initData.description || "",
+        auto_create_offline:
+          props.initData.property?.auto_create_offline ?? 0,
       },
     };
 
