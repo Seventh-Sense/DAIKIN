@@ -194,6 +194,7 @@ export const createModbusRTUParams = (data: DataType) => ({
     data_bit: data.property.data_bit,
     parity: data.property.parity,
     stop_bit: data.property.stop_bit,
+    auto_create_offline: data.property.auto_create_offline ?? 0,
   },
   points: [],
 });
