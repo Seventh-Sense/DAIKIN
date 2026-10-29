@@ -260,6 +260,24 @@ const list = ref<any[]>([]);
 const hasPrimary = () => !!(info.host.trim() && info.port.trim());
 const hasSecondary = () => !!(info.secondary_host.trim() && info.secondary_port.trim());
 
+// 页面上行的 topic → 纯净 topic（sn/pkey 来自页面输入）+ 外层认证字段
+const splitTopic = (topic: any) => {
+  const { username, password, client_id, ...rest } = topic;
+  return {
+    topicCore: {
+      group: rest.group,
+      sub_topic: rest.sub_topic,
+      pub_topic: rest.pub_topic,
+      interval: rest.interval,
+      sn: rest.sn ?? "",
+      pkey: rest.pkey ?? "",
+    },
+    username: username ?? "",
+    password: password ?? "",
+    client_id: client_id ?? "",
+  };
+};
+
 // --- 从 pinia 聚合 topics 列表（去重） ---
 const aggregateList = () => {
   const ip = stepStore.getCurrentIP();
@@ -271,10 +289,16 @@ const aggregateList = () => {
   const seen = new Set<string>();
   const result: any[] = [];
   for (const key of Object.keys(ctrl.mqtt)) {
-    const topic = ctrl.mqtt[key]?.topics?.[0];
+    const record = ctrl.mqtt[key];
+    const topic = record?.topics?.[0];
     if (topic && !seen.has(topic.group)) {
       seen.add(topic.group);
-      result.push(topic);
+      result.push({
+        ...topic,
+        username: record.username ?? "",
+        password: record.password ?? "",
+        client_id: record.client_id ?? "",
+      });
     }
   }
   list.value = result;
@@ -428,13 +452,18 @@ const createMqttRecords = (topic: any) => {
     client_key: info.client_key.trim(),
   };
 
+  const { topicCore, username, password, client_id } = splitTopic(topic);
+
   if (hasPrimary()) {
     const key = controllerStore.nextMqttPrimaryKey(ip);
     ctrl.mqtt[key] = {
       host: info.host.trim(),
       port: info.port.trim(),
+      username,
+      password,
+      client_id,
       ...commonConfig,
-      topics: [topic],
+      topics: [topicCore],
     };
   }
 
@@ -443,8 +472,11 @@ const createMqttRecords = (topic: any) => {
     ctrl.mqtt[key] = {
       host: info.secondary_host.trim(),
       port: info.secondary_port.trim(),
+      username,
+      password,
+      client_id,
       ...commonConfig,
-      topics: [topic],
+      topics: [topicCore],
     };
   }
 };
@@ -556,12 +588,16 @@ const handleAddressChanges = () => {
   if (!prevHasPrimary && curHasPrimary && !primaryEditing.value) {
     const secondaryKeys = controllerStore.getMqttKeysBySeries(ip, "secondary");
     for (const secKey of secondaryKeys) {
-      const topic = ctrl.mqtt[secKey]?.topics?.[0];
-      if (!topic) continue;
+      const src = ctrl.mqtt[secKey];
+      const topicCore = src?.topics?.[0];
+      if (!topicCore) continue;
       const primaryKey = controllerStore.nextMqttPrimaryKey(ip);
       ctrl.mqtt[primaryKey] = {
         host: info.host.trim(),
         port: info.port.trim(),
+        username: src.username ?? "",
+        password: src.password ?? "",
+        client_id: src.client_id ?? "",
         encode_format: 2,
         last_will_topic: info.last_will_topic.trim(),
         ca_filename: info.ca_filename,
@@ -570,7 +606,7 @@ const handleAddressChanges = () => {
         client_certificate: info.client_certificate.trim(),
         client_key_filename: info.client_key_filename,
         client_key: info.client_key.trim(),
-        topics: [topic],
+        topics: [topicCore],
       };
     }
   }
@@ -579,12 +615,16 @@ const handleAddressChanges = () => {
   if (!prevHasSecondary && curHasSecondary && !secondaryEditing.value) {
     const primaryKeys = controllerStore.getMqttKeysBySeries(ip, "primary");
     for (const priKey of primaryKeys) {
-      const topic = ctrl.mqtt[priKey]?.topics?.[0];
-      if (!topic) continue;
+      const src = ctrl.mqtt[priKey];
+      const topicCore = src?.topics?.[0];
+      if (!topicCore) continue;
       const secondaryKey = controllerStore.nextMqttSecondaryKey(ip);
       ctrl.mqtt[secondaryKey] = {
         host: info.secondary_host.trim(),
         port: info.secondary_port.trim(),
+        username: src.username ?? "",
+        password: src.password ?? "",
+        client_id: src.client_id ?? "",
         encode_format: 2,
         last_will_topic: info.last_will_topic.trim(),
         ca_filename: info.ca_filename,
@@ -593,7 +633,7 @@ const handleAddressChanges = () => {
         client_certificate: info.client_certificate.trim(),
         client_key_filename: info.client_key_filename,
         client_key: info.client_key.trim(),
-        topics: [topic],
+        topics: [topicCore],
       };
     }
   }
@@ -729,9 +769,13 @@ const handleUpdate = (_index: number, newData: any) => {
     // 没找到旧记录 → 直接创建新的
     createMqttRecords(newData);
   } else {
-    // 更新所有匹配记录的 topics[0]
+    // 更新所有匹配记录的 topic 与认证字段
+    const { topicCore, username, password, client_id } = splitTopic(newData);
     for (const key of oldRecords.keys) {
-      ctrl.mqtt[key].topics = [newData];
+      ctrl.mqtt[key].topics = [topicCore];
+      ctrl.mqtt[key].username = username;
+      ctrl.mqtt[key].password = password;
+      ctrl.mqtt[key].client_id = client_id;
     }
   }
   aggregateList();

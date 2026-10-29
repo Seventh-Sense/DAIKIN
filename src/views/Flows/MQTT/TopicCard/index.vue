@@ -137,25 +137,9 @@ const cardName = computed(() => props.data.group);
 const subTopic = computed(() => props.data.sub_topic);
 const pubTopic = computed(() => props.data.pub_topic);
 const interval = computed(() => props.data.interval);
-const deviceSn = computed(() => {
-  const u = props.data.username || "";
-  const idx = u.indexOf("&");
-  return idx >= 0 ? u.substring(idx + 1) : u;
-});
-const productKey = computed(() => {
-  const u = props.data.username || "";
-  const idx = u.indexOf("&");
-  return idx >= 0 ? u.substring(0, idx) : "";
-});
+const deviceSn = computed(() => props.data.sn ?? "");
+const productKey = computed(() => props.data.pkey ?? "");
 const productSecret = computed(() => props.data.password || "");
-
-const splitUsername = (username: string) => {
-  const idx = username.indexOf("&");
-  if (idx >= 0) {
-    return { product_key: username.substring(0, idx), device_sn: username.substring(idx + 1) };
-  }
-  return { product_key: "", device_sn: username };
-};
 
 watch(
   () => props.data,
@@ -163,9 +147,8 @@ watch(
     editSubTopic.value = newData.sub_topic;
     editPubTopic.value = newData.pub_topic;
     editInterval.value = newData.interval;
-    const { product_key, device_sn } = splitUsername(newData.username || "");
-    editProductKey.value = product_key;
-    editDeviceSn.value = device_sn;
+    editProductKey.value = newData.pkey ?? "";
+    editDeviceSn.value = newData.sn ?? "";
     editProductSecret.value = newData.password || "";
   },
   { immediate: true },
@@ -190,15 +173,18 @@ const handleSave = () => {
   //   return;
   // }
 
-  const username = `${editProductKey.value.trim()}&${editDeviceSn.value.trim()}`;
+  const sn = editDeviceSn.value.trim();
+  const pkey = editProductKey.value.trim();
   const newData: any = {
     ...props.data,
     sub_topic: editSubTopic.value.trim(),
     pub_topic: editPubTopic.value.trim(),
     interval: editInterval.value,
-    username,
+    sn,
+    pkey,
+    username: `${pkey}&${sn}`,
     password: editProductSecret.value.trim(),
-    client_id: `${editDeviceSn.value.trim()}&v1`,
+    client_id: `${sn}&v1`,
   };
 
   emit("update", newData);
@@ -210,9 +196,8 @@ const handleCancel = () => {
   editSubTopic.value = props.data.sub_topic;
   editPubTopic.value = props.data.pub_topic;
   editInterval.value = props.data.interval;
-  const { product_key, device_sn } = splitUsername(props.data.username || "");
-  editProductKey.value = product_key;
-  editDeviceSn.value = device_sn;
+  editProductKey.value = props.data.pkey ?? "";
+  editDeviceSn.value = props.data.sn ?? "";
   editProductSecret.value = props.data.password || "";
 
   isEditing.value = false;

@@ -116,15 +116,18 @@ const handleOk = () => {
   //   return;
   // }
 
-  const username = `${data.value.product_key.trim()}&${data.value.device_sn.trim()}`;
+  const sn = data.value.device_sn.trim();
+  const pkey = data.value.product_key.trim();
   const newTopic = {
     group: data.value.serial_number,
     sub_topic: data.value.sub_topic.trim(),
     pub_topic: data.value.pub_topic.trim(),
     interval: data.value.interval,
-    username,
+    sn,
+    pkey,
+    username: `${pkey}&${sn}`,
     password: data.value.product_secret.trim(),
-    client_id: `${data.value.device_sn.trim()}&v1`,
+    client_id: `${sn}&v1`,
   };
 
   emit("add", newTopic);
